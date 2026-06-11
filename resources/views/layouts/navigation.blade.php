@@ -15,6 +15,20 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    @if(auth()->user()->role == 'project_manager')
+                        <x-nav-link href="/projects/create">
+                            {{ __('Create Project') }}
+                        </x-nav-link>
+
+                        <x-nav-link href="/projects">
+                            {{ __('All Projects') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link href="/projects">
+                            {{ __('My Projects') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
