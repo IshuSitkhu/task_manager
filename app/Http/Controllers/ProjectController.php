@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -30,7 +31,9 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        return view('projects.create');
+        $users = User::where('role', 'employee')->get();
+
+        return view('projects.create', compact('users'));
     }
 
     /**
@@ -50,7 +53,7 @@ class ProjectController extends Controller
                 'end_date' => 'nullable|date',
             ]);
 
-            Project::create([
+            $project = Project::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'status' => $request->status,
@@ -58,6 +61,11 @@ class ProjectController extends Controller
                 'end_date' => $request->end_date,
                 'created_by' => auth()->id(),
             ]);
+
+            // attach members
+            if ($request->members) {
+                $project->members()->syncWithoutDetaching($request->members);
+            }
 
             return redirect()->route('projects.index');
         }
@@ -67,7 +75,19 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return view('projects.show', compact('project'));
+        $project->load('members');
+
+        $allUsers = User::where('role', 'employee')->get();
+
+        return view('projects.show', compact('project', 'allUsers'));
+    }
+
+
+    public function addMembers(Request $request, Project $project)
+    {
+        $project->members()->syncWithoutDetaching($request->members);
+
+        return back();
     }
 
     /**

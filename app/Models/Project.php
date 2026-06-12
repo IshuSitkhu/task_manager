@@ -22,4 +22,10 @@ class Project extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'project_user')
+                    ->withTimestamps();
+    }
 }

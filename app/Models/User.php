@@ -58,10 +58,14 @@ class User extends Authenticatable
         return $this->role === 'employee';
     }
 
-    public function projects()
-    {
-        return $this->hasMany(Project::class, 'created_by');
-    }
+    public function createdProjects()
+{
+    return $this->hasMany(Project::class, 'created_by');
+}
 
+public function projects()
+{
+    return $this->belongsToMany(Project::class, 'project_user')->withTimestamps();
+}
     
 }
