@@ -59,13 +59,18 @@ class User extends Authenticatable
     }
 
     public function createdProjects()
-{
-    return $this->hasMany(Project::class, 'created_by');
-}
+    {
+        return $this->hasMany(Project::class, 'created_by');
+    }
 
-public function projects()
-{
-    return $this->belongsToMany(Project::class, 'project_user')->withTimestamps();
-}
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_user')->withTimestamps();
+    }
+
+    public function ownedEpics()
+    {
+        return $this->hasMany(Epic::class, 'owner_id');
+    }
     
 }
