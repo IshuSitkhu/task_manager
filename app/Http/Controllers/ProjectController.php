@@ -73,22 +73,29 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
-    {
-        $project->load('members');
+        public function show(Project $project)
+        {
+            $project->load('members');
 
-        $allUsers = User::where('role', 'employee')->get();
+            $allUsers = User::where('role', 'employee')->get();
 
-        return view('projects.show', compact('project', 'allUsers'));
-    }
+            return view('projects.show', compact('project', 'allUsers'));
+        }
 
 
-    public function addMembers(Request $request, Project $project)
-    {
-        $project->members()->syncWithoutDetaching($request->members);
+        public function addMembers(Request $request, Project $project)
+        {
+            $project->members()->syncWithoutDetaching($request->members);
 
-        return back();
-    }
+            return back();
+        }
+
+        public function overview(Project $project)
+        {
+            $allUsers = User::all();
+
+            return view('projects.overview', compact('project', 'allUsers'));
+        }
 
     /**
      * Show the form for editing the specified resource.

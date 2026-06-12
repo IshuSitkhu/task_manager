@@ -73,9 +73,9 @@
 
                         <div class="mt-5 flex justify-between items-center">
 
-                            <a href="{{ route('projects.show', $project) }}"
-                               class="text-blue-600 hover:underline">
-                                Open Project →
+                            <a href="{{ route('projects.overview', $project->id) }}"
+                                class="text-blue-600 hover:underline">
+                                    Open Project →
                             </a>
 
                             @if(auth()->user()->role == 'project_manager')
