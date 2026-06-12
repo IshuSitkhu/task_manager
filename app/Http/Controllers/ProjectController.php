@@ -31,7 +31,7 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        $users = User::where('role', 'employee')->get();
+        $users = User::whereIn('role', ['employee', 'project_manager'])->get();
 
         return view('projects.create', compact('users'));
     }

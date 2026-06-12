@@ -24,7 +24,7 @@ class EpicController extends Controller
      */
     public function create(Project $project)
     {
-        $users = User::where('role', 'employee')->get();
+        $users = $project->members; // ON;LY AVAILABLE PROJECT_USER
 
         return view('epics.create', compact('project', 'users'));
     }
@@ -40,8 +40,8 @@ class EpicController extends Controller
             'owner_id' => 'required|exists:users,id',
             'priority' => 'required',
             'status' => 'required',
-            'planned_start_date' => 'nullable|date',
-            'planned_end_date' => 'nullable|date',
+            'planned_start_date' => 'required|date',
+            'planned_end_date' => 'required|date',
             'progress' => 'nullable|integer|min:0|max:100',
         ]);
 

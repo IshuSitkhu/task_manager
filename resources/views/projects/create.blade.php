@@ -93,13 +93,13 @@
                     <div class="mb-4">
                         <label class="block font-medium mb-2">Add Members</label>
 
-<select name="members[]" multiple class="js-select2 w-full border p-2 rounded">
-    @foreach($users as $user)
-        <option value="{{ $user->id }}">
-            {{ $user->name }}
-        </option>
-    @endforeach
-</select>
+                    <select name="members[]" multiple class="js-select2 w-full border p-2 rounded">
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}">
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
                     </div>
 
                     <div class="flex justify-end gap-3">

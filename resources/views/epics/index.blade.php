@@ -8,7 +8,7 @@
         <h2 class="text-2xl font-bold">Epics</h2>
 
         <a href="{{ route('projects.epics.create', $project->id) }}"
-           class="bg-blue-600 text-white px-4 py-2 rounded">
+           class="px-3 py-1 bg-black text-white rounded">
             New Epic
         </a>
 
@@ -94,7 +94,7 @@
                         </td>
 
                         {{-- PROGRESS --}}
-                        <td class="p-3 w-40">
+                        <td class="p-3 w-20">
                             <div class="w-full bg-gray-200 rounded h-2">
                                 <div class="bg-blue-500 h-2 rounded"
                                      style="width: {{ $epic->progress }}%"></div>
@@ -111,11 +111,11 @@
                         
 
                         {{-- ACTIONS --}}
-                        <td class="p-3 flex gap-2">
+                        <td class="pt-5 flex">
 
                             <a href="{{ route('projects.epics.edit', [$project->id, $epic->id]) }}"
-                               class="text-blue-600">
-                                Edit
+                               class="text-blue-600 ">
+                                Edit 
                             </a>
 
                             <form method="POST"
@@ -125,7 +125,7 @@
 
                                 <button class="text-red-600"
                                         onclick="return confirm('Delete epic?')">
-                                    Delete
+                                       Delete
                                 </button>
                             </form>
 
