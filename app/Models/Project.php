@@ -32,4 +32,14 @@ class Project extends Model
     public function epics(){
         return $this->hasMany(Epic::class);
     }
+
+    public function sprints()
+    {
+        return $this->hasMany(Sprint::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

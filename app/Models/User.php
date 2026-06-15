@@ -72,5 +72,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Epic::class, 'owner_id');
     }
-    
+
+    public function assignedTasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
+    }
+
 }
