@@ -2,64 +2,46 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
 use App\Models\Sprint;
 use Illuminate\Http\Request;
 
 class SprintController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Project $project)
     {
-        //
+        $sprints = $project->sprints()->latest()->get();
+
+        return view('sprints.index', compact('project', 'sprints'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(Project $project)
     {
-        //
+        return view('sprints.create', compact('project'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request, Project $project)
     {
-        //
-    }
+        $request->validate([
+            'name' => 'required|max:255',
+            'goal' => 'nullable',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+            'status' => 'required',
+            'progress' => 'nullable|integer|min:0|max:100',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Sprint $sprint)
-    {
-        //
-    }
+        $project->sprints()->create([
+            'name' => $request->name,
+            'goal' => $request->goal,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'status' => $request->status,
+            'progress' => $request->progress ?? 0,
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Sprint $sprint)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Sprint $sprint)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Sprint $sprint)
-    {
-        //
+        return redirect()
+            ->route('projects.sprints', $project->id)
+            ->with('success', 'Sprint created successfully');
     }
 }

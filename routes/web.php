@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EpicController;
+use App\Http\Controllers\SprintController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
@@ -80,6 +81,27 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/projects/{project}/tasks/board', [TaskController::class, 'board'])
     ->name('projects.tasks.board');
+
+
+    // Sprint
+
+    Route::get('/projects/{project}/sprints', [SprintController::class, 'index'])
+        ->name('projects.sprints');
+
+    Route::get('/projects/{project}/sprints/create', [SprintController::class, 'create'])
+        ->name('projects.sprints.create');
+
+    Route::post('/projects/{project}/sprints', [SprintController::class, 'store'])
+        ->name('projects.sprints.store');
+
+    Route::get('/projects/{project}/sprints/{sprint}/edit', [SprintController::class, 'edit'])
+        ->name('projects.sprints.edit');
+
+    Route::put('/projects/{project}/sprints/{sprint}', [SprintController::class, 'update'])
+        ->name('projects.sprints.update');
+
+    Route::delete('/projects/{project}/sprints/{sprint}', [SprintController::class, 'destroy'])
+        ->name('projects.sprints.destroy');
 });
 
 require __DIR__.'/auth.php';
