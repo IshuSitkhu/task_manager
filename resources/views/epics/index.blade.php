@@ -34,7 +34,7 @@
                     <th class="p-3">Status</th>
                     <th class="p-3">Priority</th>
                     <th class="p-3">Progress</th>
-                    <th class="p-3">Connected tasks</th>
+                    {{-- <th class="p-3">Connected tasks</th> --}}
                     <th class="p-3">Actions</th>
                 </tr>
             </thead>
@@ -102,20 +102,20 @@
                             <span class="text-xs">{{ $epic->progress }}%</span>
                         </td>
 
-                        <td class="p-3">
+                        {{-- <td class="p-3">
                             <span class="text-gray-500 text-sm">
                                 0 tasks
                             </span>
-                        </td>
+                        </td> --}}
 
-                        
+
 
                         {{-- ACTIONS --}}
-                        <td class="pt-5 flex">
+                        <td class="pt-5 flex gap-3">
 
                             <a href="{{ route('projects.epics.edit', [$project->id, $epic->id]) }}"
                                class="text-blue-600 ">
-                                Edit 
+                                Edit
                             </a>
 
                             <form method="POST"

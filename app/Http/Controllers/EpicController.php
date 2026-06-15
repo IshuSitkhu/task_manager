@@ -14,7 +14,11 @@ class EpicController extends Controller
      */
     public function index(Project $project)
     {
-        $epics = $project->epics()->with('owner')->latest()->get();
+        $epics = $project->epics()
+            ->withCount('tasks')
+            ->with('owner')
+            ->latest()
+            ->get();
 
         return view('epics.index', compact('project', 'epics'));
     }

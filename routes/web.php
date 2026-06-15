@@ -30,7 +30,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/projects/{project}/sprints', [ProjectController::class, 'sprints'])->name('projects.sprints');
 
-    Route::get('/projects/{project}/tasks', [ProjectController::class, 'tasks'])->name('projects.tasks');
+    // Route::get('/projects/{project}/tasks', [ProjectController::class, 'tasks'])->name('projects.tasks');
+
 
 
     //epic
@@ -52,6 +53,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/projects/{project}/epics/{epic}', [EpicController::class, 'destroy'])
         ->name('projects.epics.destroy');
 
+
+
      // TASKS
     Route::get('/projects/{project}/tasks', [TaskController::class, 'index'])
         ->name('projects.tasks');
@@ -70,6 +73,13 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/projects/{project}/tasks/{task}', [TaskController::class, 'destroy'])
         ->name('projects.tasks.destroy');
+
+
+    //kanban
+
+
+    Route::get('/projects/{project}/tasks/board', [TaskController::class, 'board'])
+    ->name('projects.tasks.board');
 });
 
 require __DIR__.'/auth.php';

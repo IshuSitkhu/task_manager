@@ -117,13 +117,13 @@
                 </div>
 
                 {{-- CONNECTED TASKS (UI ONLY FOR NOW) --}}
-                <div>
+                {{-- <div>
                     <label class="block font-medium mb-1">Connected Tasks</label>
                     <input type="text"
                            class="w-full border rounded p-2 bg-gray-100"
                            value="(Will be linked with Tasks module)"
                            disabled>
-                </div>
+                </div> --}}
 
             </div>
 

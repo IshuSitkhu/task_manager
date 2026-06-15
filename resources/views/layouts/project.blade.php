@@ -47,8 +47,9 @@
                         </li>
 
                         <li>
-                            <a href="#">
-                                Board
+                            <a href="{{ route('projects.tasks.board', $project->id) }}"
+                            class="{{ request()->routeIs('projects.tasks.board') ? 'text-blue-600 font-semibold' : '' }}">
+                                Kanban Board
                             </a>
                         </li>
 

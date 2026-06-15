@@ -19,6 +19,16 @@
     {{-- FORM CARD --}}
     <div class="bg-white p-6 rounded shadow">
 
+        @if ($errors->any())
+    <div class="bg-red-100 text-red-700 p-4 mb-4 rounded">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
         <form method="POST" action="{{ route('projects.epics.store', $project->id) }}">
             @csrf
 
@@ -97,7 +107,9 @@
                     <label class="block font-medium mb-1">Start Date</label>
                     <input type="date"
                            name="planned_start_date"
-                           class="w-full border rounded p-2">
+                           class="w-full border rounded p-2"
+                           required
+                           >
                 </div>
 
                 {{-- END DATE --}}
@@ -105,15 +117,16 @@
                     <label class="block font-medium mb-1">End Date</label>
                     <input type="date"
                            name="planned_end_date"
-                           class="w-full border rounded p-2">
+                           class="w-full border rounded p-2"
+                           required>
                 </div>
-
+{{-- 
                 <div>
                     <label class="block font-medium mb-1"> Conected tasks</label>
                     <input type="text"
                            name="connected_task"
                            class="w-full border rounded p-2">
-                </div>
+                </div> --}}
             </div>
 
             {{-- SUBMIT --}}
