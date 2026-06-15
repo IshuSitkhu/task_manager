@@ -23,7 +23,9 @@
         <div class="space-y-2">
 
             @foreach($tasks->where('status', 'todo') as $task)
-                <div class="bg-white p-3 rounded shadow">
+                <div class="bg-white p-3 rounded shadow"
+                    data-task-id="{{ $task->id }}"
+                    draggable="true">
                     <div class="font-semibold">{{ $task->title }}</div>
                     <div class="text-xs text-gray-500">
                        Epic- {{ $task->epic->title ?? 'No Epic' }}
@@ -50,7 +52,9 @@
         <div class="space-y-2">
 
             @foreach($tasks->where('status', 'in_progress') as $task)
-                <div class="bg-white p-3 rounded shadow">
+                <div class="bg-white p-3 rounded shadow"
+                    data-task-id="{{ $task->id }}"
+                    draggable="true">
                     <div class="font-semibold">{{ $task->title }}</div>
                     <div class="text-xs text-gray-500">
                         {{ $task->epic->title ?? 'No Epic' }}
@@ -77,7 +81,9 @@
         <div class="space-y-2">
 
             @foreach($tasks->where('status', 'review') as $task)
-                <div class="bg-white p-3 rounded shadow">
+                <div class="bg-white p-3 rounded shadow"
+                data-task-id="{{ $task->id }}"
+                draggable="true">
                     <div class="font-semibold">{{ $task->title }}</div>
                     <div class="text-xs text-gray-500">
                         {{ $task->epic->title ?? 'No Epic' }}
@@ -104,7 +110,9 @@
         <div class="space-y-2">
 
             @foreach($tasks->where('status', 'done') as $task)
-                <div class="bg-white p-3 rounded shadow">
+                <div class="bg-white p-3 rounded shadow"
+                data-task-id="{{ $task->id }}"
+                draggable="true">
                     <div class="font-semibold">{{ $task->title }}</div>
                     <div class="text-xs text-gray-500">
                         {{ $task->epic->title ?? 'No Epic' }}

@@ -112,9 +112,9 @@
                     <label class="block font-medium mb-1">End Date</label>
                     <input type="date"
                            name="planned_end_date"
-                           value="{{ $epic->planned_end_date }}"
+
                            class="w-full border rounded p-2">
-                </div>
+                </div>value="{{ $epic->planned_end_date }}"
 
                 {{-- CONNECTED TASKS (UI ONLY FOR NOW) --}}
                 {{-- <div>

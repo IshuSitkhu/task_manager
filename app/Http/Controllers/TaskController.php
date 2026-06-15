@@ -108,4 +108,19 @@ class TaskController extends Controller
 
         return view('tasks.board', compact('project', 'tasks'));
     }
+
+    public function updateStatus(Request $request, Task $task)
+    {
+        $request->validate([
+            'status' => 'required|in:todo,in_progress,review,done',
+        ]);
+
+        $task->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
 }

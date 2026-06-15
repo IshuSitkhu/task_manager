@@ -102,6 +102,11 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/projects/{project}/sprints/{sprint}', [SprintController::class, 'destroy'])
         ->name('projects.sprints.destroy');
+
+
+    //drag and drp
+    Route::post('/tasks/{task}/status', [TaskController::class, 'updateStatus'])
+    ->name('tasks.updateStatus');
 });
 
 require __DIR__.'/auth.php';

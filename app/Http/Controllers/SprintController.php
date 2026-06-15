@@ -44,4 +44,38 @@ class SprintController extends Controller
             ->route('projects.sprints', $project->id)
             ->with('success', 'Sprint created successfully');
     }
+
+
+    public function edit(Project $project, Sprint $sprint)
+    {
+        return view('sprints.edit', compact('project', 'sprint'));
+    }
+
+    // UPDATE
+    public function update(Request $request, Project $project, Sprint $sprint)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'goal' => 'nullable|string',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+            'status' => 'required|in:planned,active,closed',
+            'progress' => 'nullable|integer|min:0|max:100',
+        ]);
+
+        $sprint->update($request->all());
+
+        return redirect()->route('projects.sprints', $project->id)
+            ->with('success', 'Sprint updated successfully');
+    }
+
+    // DELETE
+    public function destroy(Project $project, Sprint $sprint)
+    {
+        $sprint->delete();
+
+        return back()->with('success', 'Sprint deleted successfully');
+    }
+
+
 }
