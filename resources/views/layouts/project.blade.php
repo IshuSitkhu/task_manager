@@ -1,21 +1,18 @@
 <x-app-layout>
 
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class=" mx-auto sm:px-6 lg:px-8">
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 
-                {{-- SIDEBAR --}}
-                <div class="bg-white p-4 rounded shadow h-fit">
+                <div class="bg-white p-3 rounded shadow h-fit">
 
-                    {{-- PROJECT TITLE --}}
                     @if(isset($project))
-                        <h3 class="font-bold mb-4">
+                        <h3 class="font-bold mb-4 text-xl">
                             {{ $project->name }}
                         </h3>
                     @endif
 
-                    {{-- MENU --}}
                     <ul class="space-y-2 text-sm">
 
                         <li>

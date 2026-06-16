@@ -34,7 +34,7 @@
                     <th class="p-3">Status</th>
                     <th class="p-3">Priority</th>
                     <th class="p-3">Progress</th>
-                    <th class="p-3">Actions</th>
+                    <th class="p-3 text-center">Actions</th>
                 </tr>
             </thead>
 
@@ -170,15 +170,48 @@
                         </td>
 
                         <td class="p-3">
+                            <div class="w-full bg-gray-200 rounded h-2">
+                                <div class="bg-green-500 h-2 rounded"
+                                     style="width: {{ $epic->progress }}%"></div>
+                            </div>
+                            <span class="text-xs text-gray-600">
                             {{ $epic->progress }}%
                         </td>
 
-                        <td class="p-3 text-right">
+                        <td class="p-3 flex justify-end">
                             <button onclick="toggleEpic({{ $epic->id }})"
-                                    class="text-sm text-blue-600">
-                                Show Tasks
+                                        class="text-sm text-blue-600">
+                                    Show Tasks
                             </button>
+
+                                    <a href="{{ route('projects.epics.edit', [$project->id, $epic->id]) }}"
+                                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Edit
+                                    </a>
+
+                                    <form method="POST"
+                                          action="{{ route('projects.epics.destroy', [$project->id, $epic->id]) }}">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                                onclick="return confirm('Delete epic?')">
+                                            Delete
+                                        </button>
+                                    </form>
+
+
                         </td>
+
+                        <td>
+
+
+
+
+
+
+
 
                     </tr>
 
@@ -276,6 +309,30 @@
                 row.classList.add('hidden');
             }
         }
+
+        function toggleMenu(id) {
+
+                    let menu = document.getElementById('menu-' + id);
+
+                    // close all others
+                    document.querySelectorAll('[id^="menu-"]').forEach(el => {
+                        if (el !== menu) el.classList.add('hidden');
+                    });
+
+                    // toggle current
+                    menu.classList.toggle('hidden');
+        }
+
+                // click outside to close
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('[id^="menu-"]').forEach(el => {
+                    el.classList.add('hidden');
+                });
+            }
+        });
+
+
     </script>
 
 @endsection

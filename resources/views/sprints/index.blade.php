@@ -210,7 +210,7 @@
                 <div class="col-span-1 flex justify-end relative">
 
                     <button onclick="toggleMenu({{ $sprint->id }})"
-                            class="p-1.5 rounded hover:bg-gray-200 text-gray-600">
+                            class="p-1.5 rounded hover:bg-gray-200 text-black">
                         ⋯
                     </button>
 
