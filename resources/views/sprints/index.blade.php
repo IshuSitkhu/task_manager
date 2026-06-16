@@ -215,7 +215,7 @@
                     </button>
 
                     <div id="menu-{{ $sprint->id }}"
-                        class="hidden absolute right-0 mt-8 w-40 bg-white border rounded-lg shadow-lg z-20 overflow-hidden">
+                        class="hidden absolute right-0 top-full mt-2 w-40 bg-white border rounded-lg shadow-lg z-50 overflow-hidden">
 
                         <a href="{{ route('projects.sprints.edit', [$project->id, $sprint->id]) }}"
                         class="block px-4 py-2 text-sm hover:bg-gray-100">
@@ -255,73 +255,61 @@
 
                         <div class="p-4 border rounded-lg bg-white hover:bg-gray-50 transition shadow-sm">
 
-                            {{-- TOP ROW: Title + Actions --}}
-                            <div class="flex justify-between items-start gap-4">
+                        <div class="flex justify-between items-center gap-6">
 
-                                <div>
-                                    <div class="font-semibold text-gray-800 text-base">
-                                        {{ $task->title }}
-                                    </div>
+                            <div class="flex items-center gap-8 min-w-0">
 
-                                    <div class="flex flex-wrap gap-2 mt-3 text-sm">
+                                <h1 class="font-semibold text-gray-800 text-base whitespace-nowrap">
+                                    {{ $task->title }}
+                                </h1>
 
-                                        <div class=" text-black-500 mt-1">
-                                            Epic: {{ $task->epic->title ?? 'N/A' }}
-                                        </div>
+                                <div class="flex items-center gap-6 text-xs text-gray-600 truncate">
 
-                                        <span class="px-2 py-1 rounded  text-blue-700">
-                                            Status:{{ $task->status }}
-                                        </span>
+                                    <span class="truncate px-2 py-0.5 rounded  bg-purple-100 text-purple-700 whitespace-nowrap">
+                                        Epic: {{ $task->epic->title ?? 'N/A' }}
+                                    </span>
 
-                                        <span class="px-2 py-1 rounded text-green-700">
-                                            Type: {{ $task->type }}
-                                        </span>
+                                    <span class="px-2 py-0.5 rounded  text-blue-700 whitespace-nowrap">
+                                        Status: {{ $task->status }}
+                                    </span>
 
-                                        <span class="px-2 py-1 rounded  text-yellow-700">
-                                            Priority: {{ $task->priority }}
-                                        </span>
-                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-green-700 whitespace-nowrap">
+                                        Type: {{ $task->type }}
+                                    </span>
+
+                                    <span class="px-2 py-0.5 rounded  text-yellow-700 whitespace-nowrap">
+                                        Priority: {{ $task->priority }}
+                                    </span>
+
                                 </div>
 
-                                {{-- ACTION MENU --}}
-                                <div class="relative">
+                            </div>
 
-                                    <button onclick="toggleMenu({{ $task->id }})"
-                                            class="p-2 rounded hover:bg-gray-200 transition">
-                                        ⋯
+                            <div class="flex items-center gap-2">
+
+                                <button onclick="openTaskModal({{ $task->id }})"
+                                        class="px-3 py-1 text-sm rounded hover:bg-gray-100">
+                                    Edit
+                                </button>
+
+                                <form method="POST"
+                                    action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
+
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit"
+                                            onclick="return confirm('Delete this task?')"
+                                            class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded">
+                                        Delete
                                     </button>
 
-                                    <div id="menu-{{ $task->id }}"
-                                        class="hidden absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg z-20">
-
-                                        <button onclick="openTaskModal({{ $task->id }})"
-                                                class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-                                            Edit
-                                        </button>
-
-                                        <form method="POST"
-                                            action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button type="submit"
-                                                    onclick="return confirm('Delete this task?')"
-                                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                                                Delete
-                                            </button>
-                                        </form>
-
-                                    </div>
-                                </div>
+                                </form>
 
                             </div>
 
-                            {{-- META INFO ROW --}}
-                            <div class="flex flex-wrap gap-2 mt-3 text-xs">
+                        </div>
 
-
-
-                            </div>
 
                         </div>
 
