@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\Project;
+use App\Models\Epic;
+use App\Models\Sprint;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -66,6 +69,18 @@ class TaskController extends Controller
         return view('tasks.edit', compact('project', 'task', 'epics', 'sprints', 'users'));
     }
 
+    public function editmodule(Project $project, Task $task)
+    {
+        //IT RETURN HTML FORM
+        return view('tasks.partials.edit-modal-form', [
+            'project' => $project,
+            'task' => $task,
+            'epics' => $project->epics,
+            'sprints' => $project->sprints,
+            'users' => $project->members,
+        ]);
+    }
+
     public function update(Request $request, Project $project, Task $task)
     {
         $request->validate([
@@ -90,7 +105,9 @@ class TaskController extends Controller
             'due_date' => $request->due_date,
         ]);
 
-        return redirect()->route('projects.tasks', $project->id)
+        $redirect = $request->redirect_to ?? route('projects.tasks', $project->id);
+
+        return redirect($redirect)
             ->with('success', 'Task updated successfully');
     }
 

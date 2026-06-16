@@ -1,32 +1,13 @@
-@extends('layouts.project')
+<div class="bg-white p-6 rounded shadow">
+    <form id="taskForm"
+        method="POST"
+        action="{{ route('projects.tasks.update', [$project->id, $task->id]) }}">
 
-@section('content')
+        @csrf
+        @method('PUT')
 
-    {{-- HEADER --}}
-    <div class="flex justify-between items-center mb-6">
 
-        <h2 class="text-2xl font-bold">
-            Edit Task
-        </h2>
-
-        <a href="{{ route('projects.tasks', $project->id) }}"
-           class="text-blue-600 hover:underline">
-            ← Back to Tasks
-        </a>
-
-    </div>
-
-    {{-- FORM CARD --}}
-    <div class="bg-white p-6 rounded shadow">
-
-        <form method="POST"
-              action="{{ route('projects.tasks.update', [$project->id, $task->id]) }}">
-
-            @csrf
-            @method('PUT')
-
-            <input type="hidden" name="redirect_to" value="{{ route('projects.tasks', $project->id) }}">
-
+        <input type="hidden" name="redirect_to" value="{{ route('projects.sprints', $project->id) }}">
             <div class="mb-4">
                 <label class="block font-medium mb-1">Task Title</label>
                 <input type="text"
@@ -45,7 +26,6 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                {{-- EPIC --}}
                 <div>
                     <label class="block font-medium mb-1">Epic</label>
                     <select name="epic_id" class="w-full border rounded p-2" required>
@@ -60,7 +40,6 @@
                     </select>
                 </div>
 
-                {{-- SPRINT --}}
                 <div>
                     <label class="block font-medium mb-1">Sprint</label>
                     <select name="sprint_id" class="w-full border rounded p-2">
@@ -77,7 +56,6 @@
                     </select>
                 </div>
 
-                {{-- ASSIGNEE --}}
                 <div>
                     <label class="block font-medium mb-1">Assignee</label>
                     <select name="assigned_to" class="w-full border rounded p-2" required>
@@ -92,7 +70,6 @@
                     </select>
                 </div>
 
-                {{-- TYPE --}}
                 <div>
                     <label class="block font-medium mb-1">Type</label>
                     <select name="type" class="w-full border rounded p-2">
@@ -107,7 +84,6 @@
                     </select>
                 </div>
 
-                {{-- PRIORITY --}}
                 <div>
                     <label class="block font-medium mb-1">Priority</label>
                     <select name="priority" class="w-full border rounded p-2">
@@ -122,7 +98,6 @@
                     </select>
                 </div>
 
-                {{-- STATUS --}}
                 <div>
                     <label class="block font-medium mb-1">Status</label>
                     <select name="status" class="w-full border rounded p-2">
@@ -137,7 +112,6 @@
                     </select>
                 </div>
 
-                {{-- GITHUB LINK --}}
                 <div>
                     <label class="block font-medium mb-1">GitHub Link</label>
                     <input type="text"
@@ -146,7 +120,6 @@
                            class="w-full border rounded p-2">
                 </div>
 
-                {{-- DUE DATE --}}
                 <div>
                     <label class="block font-medium mb-1">Due Date</label>
                     <input type="date"
@@ -157,18 +130,14 @@
 
             </div>
 
-            {{-- SUBMIT --}}
             <div class="mt-6 flex justify-end">
 
-                <button type="submit"
+                <button
                         class="bg-blue-600 text-white px-6 py-2 rounded">
                     Update Task
                 </button>
 
             </div>
 
-        </form>
-
-    </div>
-
-@endsection
+    </form>
+</div>
