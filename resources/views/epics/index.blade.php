@@ -26,7 +26,7 @@
 
         <table class="w-full text-sm text-left">
 
-            <thead class="bg-gray-100">
+            <thead class="bg-gray-100 ">
                 <tr>
                     <th class="p-3">Epic</th>
                     <th class="p-3">Owner</th>
@@ -136,7 +136,7 @@
                 @forelse($epics as $epic)
 
 
-                    <tr class="border-b bg-white mt-2">
+                    <tr class="bg-white ">
 
                         <td class="p-3 font-semibold">
                             {{ $epic->title }}
@@ -146,7 +146,7 @@
                             {{ $epic->owner->name ?? 'N/A' }}
                         </td>
 
-                        <td class="p-3 text-xs">
+                        <td class="p-3 text-sm">
 
                             <span>
                                 {{ \Carbon\Carbon::parse($epic->planned_start_date)->format('d M Y') }}
@@ -158,13 +158,13 @@
                         </td>
 
                         <td class="p-3">
-                            <span class="px-2 py-1 rounded text-xs bg-gray-200">
+                            <span class="px-2 py-1 rounded text-sm bg-gray-200">
                                 {{ ucfirst($epic->status) }}
                             </span>
                         </td>
 
                         <td class="p-3">
-                            <span class="px-2 py-1 rounded text-xs bg-yellow-200">
+                            <span class="px-2 py-1 rounded text-sm bg-yellow-200">
                                 {{ ucfirst($epic->priority) }}
                             </span>
                         </td>
@@ -182,15 +182,15 @@
 
                     </tr>
 
-                    <tr id="epic-{{ $epic->id }}" class="hidden bg-gray-50">
+                    <tr id="epic-{{ $epic->id }}" class="hidden ">
 
-                        <td colspan="7" class="p-4">
+                        <td colspan="7" class="p-4 border-b ">
 
                             @if($epic->tasks->count() > 0)
-                                <h3 class="font-semibold text-lg text-gray-700 mb-3">
+                                <h3 class="font-semibold text-sm text-gray-700 ">
                                     Connected Tasks
                                 </h3>
-                                <table class="w-full text-sm text-left border rounded">
+                                <table class="w-full text-sm text-left bg-gray-50 border rounded">
 
                                     <thead class="text-left text-black">
                                         <tr>
