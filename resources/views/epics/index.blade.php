@@ -34,34 +34,29 @@
                     <th class="p-3">Status</th>
                     <th class="p-3">Priority</th>
                     <th class="p-3">Progress</th>
-                    {{-- <th class="p-3">Connected tasks</th> --}}
                     <th class="p-3">Actions</th>
                 </tr>
             </thead>
 
-            <tbody>
+            {{-- <tbody>
 
                 @forelse($epics as $epic)
 
                     <tr class="border-b">
 
-                        {{-- TITLE --}}
                         <td class="p-3 font-semibold">
                             {{ $epic->title }}
                         </td>
 
-                        {{-- OWNER --}}
                         <td class="p-3">
                             {{ $epic->owner->name ?? 'N/A' }}
                         </td>
 
-                        {{-- DATES --}}
                         <td class="p-3 text-xs">
                             <div>{{ $epic->planned_start_date ?? '-' }}</div>
                             <div>{{ $epic->planned_end_date ?? '-' }}</div>
                         </td>
 
-                        {{-- STATUS --}}
                         <td class="p-3">
                             @php
                                 $statusColors = [
@@ -77,7 +72,6 @@
                             </span>
                         </td>
 
-                        {{-- PRIORITY --}}
                         <td class="p-3">
                             @php
                                 $priorityColors = [
@@ -93,7 +87,7 @@
                             </span>
                         </td>
 
-                        {{-- PROGRESS --}}
+
                         <td class="p-3 w-20">
                             <div class="w-full bg-gray-200 rounded h-2">
                                 <div class="bg-blue-500 h-2 rounded"
@@ -102,15 +96,7 @@
                             <span class="text-xs">{{ $epic->progress }}%</span>
                         </td>
 
-                        {{-- <td class="p-3">
-                            <span class="text-gray-500 text-sm">
-                                0 tasks
-                            </span>
-                        </td> --}}
 
-
-
-                        {{-- ACTIONS --}}
                         <td class="pt-5 flex gap-3">
 
                             <a href="{{ route('projects.epics.edit', [$project->id, $epic->id]) }}"
@@ -143,10 +129,153 @@
 
                 @endforelse
 
-            </tbody>
+            </tbody> --}}
+
+            <tbody>
+
+                @forelse($epics as $epic)
+
+
+                    <tr class="border-b bg-white mt-2">
+
+                        <td class="p-3 font-semibold">
+                            {{ $epic->title }}
+                        </td>
+
+                        <td class="p-3">
+                            {{ $epic->owner->name ?? 'N/A' }}
+                        </td>
+
+                        <td class="p-3 text-xs">
+
+                            <span>
+                                {{ \Carbon\Carbon::parse($epic->planned_start_date)->format('d M Y') }}
+                            </span>
+                            <span class="text-gray-400 mx-1">→</span>
+                            <span>
+                                {{ \Carbon\Carbon::parse($epic->planned_end_date)->format('d M Y') }}
+                            </span>
+                        </td>
+
+                        <td class="p-3">
+                            <span class="px-2 py-1 rounded text-xs bg-gray-200">
+                                {{ ucfirst($epic->status) }}
+                            </span>
+                        </td>
+
+                        <td class="p-3">
+                            <span class="px-2 py-1 rounded text-xs bg-yellow-200">
+                                {{ ucfirst($epic->priority) }}
+                            </span>
+                        </td>
+
+                        <td class="p-3">
+                            {{ $epic->progress }}%
+                        </td>
+
+                        <td class="p-3 text-right">
+                            <button onclick="toggleEpic({{ $epic->id }})"
+                                    class="text-sm text-blue-600">
+                                Show Tasks
+                            </button>
+                        </td>
+
+                    </tr>
+
+                    <tr id="epic-{{ $epic->id }}" class="hidden bg-gray-50">
+
+                        <td colspan="7" class="p-4">
+
+                            @if($epic->tasks->count() > 0)
+                                <h3 class="font-semibold text-lg text-gray-700 mb-3">
+                                    Connected Tasks
+                                </h3>
+                                <table class="w-full text-sm text-left border rounded">
+
+                                    <thead class="text-left text-black">
+                                        <tr>
+                                            <th class="p-2">Task</th>
+                                            <th class="p-2">Sprint</th>
+                                            <th class="p-2">Status</th>
+                                            <th class="p-2">Type</th>
+                                            <th class="p-2">Priority</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        @foreach($epic->tasks as $task)
+
+                                            <tr class="border-t">
+
+                                                <td class="p-2 font-medium">
+                                                    {{ $task->title }}
+                                                </td>
+
+                                                <td class="p-2 text-purple-600">
+                                                    {{ $task->sprint ?  $task->sprint->name : 'Backlog' }}
+                                                </td>
+
+                                                <td class="p-2 text-blue-600">
+                                                   {{ $task->status }}
+                                                </td>
+
+                                                <td class="p-2 text-green-600">
+                                                    {{ $task->type }}
+                                                </td>
+
+                                                <td class="p-2 text-yellow-600">
+                                                    {{ $task->priority }}
+                                                </td>
+
+                                            </tr>
+
+                                        @endforeach
+
+                                    </tbody>
+
+                                </table>
+
+                            @else
+                                <p class="text-gray-500">No tasks in this epic</p>
+                            @endif
+
+
+
+                        </td>
+
+                        <hr>
+
+                    </tr>
+
+
+                @empty
+
+                    <tr>
+                        <td colspan="7" class="p-4 text-center text-gray-500">
+                            No epics found
+                        </td>
+                    </tr>
+
+                @endforelse
+
+                </tbody>
 
         </table>
 
     </div>
+
+    <script>
+        function toggleEpic(id)
+        {
+            let row = document.getElementById('epic-' + id);
+
+            if (row.classList.contains('hidden')) {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        }
+    </script>
 
 @endsection

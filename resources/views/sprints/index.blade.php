@@ -158,7 +158,7 @@
     @foreach($sprints as $sprint)
                 <div class="border rounded-lg mb-8 bg-white shadow-sm overflow-hidden">
 
-            <div class="grid grid-cols-12 items-center gap-4 px-5 py-3 bg-gray-50 border-b text-sm font-medium text-gray-600">
+            <div class="grid grid-cols-12 items-center gap-4 px-5 py-3  border-b text-sm font-medium text-gray-600">
 
                 <div class="col-span-3">
                     <div class="font-semibold text-gray-900">
@@ -170,13 +170,13 @@
                     {{ $sprint->goal ?? 'No goal defined' }}
                 </div>
 
-                <div class="col-span-2 text-gray-700">
+                <div class="col-span-3 text-gray-700">
                     <span>
-                        {{ \Carbon\Carbon::parse($sprint->start_date)->format('d M') }}
+                        {{ \Carbon\Carbon::parse($sprint->start_date)->format('d M Y') }}
                     </span>
                     <span class="text-gray-400 mx-1">→</span>
                     <span>
-                        {{ \Carbon\Carbon::parse($sprint->end_date)->format('d M') }}
+                        {{ \Carbon\Carbon::parse($sprint->end_date)->format('d M Y') }}
                     </span>
                 </div>
 
@@ -194,13 +194,13 @@
                     </span>
                 </div>
 
-                <div class="col-span-2">
+                <div class="col-span-1">
                     <div class="flex items-center gap-2">
-                        <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                        {{-- <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
                             <div class="bg-green-500 h-2 rounded-full transition-all"
                                 style="width: {{ $sprint->progress }}%">
                             </div>
-                        </div>
+                        </div> --}}
                         <span class="text-xs text-gray-600 w-10 text-right">
                             {{ $sprint->progress }}%
                         </span>
@@ -253,7 +253,7 @@
 
                         @foreach($sprint->tasks as $task)
 
-                        <div class="p-4 border rounded-lg bg-white hover:bg-gray-50 transition shadow-sm">
+                        <div class="p-4 border rounded-lg bg-gray-50 hover:bg-gray-50 transition shadow-sm">
 
                         <div class="flex justify-between items-center gap-6">
 
