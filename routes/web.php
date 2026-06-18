@@ -75,6 +75,9 @@ Route::middleware('auth')->group(function () {
      Route::get('/projects/{project}/tasks/{task}/editmodule', [TaskController::class, 'editmodule'])
         ->name('projects.tasks.editmodule');
 
+    Route::get('/projects/{project}/tasks/{task}/addmodule', [TaskController::class, 'addmodule'])
+        ->name('projects.tasks.addmodule');
+
     Route::put('/projects/{project}/tasks/{task}', [TaskController::class, 'update'])
         ->name('projects.tasks.update');
 

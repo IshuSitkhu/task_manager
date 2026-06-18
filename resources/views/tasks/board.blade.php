@@ -24,10 +24,12 @@
                     {{ $status->name }}
                 </h3>
 
-                <a href="{{ route('projects.tasks.create', $project->id) }}?status={{ $status->slug }}"
-                   class="text-xs bg-white text-black px-2 py-1 rounded">
+
+                <button onclick="openTaskModal('{{ $status->slug }}')"
+                    class="text-xs bg-white text-black px-2 py-1 rounded">
                     + Add
-                </a>
+                </button>
+
             </div>
 
             <div class="space-y-2">
@@ -56,7 +58,7 @@
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">Add New Status</h2>
             <button onclick="closeStatusModal()" class="text-black font-bold text-lg">
-                X
+                ✖
             </button>
         </div>
 
@@ -84,6 +86,26 @@
     </div>
 </div>
 
+
+<div id="taskModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+
+    <div class="bg-white p-4 rounded w-[700px] max-h-[99vh] overflow-y-auto">
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Create Task</h2>
+            <button onclick="closeTaskModal()">✖</button>
+        </div>
+
+        @include('tasks.partials.add_modal-form', [
+            'project' => $project,
+            'epics' => $epics,
+            'sprints' => $sprints,
+            'users' => $users
+        ])
+
+    </div>
+</div>
+
 <script>
     function openStatusModal() {
         document.getElementById('statusModal').classList.remove('hidden');
@@ -91,6 +113,20 @@
 
     function closeStatusModal() {
         document.getElementById('statusModal').classList.add('hidden');
+    }
+
+    function openTaskModal(statusSlug)
+    {
+        document.getElementById('taskModal').classList.remove('hidden');
+
+        if (statusSlug) {
+            document.getElementById('statusSelect').value = statusSlug;
+        }
+    }
+
+    function closeTaskModal()
+    {
+        document.getElementById('taskModal').classList.add('hidden');
     }
 </script>
 

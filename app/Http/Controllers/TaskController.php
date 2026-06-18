@@ -56,7 +56,10 @@ class TaskController extends Controller
             'due_date' => $request->due_date,
         ]);
 
-        return redirect()->route('projects.tasks', $project->id)
+        // return redirect()->route('projects.tasks', $project->id)
+        //     ->with('success', 'Task created successfully');
+
+        return redirect()->back()
             ->with('success', 'Task created successfully');
     }
 
@@ -117,11 +120,24 @@ class TaskController extends Controller
     }
 
 
+
     public function board(Project $project)
     {
-        $tasks = $project->tasks()->with(['epic', 'assignee'])->get();
+        $project->load('statuses');
 
-        return view('tasks.board', compact('project', 'tasks'));
+        $tasks = $project->tasks()->with('epic', 'assignee')->get();
+
+        $epics = $project->epics;
+        $sprints = $project->sprints;
+        $users = User::where('role', 'employee')->get();
+
+        return view('tasks.board', compact(
+            'project',
+            'tasks',
+            'epics',
+            'sprints',
+            'users'
+        ));
     }
 
     public function updateStatus(Request $request, Task $task)
