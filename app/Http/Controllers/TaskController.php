@@ -105,9 +105,7 @@ class TaskController extends Controller
             'due_date' => $request->due_date,
         ]);
 
-        $redirect = $request->redirect_to ?? route('projects.tasks', $project->id);
-
-        return redirect($redirect)
+        return redirect()->back()
             ->with('success', 'Task updated successfully');
     }
 

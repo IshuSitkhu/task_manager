@@ -1,4 +1,4 @@
-<div class="bg-white p-6 rounded shadow">
+<div class="bg-white p-3 rounded shadow">
     <form id="taskForm"
         method="POST"
         action="{{ route('projects.tasks.update', [$project->id, $task->id]) }}">

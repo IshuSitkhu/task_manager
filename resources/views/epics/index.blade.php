@@ -206,13 +206,6 @@
 
                         <td>
 
-
-
-
-
-
-
-
                     </tr>
 
                     <tr id="epic-{{ $epic->id }}" class="hidden ">
@@ -232,6 +225,7 @@
                                             <th class="p-2">Status</th>
                                             <th class="p-2">Type</th>
                                             <th class="p-2">Priority</th>
+                                            <th class="p-2 text-center">Actions</th>
                                         </tr>
                                     </thead>
 
@@ -259,6 +253,31 @@
 
                                                 <td class="p-2 text-yellow-600">
                                                     {{ $task->priority }}
+                                                </td>
+
+                                                <td class="p-2 flex gap-3 justify-center">
+                                                    {{-- <a href="{{ route('projects.tasks.edit', [$project->id, $task->id]) }}"
+                                                       class="text-sm text-blue-600">
+                                                        Edit
+                                                    </a> --}}
+
+                                                    <button onclick="openTaskModal({{ $task->id }})"
+                                                            class="px-3 text-sm text-blue-600">
+                                                        Edit
+                                                    </button>
+
+                                                    <form method="POST"
+                                                          action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                          class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+
+                                                        <button type="submit"
+                                                                class="text-sm text-red-600"
+                                                                onclick="return confirm('Delete task?')">
+                                                            Delete
+                                                        </button>
+                                                    </form>
                                                 </td>
 
                                             </tr>
@@ -310,29 +329,69 @@
             }
         }
 
-        function toggleMenu(id) {
+        function openTaskModal(taskId)
+        {
+            fetch(`/projects/{{ $project->id }}/tasks/${taskId}/editmodule`)
+                        .then(res => res.text())
+                        .then(html => {
 
-                    let menu = document.getElementById('menu-' + id);
+                            //TAKE HTML AND PUT IN MODAL BODY
+                            document.getElementById('modalBody').innerHTML = html;
 
-                    // close all others
-                    document.querySelectorAll('[id^="menu-"]').forEach(el => {
-                        if (el !== menu) el.classList.add('hidden');
-                    });
-
-                    // toggle current
-                    menu.classList.toggle('hidden');
+                            //MODAL IS SHOWN, NOW ATTACH FORM SUBMIT HANDLER
+                            document.getElementById('taskModal').classList.remove('hidden');
+                        })
+                        .catch(err => console.log(err));
         }
 
-                // click outside to close
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.relative')) {
-                document.querySelectorAll('[id^="menu-"]').forEach(el => {
-                    el.classList.add('hidden');
-                });
-            }
-        });
+        function closeModal()
+        {
+            document.getElementById('taskModal').classList.add('hidden');
+        }
 
+        function attachFormSubmit()
+        {
+            const form = document.getElementById('taskForm');
+
+                    //ATTACH SUBMIT HANDLER
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+
+                        //AJAX SUBMIT FORM
+                        fetch(form.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: new FormData(form)
+                        })
+                        .then(res => res.json())
+                        .then(() => {
+
+                            closeModal();
+
+                            location.reload();
+                        });
+                    });
+        }
 
     </script>
+
+    <div id="taskModal"
+                class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+                <div class="bg-white w-full max-w-3xl p-6 rounded shadow">
+
+                    <div class="flex py-6 justify-between ">
+                        <h2 class="  text-xl font-bold">Edit Task</h2>
+                        <button onclick="closeModal()">✕</button>
+                    </div>
+
+                    <div id="modalBody">
+                        {{-- AJAX FORM WILL LOAD HERE --}}
+                    </div>
+
+    </div>
 
 @endsection
