@@ -9,6 +9,8 @@
         class="px-3 py-1 bg-black text-white rounded">
         + Add New Status
     </button>
+
+
 </div>
 
 <div class="grid grid-cols-4 gap-4">
@@ -24,10 +26,9 @@
                     {{ $status->name }}
                 </h3>
 
-
                 <button onclick="openTaskModal('{{ $status->slug }}')"
                     class="text-xs bg-white text-black px-2 py-1 rounded">
-                    + Add
+                    + Add Task
                 </button>
 
             </div>
@@ -38,7 +39,7 @@
                     <div class="bg-white p-3 rounded shadow">
                         <div class="font-semibold">{{ $task->title }}</div>
                         <div class="text-xs text-gray-500">
-                            {{ $task->epic->title ?? 'No Epic' }}
+                            Epic: {{ $task->epic->title ?? 'No Epic' }}
                         </div>
                     </div>
                 @endforeach
@@ -115,18 +116,28 @@
         document.getElementById('statusModal').classList.add('hidden');
     }
 
-    function openTaskModal(statusSlug)
+    function openTaskModal(statusSlug = null)
     {
-        document.getElementById('taskModal').classList.remove('hidden');
+        const modal = document.getElementById('taskModal');
+        modal.classList.remove('hidden');
 
         if (statusSlug) {
-            document.getElementById('statusSelect').value = statusSlug;
+            const select = document.getElementById('statusSelect');
+
+            if (select) {
+                select.value = statusSlug;
+            }
         }
     }
 
     function closeTaskModal()
     {
         document.getElementById('taskModal').classList.add('hidden');
+
+        const select = document.getElementById('statusSelect');
+        if (select) {
+            select.selectedIndex = 0;
+        }
     }
 </script>
 

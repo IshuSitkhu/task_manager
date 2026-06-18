@@ -2,7 +2,6 @@
 
 @section('content')
 
-    {{-- HEADER --}}
     <div class="flex justify-between items-center mb-6">
 
         <h2 class="text-2xl font-bold">
@@ -16,7 +15,6 @@
 
     </div>
 
-    {{-- FORM CARD --}}
     <div class="bg-white p-6 rounded shadow">
 
 
@@ -33,7 +31,6 @@
         <form method="POST" action="{{ route('projects.tasks.store', $project->id) }}">
             @csrf
 
-            {{-- TITLE --}}
             <div class="mb-4">
                 <label class="block font-medium mb-1">Task Title</label>
                 <input type="text"
@@ -43,7 +40,6 @@
                        required>
             </div>
 
-            {{-- DESCRIPTION --}}
             <div class="mb-4">
                 <label class="block font-medium mb-1">Description</label>
                 <textarea name="description"
@@ -54,7 +50,6 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                {{-- EPIC --}}
                 <div>
                     <label class="block font-medium mb-1">Epic</label>
                     <select name="epic_id" class="w-full border rounded p-2" required>
@@ -68,7 +63,6 @@
                     </select>
                 </div>
 
-                {{-- SPRINT --}}
                 <div>
                     <label class="block font-medium mb-1">Sprint (optional)</label>
                     <select name="sprint_id" class="w-full border rounded p-2">
@@ -82,7 +76,6 @@
                     </select>
                 </div>
 
-                {{-- ASSIGNEE --}}
                 <div>
                     <label class="block font-medium mb-1">Assignee</label>
                     <select name="assigned_to" class="w-full border rounded p-2" required>
@@ -96,7 +89,6 @@
                     </select>
                 </div>
 
-                {{-- TYPE --}}
                 <div>
                     <label class="block font-medium mb-1">Type</label>
                     <select name="type" class="w-full border rounded p-2" required>
@@ -108,7 +100,6 @@
                     </select>
                 </div>
 
-                {{-- PRIORITY --}}
                 <div>
                     <label class="block font-medium mb-1">Priority</label>
                     <select name="priority" class="w-full border rounded p-2" required>
@@ -119,7 +110,6 @@
                     </select>
                 </div>
 
-                {{-- STATUS --}}
                 <div>
                     <label class="block font-medium mb-1">Status</label>
 
@@ -132,7 +122,6 @@
                     </select>
                 </div>
 
-                {{-- GITHUB LINK --}}
                 <div>
                     <label class="block font-medium mb-1">GitHub Link</label>
                     <input type="text"
@@ -141,7 +130,6 @@
                            placeholder="https://github.com/...">
                 </div>
 
-                {{-- DUE DATE --}}
                 <div>
                     <label class="block font-medium mb-1">Due Date</label>
                     <input type="date"
@@ -151,7 +139,6 @@
 
             </div>
 
-            {{-- SUBMIT --}}
             <div class="mt-6 flex justify-end">
                 <button type="submit"
                         class="bg-blue-600 text-white px-6 py-2 rounded">

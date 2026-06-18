@@ -84,7 +84,7 @@
                 <div>
                     <label class="block font-medium mb-1">Status</label>
 
-                    <select name="status" class="w-full border rounded p-2" required>
+                    <select name="status" id="statusSelect" class="w-full border rounded p-2" required>
                         @foreach($project->statuses as $status)
                             <option value="{{ $status->slug }}">
                                 {{ $status->name }}
