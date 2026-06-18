@@ -26,15 +26,39 @@
                     {{ $status->name }}
                 </h3>
 
-                <button onclick="openTaskModal('{{ $status->slug }}')"
+                 <div class="lex justify-end relative">
+                    <button onclick="toggleMenu({{ $status->id }})"
+                        class="text-white text-sm">
+                        ⋮ 
+                    </button>
+
+                    <div id="menu-{{ $status->id }}" class="hidden absolute right-0 top-8 mt-2 bg-white border rounded shadow-lg z-50 min-w-[150px]">
+                        <form method="POST"
+                        action="{{ route('projects.statuses.destroy', [$project->id, $status->id]) }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
+                                Delete Status
+                            </button>
+                        </form>
+
+                        <button onclick="openTaskModal('{{ $status->slug }}'); toggleMenu({{ $status->id }})"
+                            class="text-sm bg-white text-black px-4 py-2 rounded">
+                            Add Task
+                        </button>
+                    </div>
+
+                </div>
+
+                {{-- <button onclick="openTaskModal('{{ $status->slug }}')"
                     class="text-xs bg-white text-black px-2 py-1 rounded">
                     + Add Task
-                </button>
+                </button> --}}
+
 
             </div>
 
             <div class="space-y-2">
-
                 @foreach($tasks->where('status', $status->slug) as $task)
                     <div class="bg-white p-3 rounded shadow">
                         <div class="font-semibold">{{ $task->title }}</div>
@@ -139,6 +163,60 @@
             select.selectedIndex = 0;
         }
     }
+
+    // let draggedTaskId = null;
+
+    // function dragTask(event) {
+    //     draggedTaskId = event.target.getAttribute('data-task-id');
+    // }
+
+    // function allowDrop(event) {
+    //     event.preventDefault();
+    // }
+
+    // function dropTask(event, newStatus) {
+    //     event.preventDefault();
+
+    //     if (!draggedTaskId) return;
+
+    //     fetch(`/tasks/${draggedTaskId}/move-status`, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             "X-CSRF-TOKEN": "{{ csrf_token() }}"
+    //         },
+    //         body: JSON.stringify({
+    //             status: newStatus
+    //         })
+    //     })
+    //     .then(res => res.json())
+    //     .then(data => {
+    //         if (data.success) {
+    //             location.reload(); // simple refresh
+    //         }
+    //     });
+    // }
+
+    function toggleMenu(statusId) {
+        let menu = document.getElementById(`menu-${statusId}`);
+
+        document.querySelectorAll('[id^="menu-"]').forEach(m => {
+            if (m !== menu) {
+                m.classList.add('hidden');
+            }
+        });
+
+        menu.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function (e) {
+                    if (!e.target.closest('.relative')) {
+                        document.querySelectorAll('[id^="menu-"]').forEach(el => {
+                            el.classList.add('hidden');
+                        });
+                    }
+                });
+
 </script>
 
 @endsection

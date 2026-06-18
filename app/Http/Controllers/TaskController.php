@@ -154,4 +154,16 @@ class TaskController extends Controller
             'success' => true
         ]);
     }
+
+
+    public function moveStatus(Request $request, Task $task)
+    {
+        $task->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
 }

@@ -30,6 +30,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects/{project}/statuses', [ProjectController::class, 'storeStatus'])
     ->name('projects.statuses.store');
 
+    Route::delete('/projects/{project}/statuses/{status}', [ProjectController::class, 'destroyStatus'])
+    ->name('projects.statuses.destroy');
+
     // Route::get('/projects/{project}/epics', [ProjectController::class, 'epics'])->name('projects.epics');
 
     Route::get('/projects/{project}/sprints', [ProjectController::class, 'sprints'])->name('projects.sprints');
@@ -83,6 +86,9 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/projects/{project}/tasks/{task}', [TaskController::class, 'destroy'])
         ->name('projects.tasks.destroy');
+
+    Route::post('/projects/{project}/tasks/{task}/move-status', [TaskController::class, 'moveStatus'])
+        ->name('projects.tasks.moveStatus');
 
 
     //kanban

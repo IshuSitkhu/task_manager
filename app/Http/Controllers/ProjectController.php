@@ -101,6 +101,14 @@ class ProjectController extends Controller
         return back();
     }
 
+    public function destroyStatus(Project $project, $statusId)
+    {
+        $status = $project->statuses()->findOrFail($statusId);
+        $status->delete();
+
+        return back();
+    }
+
     /**
      * Show project details
      */
