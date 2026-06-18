@@ -138,10 +138,10 @@
                     <label class="block font-medium mb-1">Status</label>
                     <select name="status" class="w-full border rounded p-2">
 
-                        @foreach(['todo','in_progress','review','done'] as $status)
-                            <option value="{{ $status }}"
-                                {{ $task->status == $status ? 'selected' : '' }}>
-                                {{ ucfirst(str_replace('_',' ', $status)) }}
+                        @foreach($project->statuses as $status)
+                            <option value="{{ $status->slug }}"
+                                {{ $task->status == $status->slug ? 'selected' : '' }}>
+                                {{ ucfirst(str_replace('_',' ', $status->name)) }}
                             </option>
                         @endforeach
 
