@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -13,10 +14,10 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->role == 'project_manager') {
+        if (Auth::user()->role == 'project_manager') {
             $projects = Project::all();
         } else {
-            $projects = Project::where('created_by', auth()->id())->get();
+            $projects = Project::where('created_by', Auth::id())->get();
         }
 
         return view('projects.index', compact('projects'));
@@ -27,7 +28,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        if (auth()->user()->role !== 'project_manager') {
+        if (Auth::user()->role !== 'project_manager') {
             abort(403);
         }
 
@@ -41,7 +42,7 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'project_manager') {
+        if (Auth::user()->role !== 'project_manager') {
             abort(403);
         }
 
@@ -59,7 +60,7 @@ class ProjectController extends Controller
             'status' => $request->status,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'created_by' => auth()->id(),
+            'created_by' => Auth::id(),
         ]);
 
         //  DEFAULT STATUSES (FIXED)
@@ -95,13 +96,13 @@ class ProjectController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'color' => $request->color,
-            $order = ($project->statuses()->max('order') ?? 0) + 1,
+            'order' => ($project->statuses()->max('order') ?? 0) + 1,
         ]);
 
         return back();
     }
 
-    public function destroyStatus(Project $project, $statusId)
+    public function destroyStatus(Project $project, int $statusId)
     {
         $status = $project->statuses()->findOrFail($statusId);
         $status->delete();
@@ -141,7 +142,53 @@ class ProjectController extends Controller
         return view('projects.overview', compact('project', 'allUsers'));
     }
 
-    public function edit(Project $project) {}
-    public function update(Request $request, Project $project) {}
-    public function destroy(Project $project) {}
+    public function edit(Project $project) {
+        if (Auth::user()->role !== 'project_manager') {
+            abort(403);
+        }
+
+        $users = User::whereIn('role', ['employee', 'project_manager'])->get();
+
+        return view('projects.edit', compact('project', 'users'));
+    }
+
+
+    public function update(Request $request, Project $project) {
+        if (Auth::user()->role !== 'project_manager') {
+            abort(403);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+        ]);
+
+        $project->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'status' => $request->status,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+        ]);
+
+        // members
+        if ($request->members) {
+            $project->members()->sync($request->members);
+        } else {
+            $project->members()->sync([]);
+        }
+
+        return redirect()->route('projects.index')
+            ->with('success', 'Project updated successfully');
+    }
+
+    public function destroy(Project $project) {
+        $project->delete();
+
+        return redirect()->route('projects.index')
+            ->with('success', 'Project deleted successfully');
+    }
 }

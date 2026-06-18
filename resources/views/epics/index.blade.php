@@ -24,9 +24,9 @@
     {{-- TABLE --}}
     <div class="bg-white shadow rounded overflow-x-auto">
 
-        <table class="w-full text-sm text-left">
+        <table class="w-full text-sm text-left ">
 
-            <thead class="bg-gray-100 ">
+            <thead class="bg-black/80 text-white uppercase text-xs">
                 <tr>
                     <th class="p-3">Epic</th>
                     <th class="p-3">Owner</th>

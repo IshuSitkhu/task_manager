@@ -1,11 +1,12 @@
 <x-app-layout>
 
-    <div class="py-6">
-        <div class=" mx-auto sm:px-6 lg:px-8">
+    <div class="py-6 bg-gray-100 min-h-screen">
+        <div class=" mx-auto sm:px-6 lg:px-8 ">
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 ">
 
-                <div class="bg-white p-3 rounded shadow h-fit">
+
+                <div class="bg-white p-3 rounded shadow h-fit ">
 
                     @if(isset($project))
                         <h3 class="font-bold mb-4 text-xl">

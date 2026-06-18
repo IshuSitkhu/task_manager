@@ -25,9 +25,9 @@
 {{-- TASK TABLE --}}
 <div class="bg-white shadow rounded overflow-x-auto">
 
-    <table class="w-full text-sm">
+    <table class="w-full text-sm text-left text-gray-500 ">
 
-        <thead class="bg-gray-100">
+        <thead class="bg-black/80 text-white uppercase text-xs">
             <tr>
                 <th class="p-3 text-left">Task</th>
                 <th class="p-3 text-left">Epic</th>
@@ -40,7 +40,7 @@
             </tr>
         </thead>
 
-        <tbody>
+        <tbody class="divide-y" >
 
             @forelse($tasks as $task)
                 <tr class="border-b">

@@ -87,8 +87,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/projects/{project}/tasks/{task}', [TaskController::class, 'destroy'])
         ->name('projects.tasks.destroy');
 
-    Route::post('/projects/{project}/tasks/{task}/move-status', [TaskController::class, 'moveStatus'])
-        ->name('projects.tasks.moveStatus');
+    Route::post('/tasks/{task}/move-status', [TaskController::class, 'moveStatus'])
+    ->name('tasks.move-status');
 
 
     //kanban

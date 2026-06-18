@@ -2,6 +2,7 @@
 
 @section('content')
 
+
 <div class="flex justify-between items-center mb-4">
     <h2 class="text-2xl font-bold">Kanban Board</h2>
 
@@ -17,8 +18,7 @@
 
     @foreach($project->statuses as $status)
 
-        <div class="p-3 rounded border">
-
+        <div class="p-3 rounded border border-black/40">
             <div class="flex justify-between items-center mb-3 p-3 h-10"
                  style="background: {{ $status->color ?? '#000' }}">
 
@@ -29,7 +29,7 @@
                  <div class="lex justify-end relative">
                     <button onclick="toggleMenu({{ $status->id }})"
                         class="text-white text-sm">
-                        ⋮ 
+                        ⋮
                     </button>
 
                     <div id="menu-{{ $status->id }}" class="hidden absolute right-0 top-8 mt-2 bg-white border rounded shadow-lg z-50 min-w-[150px]">
@@ -58,9 +58,11 @@
 
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-2 min-h-[200px]"
+                ondragover="allowDrop(event)"
+                ondrop="dropTask(event, '{{ $status->slug }}')">
                 @foreach($tasks->where('status', $status->slug) as $task)
-                    <div class="bg-white p-3 rounded shadow">
+                    <div class="bg-white border border-gray-300 p-3 rounded shadow cursor-move" draggable="true" ondragstart="dragTask(event)" data-task-id="{{ $task->id }}">
                         <div class="font-semibold">{{ $task->title }}</div>
                         <div class="text-xs text-gray-500">
                             Epic: {{ $task->epic->title ?? 'No Epic' }}
@@ -93,7 +95,7 @@
             <input type="text" name="name" placeholder="Status Name"
                 class="w-full border p-2 mb-3" required>
 
-            <input type="text" name="slug" placeholder="slug (no spaces)"
+            <input type="text" name="slug" placeholder="slug"
                 class="w-full border p-2 mb-3" required>
 
             <div class="mb-3 flex">
@@ -164,38 +166,48 @@
         }
     }
 
-    // let draggedTaskId = null;
+    let draggedTaskId = null;
 
-    // function dragTask(event) {
-    //     draggedTaskId = event.target.getAttribute('data-task-id');
-    // }
+    function dragTask(event) {
+        draggedTaskId = event.target.getAttribute('data-task-id');
+        console.log("Dragging task:", draggedTaskId);
+    }
 
-    // function allowDrop(event) {
-    //     event.preventDefault();
-    // }
 
-    // function dropTask(event, newStatus) {
-    //     event.preventDefault();
+    function allowDrop(event) {
+        event.preventDefault(); // VERY IMPORTANT
+    }
 
-    //     if (!draggedTaskId) return;
 
-    //     fetch(`/tasks/${draggedTaskId}/move-status`, {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             "X-CSRF-TOKEN": "{{ csrf_token() }}"
-    //         },
-    //         body: JSON.stringify({
-    //             status: newStatus
-    //         })
-    //     })
-    //     .then(res => res.json())
-    //     .then(data => {
-    //         if (data.success) {
-    //             location.reload(); // simple refresh
-    //         }
-    //     });
-    // }
+    function dropTask(event, newStatus) {
+        event.preventDefault();
+
+        if (!draggedTaskId) {
+            console.log("No task selected");
+            return;
+        }
+
+        console.log("Dropping task:", draggedTaskId, "to", newStatus);
+
+        fetch(`/tasks/${draggedTaskId}/move-status`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                status: newStatus
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+
+
 
     function toggleMenu(statusId) {
         let menu = document.getElementById(`menu-${statusId}`);
