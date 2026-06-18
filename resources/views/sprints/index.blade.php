@@ -270,7 +270,7 @@
                                     </span>
 
                                     <span class="px-2 py-0.5 rounded  text-blue-700 whitespace-nowrap">
-                                        Status: {{ $task->status }}
+                                        Status: {{ $task->statusModel->name ?? $task->status }}
                                     </span>
 
                                     <span class="px-2 py-0.5 rounded text-green-700 whitespace-nowrap">

@@ -122,11 +122,13 @@
                 {{-- STATUS --}}
                 <div>
                     <label class="block font-medium mb-1">Status</label>
+
                     <select name="status" class="w-full border rounded p-2" required>
-                        <option value="todo">Todo</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="review">Review</option>
-                        <option value="done">Done</option>
+                        @foreach($project->statuses as $status)
+                            <option value="{{ $status->slug }}">
+                                {{ $status->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 

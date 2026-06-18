@@ -244,7 +244,7 @@
                                                 </td>
 
                                                 <td class="p-2 text-blue-600">
-                                                   {{ $task->status }}
+                                                   {{ $task->statusModel->name ?? $task->status }}
                                                 </td>
 
                                                 <td class="p-2 text-green-600">

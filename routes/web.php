@@ -27,6 +27,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/projects/{project}/overview', [ProjectController::class, 'overview'])->name('projects.overview');
 
+    Route::post('/projects/{project}/statuses', [ProjectController::class, 'storeStatus'])
+    ->name('projects.statuses.store');
+
     // Route::get('/projects/{project}/epics', [ProjectController::class, 'epics'])->name('projects.epics');
 
     Route::get('/projects/{project}/sprints', [ProjectController::class, 'sprints'])->name('projects.sprints');
@@ -110,6 +113,9 @@ Route::middleware('auth')->group(function () {
     //drag and drp
     Route::post('/tasks/{task}/status', [TaskController::class, 'updateStatus'])
     ->name('tasks.updateStatus');
+
+
+
 });
 
 require __DIR__.'/auth.php';
