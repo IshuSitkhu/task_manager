@@ -2,7 +2,6 @@
 
 @section('content')
 
-    {{-- HEADER --}}
     <div class="flex justify-between items-center mb-6">
 
         <h2 class="text-2xl font-bold">
@@ -16,7 +15,6 @@
 
     </div>
 
-    {{-- FORM CARD --}}
     <div class="bg-white p-6 rounded shadow">
 
 
@@ -31,6 +29,7 @@
         @endif
 
         <form method="POST"
+         enctype="multipart/form-data"
               action="{{ route('projects.tasks.update', [$project->id, $task->id]) }}">
 
             @csrf
@@ -47,16 +46,29 @@
                        required>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-2">
                 <label class="block font-medium mb-1">Description</label>
                 <textarea name="description"
                           class="w-full border rounded p-2"
-                          rows="4">{{ $task->description }}</textarea>
+                          rows="3">{{ $task->description }}</textarea>
+            </div>
+
+            <div class="mb-2">
+                <label class="block font-medium mb-1">Task Image</label>
+
+                <input type="file"
+                    name="image"
+                    id="imageInput"
+                    accept="image/*"
+                    class="w-full border rounded p-2">
+
+                <img id="imagePreview"
+                    src="{{ $task->image ? asset('storage/'.$task->image) : '' }}"
+                    class="mt-3 max-h-28 rounded border {{ $task->image ? '' : 'hidden' }}">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                {{-- EPIC --}}
                 <div>
                     <label class="block font-medium mb-1">Epic</label>
                     <select name="epic_id" class="w-full border rounded p-2" required>
@@ -71,7 +83,6 @@
                     </select>
                 </div>
 
-                {{-- SPRINT --}}
                 <div>
                     <label class="block font-medium mb-1">Sprint</label>
                     <select name="sprint_id" class="w-full border rounded p-2">
@@ -88,7 +99,6 @@
                     </select>
                 </div>
 
-                {{-- ASSIGNEE --}}
                 <div>
                     <label class="block font-medium mb-1">Assignee</label>
                     <select name="assigned_to" class="w-full border rounded p-2" required>
@@ -103,7 +113,6 @@
                     </select>
                 </div>
 
-                {{-- TYPE --}}
                 <div>
                     <label class="block font-medium mb-1">Type</label>
                     <select name="type" class="w-full border rounded p-2">
@@ -118,7 +127,6 @@
                     </select>
                 </div>
 
-                {{-- PRIORITY --}}
                 <div>
                     <label class="block font-medium mb-1">Priority</label>
                     <select name="priority" class="w-full border rounded p-2">
@@ -133,7 +141,6 @@
                     </select>
                 </div>
 
-                {{-- STATUS --}}
                 <div>
                     <label class="block font-medium mb-1">Status</label>
                     <select name="status" class="w-full border rounded p-2">
@@ -148,7 +155,6 @@
                     </select>
                 </div>
 
-                {{-- GITHUB LINK --}}
                 <div>
                     <label class="block font-medium mb-1">GitHub Link</label>
                     <input type="text"
@@ -157,7 +163,6 @@
                            class="w-full border rounded p-2">
                 </div>
 
-                {{-- DUE DATE --}}
                 <div>
                     <label class="block font-medium mb-1">Due Date</label>
                     <input type="date"
@@ -169,7 +174,6 @@
 
             </div>
 
-            {{-- SUBMIT --}}
             <div class="mt-6 flex justify-end">
 
                 <button type="submit"
@@ -182,5 +186,42 @@
         </form>
 
     </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const input = document.getElementById('imageInput');
+        const preview = document.getElementById('imagePreview');
+
+        if (!input) return;
+
+        input.addEventListener('change', function (e) {
+
+            const file = e.target.files[0];
+
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid File',
+                    text: 'Please upload a valid image file (jpg, png, webp).'
+                });
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                preview.src = event.target.result;
+                preview.classList.remove('hidden');
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+    });
+</script>
 
 @endsection

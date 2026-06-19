@@ -1,13 +1,13 @@
 <x-app-layout>
 
-    <div x-data="{ sidebarOpen: true }" class="py-6  min-h-screen">
+    <div x-data="{ sidebarOpen: true }" class="py-6 bg-black/90 min-h-screen">
 
         <div class="mx-auto sm:px-6 lg:px-8">
 
             <div class="flex items-center gap-12 mb-4">
 
                 @if(isset($project))
-                    <h3 class="font-bold text-xl">
+                    <h3 class="font-bold text-xl text-white">
                         {{ $project->name }}
                     </h3>
                 @endif

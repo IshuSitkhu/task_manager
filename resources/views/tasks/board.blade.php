@@ -6,7 +6,7 @@
 <div class="flex justify-between items-center mb-4">
     <h2 class="text-2xl font-bold">Kanban Board</h2>
 
-    @if(session('error'))
+    {{-- @if(session('error'))
         <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
             {{ session('error') }}
         </div>
@@ -16,7 +16,7 @@
         <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
             {{ session('success') }}
         </div>
-    @endif
+    @endif --}}
 
     <button onclick="openStatusModal()"
         class="px-3 py-1 bg-black text-white rounded">
@@ -79,29 +79,39 @@
                 ondragover="allowDrop(event)"
                 ondrop="dropTask(event, '{{ $status->slug }}')">
                 @foreach($tasks->where('status', $status->slug) as $task)
-                    <div class="bg-white border border-gray-300 p-3 rounded shadow cursor-move"
-                         draggable="true"
-                         ondragstart="dragTask(event)"
-                         data-task-id="{{ $task->id }}">
-                        <div class="font-semibold">{{ $task->title }}</div>
-                        <div class="text-xs text-gray-500 py-1">
-                            Epic: {{ $task->epic->title ?? 'No Epic' }}
-                        </div>
-                        <div class="text-xs text-gray-500">
-                            Assignee: {{ $task->assignee->name ?? 'Unassigned' }}
-                        </div>
+                <div class="bg-white border border-gray-300 p-3 rounded shadow cursor-move"
+                    draggable="true"
+                    data-task-id="{{ $task->id }}">
 
-                        <div>
-                            <span class=" py-1 rounded  text-xs
-                                @if($task->priority == 'low') text-green-500
-                                @elseif($task->priority == 'medium') text-yellow-500
-                                @elseif($task->priority == 'high') text-orange-500
-                                @else text-red-500 @endif">
+                    <div class="font-semibold">{{ $task->title }}</div>
 
-                                Priority: {{ ucfirst($task->priority) }}
-                            </span>
-                        </div>
+                    <div class="text-xs text-gray-500 py-1">
+                        Epic: {{ $task->epic->title ?? 'No Epic' }}
                     </div>
+
+                    <div class="text-xs text-gray-500">
+                        Assignee: {{ $task->assignee->name ?? 'Unassigned' }}
+                    </div>
+
+                    <div class="mt-3 flex justify-end">
+                        <button onclick="openEditTaskModal({{ $task->id }})"
+                                class="text-sm px-3 py-1 bg-blue-50 text-blue-600 rounded">
+                            Edit
+                        </button>
+
+
+                        <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="button"
+                            onclick="confirmDelete(this.form)"
+                            class="text-sm px-3 py-1 bg-red-50 text-red-600 rounded">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
                 @endforeach
 
             </div>
@@ -215,54 +225,82 @@
     {
         document.getElementById('taskModal').classList.add('hidden');
 
+
+
         const select = document.getElementById('statusSelect');
         if (select) {
             select.selectedIndex = 0;
         }
     }
 
+    function closeEditTaskModal()
+    {
+        document.getElementById('taskEditModal').classList.add('hidden');
+    }
+
+
+    function openEditTaskModal(taskId)
+    {
+        fetch(`/projects/{{ $project->id }}/tasks/${taskId}/editmodule`)
+            .then(res => res.text())
+            .then(html => {
+
+                document.getElementById('modalBody').innerHTML = html;
+
+                document.getElementById('taskEditModal').classList.remove('hidden');
+
+                // RESET FILE INPUT ISSUE FIX
+                const fileInput = document.getElementById('imageInput');
+                if (fileInput) fileInput.value = "";
+            });
+    }
+
     //glabal variable
-    let draggedTaskId = null;
-
-    function dragTask(event) {
-        draggedTaskId = event.target.getAttribute('data-task-id');
-        console.log("Dragging task:", draggedTaskId);
-    }
+let draggedTaskId = null;
 
 
-    function allowDrop(event) {
-        event.preventDefault(); // VERY IMPORTANT
-    }
+//   DRAG START (GLOBAL SAFE)
+
+document.addEventListener('dragstart', function (event) {
+    const task = event.target.closest('[data-task-id]');
+    if (!task) return;
+
+    draggedTaskId = task.dataset.taskId;
+    console.log("Dragging task:", draggedTaskId);
+});
 
 
-    function dropTask(event, newStatus) {
-        event.preventDefault();
+//   ALLOW DROP
+function allowDrop(event) {
+    event.preventDefault();
+}
 
-        if (!draggedTaskId) {
-            console.log("No task selected");
-            return;
-        }
+   // DROP TASK
+function dropTask(event, newStatus) {
+    event.preventDefault();
 
-        console.log("Dropping task:", draggedTaskId, "to", newStatus);
+    if (!draggedTaskId) return;
 
-        fetch(`/tasks/${draggedTaskId}/move-status`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                status: newStatus
-            })
+    fetch(`/tasks/${draggedTaskId}/move-status`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({
+            status: newStatus
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        });
-    }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(err => console.log(err));
 
+    draggedTaskId = null;
+}
 
 
     function toggleMenu(statusId) {
@@ -315,5 +353,23 @@
     });
 </script>
 @endif
+
+
+ <div id="taskEditModal"
+                class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+                <div class="bg-white w-full max-w-3xl p-4 rounded shadow">
+
+                    <div class="flex py-2 justify-between ">
+                        <h2 class="  text-xl font-bold">Edit Task</h2>
+                        <button onclick="closeEditTaskModal()">✕</button>
+                    </div>
+
+                    <div id="modalBody">
+                        {{-- AJAX FORM WILL LOAD HERE --}}
+                    </div>
+                </div>
+
+    </div>
 
 @endsection

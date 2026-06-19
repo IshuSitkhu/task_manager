@@ -15,7 +15,6 @@
                 </div>
             @endif
 
-            {{-- Create Project Button --}}
             @if(auth()->user()->role == 'project_manager')
                 <div class="mb-6">
                     <a href="{{ route('projects.create') }}"
@@ -28,7 +27,6 @@
             <h2 class="font-semibold text-xl p-3 text-gray-800 leading-tight">
                 Recent Projects
             </h2>
-            {{-- Project Cards --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse($projects as $project)
 
@@ -41,12 +39,12 @@
 
 
                             <div>
-                            
+
                             <span class="px-2 py-1 text-xs rounded bg-blue-100 text-blue-700">
                                 {{ ucfirst($project->status) }}
                             </span>
                             </div>
-                            
+
                         </div>
                         <p class="text-xs text-gray-500 mt-1">
                                         Owner:

@@ -12,6 +12,7 @@ class Task extends Model
         'sprint_id',
         'title',
         'description',
+        'image',
         'assigned_to',
         'status',
         'priority',
@@ -47,6 +48,6 @@ class Task extends Model
     public function projectStatus()
     {
         return $this->belongsTo(ProjectStatus::class, 'status', 'slug');
-    }   
+    }
 
 }

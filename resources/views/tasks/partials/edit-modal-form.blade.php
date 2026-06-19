@@ -1,6 +1,7 @@
 <div class="bg-white p-3 rounded shadow">
     <form id="taskForm"
         method="POST"
+        enctype="multipart/form-data"
         action="{{ route('projects.tasks.update', [$project->id, $task->id]) }}">
 
         @csrf
@@ -8,7 +9,7 @@
 
 
         <input type="hidden" name="redirect_to" value="{{ route('projects.sprints', $project->id) }}">
-            <div class="mb-4">
+            <div class="mb-2">
                 <label class="block font-medium mb-1">Task Title</label>
                 <input type="text"
                        name="title"
@@ -17,14 +18,28 @@
                        required>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-2">
                 <label class="block font-medium mb-1">Description</label>
                 <textarea name="description"
                           class="w-full border rounded p-2"
-                          rows="4">{{ $task->description }}</textarea>
+                          rows="3">{{ $task->description }}</textarea>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="mb-2">
+                <label class="block font-medium mb-1">Task Image</label>
+
+                <input type="file"
+                    name="image"
+                    id="imageInput"
+                    accept="image/*"
+                    class="w-full border rounded p-2">
+
+                <img id="imagePreview"
+                    src="{{ $task->image ? asset('storage/'.$task->image) : '' }}"
+                    class="mt-3 max-h-28 rounded border {{ $task->image ? '' : 'hidden' }}">
+            </div>
+
+            <div class="grid grid-cols-4 md:grid-cols-4 gap-4">
 
                 <div>
                     <label class="block font-medium mb-1">Epic</label>
@@ -130,7 +145,7 @@
 
             </div>
 
-            <div class="mt-6 flex justify-end">
+            <div class="mt-3 flex justify-end">
 
                 <button
                         class="bg-blue-600 text-white px-6 py-2 rounded">
@@ -141,3 +156,40 @@
 
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const input = document.getElementById('imageInput');
+        const preview = document.getElementById('imagePreview');
+
+        if (!input) return;
+
+        input.addEventListener('change', function (e) {
+
+            const file = e.target.files[0];
+
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid File',
+                    text: 'Please upload a valid image file (jpg, png, webp).'
+                });
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                preview.src = event.target.result;
+                preview.classList.remove('hidden');
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+    });
+</script>

@@ -28,7 +28,9 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('projects.tasks.store', $project->id) }}">
+        <form method="POST"
+        enctype="multipart/form-data"
+        action="{{ route('projects.tasks.store', $project->id) }}">
             @csrf
 
             <div class="mb-4">
@@ -46,6 +48,19 @@
                           class="w-full border rounded p-2"
                           rows="4"
                           placeholder="Describe the task..."></textarea>
+            </div>
+
+            <div class="mb-2">
+                <label class="block font-medium mb-1">Task Image</label>
+
+                <input type="file"
+                    name="image"
+                    id="imageInput"
+                    accept="image/*"
+                    class="w-full border rounded p-2"
+                    placeholder="Task image">
+
+
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -149,5 +164,42 @@
         </form>
 
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const input = document.getElementById('imageInput');
+        const preview = document.getElementById('imagePreview');
+
+        if (!input) return;
+
+        input.addEventListener('change', function (e) {
+
+            const file = e.target.files[0];
+
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid File',
+                    text: 'Please upload a valid image file (jpg, png, webp).'
+                });
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                preview.src = event.target.result;
+                preview.classList.remove('hidden');
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+    });
+</script>
 
 @endsection

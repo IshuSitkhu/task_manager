@@ -8,6 +8,7 @@ use App\Models\Epic;
 use App\Models\Sprint;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
 {
@@ -42,7 +43,15 @@ class TaskController extends Controller
             'status' => 'required',
             'priority' => 'required',
             'type' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('tasks', 'public');
+        }
+
 
         Task::create([
             'project_id' => $project->id,
@@ -56,6 +65,7 @@ class TaskController extends Controller
             'type' => $request->type,
             'github_link' => $request->github_link,
             'due_date' => $request->due_date,
+             'image' => $imagePath, 
         ]);
 
 
@@ -96,8 +106,25 @@ class TaskController extends Controller
             'status' => 'required',
             'priority' => 'required',
             'type' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
+        //  STEP 1: KEEP OLD IMAGE BY DEFAULT
+        $imagePath = $task->image;
+
+        //  STEP 2: IF NEW IMAGE UPLOADED
+        if ($request->hasFile('image')) {
+
+            // delete old image if exists
+            if ($task->image) {
+                Storage::disk('public')->delete($task->image);
+            }
+
+            // store new image
+            $imagePath = $request->file('image')->store('tasks', 'public');
+        }
+
+        //  STEP 3: UPDATE TASK
         $task->update([
             'title' => $request->title,
             'description' => $request->description,
@@ -109,6 +136,9 @@ class TaskController extends Controller
             'type' => $request->type,
             'github_link' => $request->github_link,
             'due_date' => $request->due_date,
+
+            //  THIS IS WHERE IMAGE GOES
+            'image' => $imagePath,
         ]);
 
         return redirect()->back()
