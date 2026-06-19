@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 18, 2026 at 12:38 PM
+-- Generation Time: Jun 19, 2026 at 02:15 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -71,8 +71,8 @@ CREATE TABLE `epics` (
 --
 
 INSERT INTO `epics` (`id`, `project_id`, `title`, `description`, `owner_id`, `priority`, `status`, `planned_start_date`, `planned_end_date`, `progress`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Authentication system', 'dsacfsad', 1, 'critical', 'in_progress', '2026-06-15', '2026-06-17', 0, '2026-06-15 01:04:45', '2026-06-15 01:04:45'),
-(3, 1, 'Product SEction', 'fdvd', 2, 'high', 'testing', '2026-06-26', '2026-06-30', 92, '2026-06-15 02:02:29', '2026-06-15 03:47:21');
+(1, 1, 'Authentication system', 'dsacfsad', 2, 'critical', 'in_progress', '2026-06-15', NULL, 10, '2026-06-15 01:04:45', '2026-06-19 03:42:12'),
+(3, 1, 'Product Section', 'fdvd', 2, 'high', 'testing', '2026-06-26', NULL, 92, '2026-06-15 02:02:29', '2026-06-19 01:33:26');
 
 -- --------------------------------------------------------
 
@@ -152,7 +152,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (8, '2026_06_15_061217_create_sprints_table', 1),
 (9, '2026_06_15_061237_create_tasks_table', 1),
 (10, '2026_06_18_051132_change_status_to_string_in_tasks_table', 2),
-(11, '2026_06_18_051418_create_project_statuses_table', 2);
+(11, '2026_06_18_051418_create_project_statuses_table', 2),
+(12, '2026_06_19_100541_add_image_to_tasks_table', 3);
 
 -- --------------------------------------------------------
 
@@ -214,7 +215,6 @@ CREATE TABLE `project_statuses` (
 --
 
 INSERT INTO `project_statuses` (`id`, `project_id`, `name`, `slug`, `color`, `order`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Todo', 'todo', '#6b7280', 1, '2026-06-18 00:06:08', '2026-06-18 00:36:00'),
 (2, 1, 'In Progress', 'in_progress', '#3b82f6', 2, '2026-06-18 00:06:08', '2026-06-18 00:36:00'),
 (3, 1, 'Review', 'review', '#a855f7', 3, '2026-06-18 00:06:08', '2026-06-18 00:36:00'),
 (4, 1, 'Done', 'done', '#22c55e', 4, '2026-06-18 00:06:08', '2026-06-18 00:36:00'),
@@ -222,8 +222,7 @@ INSERT INTO `project_statuses` (`id`, `project_id`, `name`, `slug`, `color`, `or
 (6, 2, 'Todo', 'todo', '#6b7280', 1, '2026-06-18 00:44:12', '2026-06-18 00:44:12'),
 (7, 2, 'In Progress', 'in_progress', '#3b82f6', 2, '2026-06-18 00:44:12', '2026-06-18 00:44:12'),
 (8, 2, 'Review', 'review', '#a855f7', 3, '2026-06-18 00:44:12', '2026-06-18 00:44:12'),
-(9, 2, 'Done', 'done', '#22c55e', 4, '2026-06-18 00:44:12', '2026-06-18 00:44:12'),
-(12, 1, 'HAHAH', 'haha', '#000000', 0, '2026-06-18 04:36:34', '2026-06-18 04:36:34');
+(9, 2, 'Done', 'done', '#22c55e', 4, '2026-06-18 00:44:12', '2026-06-18 00:44:12');
 
 -- --------------------------------------------------------
 
@@ -245,7 +244,8 @@ CREATE TABLE `project_user` (
 
 INSERT INTO `project_user` (`id`, `project_id`, `user_id`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, '2026-06-15 00:52:58', '2026-06-15 00:52:58'),
-(2, 1, 2, '2026-06-15 01:04:56', '2026-06-15 01:04:56');
+(2, 1, 2, '2026-06-15 01:04:56', '2026-06-15 01:04:56'),
+(3, 1, 3, '2026-06-19 01:49:28', '2026-06-19 01:49:28');
 
 -- --------------------------------------------------------
 
@@ -267,8 +267,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('flbigWLrNp0f9cIVgqoFWDl2hTCjWo1D7VvlqPhA', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.124.2 Chrome/148.0.7778.97 Electron/42.2.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUGdabVhtQ0J2WDZVa040bkUyb3IxQ21KUTFnNGhKTlVzYjRqMlZGMSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7Tjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1781777340),
-('j8cEdTUh3vyvZjh3DK4WMbFrvQtxv1qeqZUG8BSh', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNkRYeXVWblgxYlhtMzZLaVo3Vk9HRkE3ZU5pYUtLenFQaXhXSnY2RSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wcm9qZWN0cy8xL3Rhc2tzL2JvYXJkIjtzOjU6InJvdXRlIjtzOjIwOiJwcm9qZWN0cy50YXNrcy5ib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1781778820);
+('MwgAkqyDPIOmYHekqO8pdc352wMoC7f04NdP8ePQ', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36 Edg/149.0.0.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUmQ5V1g4ckd0VkNFZmNMTVQ4WmxtMHBKbHoyaEhkb0Q2clA0ZDVqSSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wcm9qZWN0cy8xL3Rhc2tzL2JvYXJkIjtzOjU6InJvdXRlIjtzOjIwOiJwcm9qZWN0cy50YXNrcy5ib2FyZCI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1781871223);
 
 -- --------------------------------------------------------
 
@@ -311,6 +310,7 @@ CREATE TABLE `tasks` (
   `sprint_id` bigint(20) UNSIGNED DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
   `assigned_to` bigint(20) UNSIGNED NOT NULL,
   `status` varchar(255) NOT NULL DEFAULT 'todo',
   `priority` enum('low','medium','high','critical') NOT NULL DEFAULT 'medium',
@@ -325,15 +325,12 @@ CREATE TABLE `tasks` (
 -- Dumping data for table `tasks`
 --
 
-INSERT INTO `tasks` (`id`, `project_id`, `epic_id`, `sprint_id`, `title`, `description`, `assigned_to`, `status`, `priority`, `type`, `github_link`, `due_date`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 3, 'login api bug', 'dsads', 2, 'review', 'high', 'ui', NULL, NULL, '2026-06-15 01:06:02', '2026-06-16 06:41:05'),
-(2, 1, 1, 2, 'UI login page', 'ahdfd', 1, 'done', 'medium', 'bug', NULL, NULL, '2026-06-15 01:14:35', '2026-06-17 22:52:57'),
-(3, 1, 3, 1, 'bx', 'dsdsffd', 1, 'review', 'critical', 'feature', NULL, '2026-06-18', '2026-06-15 01:41:50', '2026-06-17 22:58:07'),
-(7, 1, 3, NULL, 'product database fix', NULL, 1, 'todo', 'critical', 'bug', NULL, '2026-06-18', '2026-06-17 22:51:44', '2026-06-17 22:51:44'),
-(8, 1, 1, 1, 'FDF', 'DSGB', 1, 'review', 'medium', 'bug', NULL, '2026-06-18', '2026-06-18 00:09:58', '2026-06-18 00:09:58'),
-(9, 1, 3, 2, 'dsaf', 'saf', 2, 'drop', 'medium', 'bug', NULL, '2026-06-25', '2026-06-18 00:52:01', '2026-06-18 00:52:01'),
-(11, 1, 1, NULL, 'sddaf', 'sdfa', 2, 'in_progress', 'high', 'ui', NULL, '2026-06-26', '2026-06-18 01:52:59', '2026-06-18 01:52:59'),
-(12, 1, 1, NULL, 'card page', 'cardd', 2, 'haha', 'medium', 'bug', NULL, '2026-06-18', '2026-06-18 04:47:34', '2026-06-18 04:48:12');
+INSERT INTO `tasks` (`id`, `project_id`, `epic_id`, `sprint_id`, `title`, `description`, `image`, `assigned_to`, `status`, `priority`, `type`, `github_link`, `due_date`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 3, 'login api bug', 'dsads', 'tasks/eYHIs0KSia3FrDCnIYpmMx6pXYwrduqLoiCUmzyP.jpg', 2, 'drop', 'high', 'ui', NULL, NULL, '2026-06-15 01:06:02', '2026-06-19 05:53:46'),
+(2, 1, 1, 2, 'UI login page', 'ahdfd', NULL, 1, 'done', 'medium', 'bug', NULL, NULL, '2026-06-15 01:14:35', '2026-06-19 05:53:52'),
+(7, 1, 3, 1, 'product database fix', NULL, NULL, 1, 'done', 'critical', 'bug', NULL, '2026-06-18', '2026-06-17 22:51:44', '2026-06-19 05:54:06'),
+(12, 1, 1, 2, 'card page', 'cardd', NULL, 2, 'in_progress', 'medium', 'backend', NULL, '2026-06-18', '2026-06-18 04:47:34', '2026-06-19 05:54:02'),
+(16, 1, 1, NULL, 'login testing', NULL, 'tasks/PYzPsXp0WQG4mR0otr1bpQl9btfnRC42eGPkQAQA.jpg', 2, 'review', 'low', 'test', NULL, '2026-06-18', '2026-06-19 01:10:17', '2026-06-19 05:54:04');
 
 -- --------------------------------------------------------
 
@@ -482,7 +479,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `epics`
 --
 ALTER TABLE `epics`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -500,7 +497,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `projects`
@@ -512,13 +509,13 @@ ALTER TABLE `projects`
 -- AUTO_INCREMENT for table `project_statuses`
 --
 ALTER TABLE `project_statuses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `project_user`
 --
 ALTER TABLE `project_user`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `sprints`
@@ -530,7 +527,7 @@ ALTER TABLE `sprints`
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `users`
