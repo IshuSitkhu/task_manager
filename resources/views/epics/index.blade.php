@@ -28,7 +28,7 @@
 
             <thead class="bg-black/80 text-white uppercase text-xs">
                 <tr>
-                    <th class="p-3 text-center">Epic</th>
+                    <th class="p-3">Epic</th>
                     <th class="p-3 text-center">Owner</th>
                     <th class="p-3 text-center">Planned timeline</th>
                     <th class="p-3 text-center">Status</th>
@@ -138,7 +138,7 @@
 
                     <tr class="bg-white border-b hover:bg-gray-50 cursor-pointer mb-6">
 
-                        <td class="p-2 font-semibold text-center">
+                        <td class="p-2 font-semibold">
                             {{ $epic->title }}
                         </td>
 

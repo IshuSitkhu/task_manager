@@ -79,7 +79,10 @@
                 ondragover="allowDrop(event)"
                 ondrop="dropTask(event, '{{ $status->slug }}')">
                 @foreach($tasks->where('status', $status->slug) as $task)
-                    <div class="bg-white border border-gray-300 p-3 rounded shadow cursor-move" draggable="true" ondragstart="dragTask(event)" data-task-id="{{ $task->id }}">
+                    <div class="bg-white border border-gray-300 p-3 rounded shadow cursor-move"
+                         draggable="true"
+                         ondragstart="dragTask(event)"
+                         data-task-id="{{ $task->id }}">
                         <div class="font-semibold">{{ $task->title }}</div>
                         <div class="text-xs text-gray-500 py-1">
                             Epic: {{ $task->epic->title ?? 'No Epic' }}
@@ -218,6 +221,7 @@
         }
     }
 
+    //glabal variable
     let draggedTaskId = null;
 
     function dragTask(event) {

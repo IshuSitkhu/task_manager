@@ -29,8 +29,8 @@
 
         <thead class="bg-black/80 text-white uppercase text-xs">
             <tr>
-                <th class="p-3 text-center">Task</th>
-                <th class="p-3 text-center">Epic</th>
+                <th class="p-3 ">Task</th>
+                <th class="p-3 ">Epic</th>
                 <th class="p-3 text-center">Sprint</th>
                 <th class="p-3 text-center">Assignee</th>
                 <th class="p-3 text-center">Priority</th>
@@ -45,11 +45,11 @@
             @forelse($tasks as $task)
                 <tr class="bg-white border-b hover:bg-gray-50 cursor-pointer mb-6">
 
-                    <td class="p-3 text-center font-semibold">
+                    <td class="p-3 font-semibold">
                         {{ $task->title }}
                     </td>
 
-                    <td class="p-3 text-sm text-center text-gray-800">
+                    <td class="p-3 text-sm text-gray-800">
                         {{ $task->epic->title ?? '-' }}
                     </td>
 
