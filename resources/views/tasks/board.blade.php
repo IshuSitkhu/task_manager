@@ -134,7 +134,9 @@
                 <input type="color" name="color" class=" mb-3">
             </div>
 
-            <button class="bg-blue-500 text-white px-4 py-2 rounded w-full">
+            <button type="submit"
+                id="statusSubmitBtn"
+                class="bg-blue-500 text-white px-4 py-2 rounded w-full">
                 Save Status
             </button>
         </form>
@@ -165,6 +167,8 @@
 </div>
 
 <script>
+
+
 
     function confirmDelete(form) {
         Swal.fire({
@@ -270,13 +274,22 @@
     }
 
     document.addEventListener('click', function (e) {
-                    if (!e.target.closest('.relative')) {
-                        document.querySelectorAll('[id^="menu-"]').forEach(el => {
-                            el.classList.add('hidden');
-                        });
-                    }
-                });
+        if (!e.target.closest('.relative')) {
+            document.querySelectorAll('[id^="menu-"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+        }
+    });
 
+
+     document.getElementById("statusForm").addEventListener("submit", function () {
+        const btn = document.getElementById("statusSubmitBtn");
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+        }
+    });
 </script>
 
 @if(session('error'))

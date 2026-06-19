@@ -92,6 +92,14 @@ class ProjectController extends Controller
             'color' => 'nullable',
         ]);
 
+        $exists = $project->statuses()
+            ->where('slug', $request->slug)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Status already exists!');
+        }
+
         $project->statuses()->create([
             'name' => $request->name,
             'slug' => $request->slug,

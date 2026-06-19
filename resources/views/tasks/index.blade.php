@@ -73,13 +73,14 @@
                     </td>
 
                     <td class="p-3">
-                        <span class="px-2 py-1 rounded text-white text-xs
-                            @if($task->status == 'todo') bg-gray-500
-                            @elseif($task->status == 'in_progress') bg-blue-500
-                            @elseif($task->status == 'review') bg-purple-500
-                            @else bg-green-600 @endif">
+                        @php
+                            $status = $task->projectStatus;
+                        @endphp
 
-                            {{ str_replace('_', ' ', ucfirst($task->status)) }}
+                        <span class="px-2 py-1 rounded text-white text-xs"
+                            style="background-color: {{ $status->color ?? '#6b7280' }}">
+
+                            {{ $status->name ?? ucfirst(str_replace('_', ' ', $task->status)) }}
                         </span>
                     </td>
 

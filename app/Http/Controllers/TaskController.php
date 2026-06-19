@@ -32,6 +32,8 @@ class TaskController extends Controller
 
     public function store(Request $request, Project $project)
     {
+
+
         $request->validate([
             'title' => 'required|string|max:255',
             'epic_id' => 'required|exists:epics,id',
@@ -55,6 +57,7 @@ class TaskController extends Controller
             'github_link' => $request->github_link,
             'due_date' => $request->due_date,
         ]);
+
 
         // return redirect()->route('projects.tasks', $project->id)
         //     ->with('success', 'Task created successfully');
@@ -125,7 +128,7 @@ class TaskController extends Controller
     {
         $project->load('statuses');
 
-        $tasks = $project->tasks()->with('epic', 'assignee')->get();
+        $tasks = $project->tasks()->with('epic', 'assignee', 'projectStatus')->latest()->get();
 
         $epics = $project->epics;
         $sprints = $project->sprints;
