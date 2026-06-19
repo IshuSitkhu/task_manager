@@ -25,54 +25,54 @@
 {{-- TASK TABLE --}}
 <div class="bg-white shadow rounded overflow-x-auto">
 
-    <table class="w-full text-sm text-left text-gray-500 ">
+    <table class="w-full text-sm text-left ">
 
         <thead class="bg-black/80 text-white uppercase text-xs">
             <tr>
-                <th class="p-3 text-left">Task</th>
-                <th class="p-3 text-left">Epic</th>
-                <th class="p-3 text-left">Sprint</th>
-                <th class="p-3 text-left">Assignee</th>
-                <th class="p-3 text-left">Priority</th>
-                <th class="p-3 text-left">Status</th>
-                <th class="p-3 text-left">Type</th>
-                <th class="p-3 text-left">Actions</th>
+                <th class="p-3 text-center">Task</th>
+                <th class="p-3 text-center">Epic</th>
+                <th class="p-3 text-center">Sprint</th>
+                <th class="p-3 text-center">Assignee</th>
+                <th class="p-3 text-center">Priority</th>
+                <th class="p-3 text-center">Status</th>
+                <th class="p-3 text-center">Type</th>
+                <th class="p-3 text-center">Actions</th>
             </tr>
         </thead>
 
         <tbody class="divide-y" >
 
             @forelse($tasks as $task)
-                <tr class="border-b">
+                <tr class="bg-white border-b hover:bg-gray-50 cursor-pointer mb-6">
 
-                    <td class="p-3 font-semibold">
+                    <td class="p-3 text-center font-semibold">
                         {{ $task->title }}
                     </td>
 
-                    <td class="p-3">
+                    <td class="p-3 text-sm text-center text-gray-800">
                         {{ $task->epic->title ?? '-' }}
                     </td>
 
-                    <td class="p-3">
+                    <td class="p-3 text-sm text-center text-gray-800">
                         {{ $task->sprint->name ?? '-' }}
                     </td>
 
-                    <td class="p-3">
+                    <td class="p-3 text-sm text-center text-gray-800">
                         {{ $task->assignee->name ?? '-' }}
                     </td>
 
-                    <td class="p-3">
-                        <span class="px-2 py-1 rounded text-white text-xs
-                            @if($task->priority == 'low') bg-green-500
-                            @elseif($task->priority == 'medium') bg-yellow-500
-                            @elseif($task->priority == 'high') bg-orange-500
-                            @else bg-red-500 @endif">
+                    <td class="p-3 text-center">
+                        <span class="px-2 py-1 rounded text-sm
+                            @if($task->priority == 'low') text-green-600
+                            @elseif($task->priority == 'medium') text-yellow-600
+                            @elseif($task->priority == 'high') text-orange-600
+                            @else text-red-600 @endif">
 
                             {{ ucfirst($task->priority) }}
                         </span>
                     </td>
 
-                    <td class="p-3">
+                    <td class="p-3 text-center">
                         @php
                             $status = $task->projectStatus;
                         @endphp
@@ -84,12 +84,20 @@
                         </span>
                     </td>
 
-                    <td class="p-3">
+                    <td class="p-3 text-center ">
+                        <span class="px-2 py-1 rounded text-sm">
+                            {{-- @if($task->type == 'bug') text-red-600
+                            @elseif($task->type == 'feature') text-green-600
+                            @elseif($task->type == 'ui') text-blue-600
+                            @elseif($task->type == 'backend') text-yellow-600
+                            @else text-gray-600 @endif"> --}}
+
                         {{ ucfirst($task->type) }}
+                    </span>
                     </td>
 
-                    <td class="p-3 flex gap-2">
-                        <a href="{{ route('projects.tasks.edit', [$project->id, $task->id]) }}" class="text-blue-600">
+                    <td class="p-3 flex gap-2 ">
+                        <a href="{{ route('projects.tasks.edit', [$project->id, $task->id]) }}" class="hover:text-blue-400 text-blue-600">
                             Edit
                         </a>
 
@@ -97,7 +105,9 @@
                             @csrf
                             @method('DELETE')
 
-                            <button class="text-red-600">
+                            <button type="button"
+                            onclick="confirmDelete(this.form)"
+                            class="text-red-600 hover:text-red-400">
                                 Delete
                             </button>
                         </form>
@@ -117,5 +127,44 @@
     </table>
 
 </div>
+
+<script>
+    function confirmDelete(form) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This tasks will be deleted ",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+</script>
+
+@if(session('error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops!',
+        text: "{{ session('error') }}"
+    });
+</script>
+@endif
+
+@if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: "{{ session('success') }}"
+    });
+</script>
+@endif
 
 @endsection

@@ -28,12 +28,12 @@
 
             <thead class="bg-black/80 text-white uppercase text-xs">
                 <tr>
-                    <th class="p-3">Epic</th>
-                    <th class="p-3">Owner</th>
-                    <th class="p-3">Planned timeline</th>
-                    <th class="p-3">Status</th>
-                    <th class="p-3">Priority</th>
-                    <th class="p-3">Progress</th>
+                    <th class="p-3 text-center">Epic</th>
+                    <th class="p-3 text-center">Owner</th>
+                    <th class="p-3 text-center">Planned timeline</th>
+                    <th class="p-3 text-center">Status</th>
+                    <th class="p-3 text-center">Priority</th>
+                    <th class="p-3 text-center">Progress</th>
                     <th class="p-3 text-center">Actions</th>
                 </tr>
             </thead>
@@ -136,17 +136,17 @@
                 @forelse($epics as $epic)
 
 
-                    <tr class="bg-white border-b hover:bg-gray-50 cursor-pointer ">
+                    <tr class="bg-white border-b hover:bg-gray-50 cursor-pointer mb-6">
 
-                        <td class="p-3 font-semibold">
+                        <td class="p-2 font-semibold text-center">
                             {{ $epic->title }}
                         </td>
 
-                        <td class="p-3">
+                        <td class="p-2 text-sm text-gray-800 text-center">
                             {{ $epic->owner->name ?? 'N/A' }}
                         </td>
 
-                        <td class="p-3 text-sm">
+                        <td class="p-2 text-xs ">
 
                             <span>
                                 {{ \Carbon\Carbon::parse($epic->planned_start_date)->format('d M Y') }}
@@ -157,19 +157,28 @@
                             </span>
                         </td>
 
-                        <td class="p-3">
-                            <span class="px-2 py-1 rounded text-sm bg-gray-200">
+                        <td class="p-2 text-center">
+                            <span class="px-2 py-1 rounded text-sm text-white
+                            @if($epic->status == 'not_started')  bg-red-500
+                            @elseif($epic->status == 'in_progress') bg-blue-500
+                            @elseif($epic->status == 'testing') bg-yellow-500
+                            @else bg-green-800 @endif
+                            ">
                                 {{ ucfirst($epic->status) }}
                             </span>
                         </td>
 
-                        <td class="p-3">
-                            <span class="px-2 py-1 rounded text-sm bg-yellow-200">
+                        <td class="p-2 text-center">
+                            <span class="px-2 py-1 rounded text-sm
+                                 @if($epic->priority == 'low') text-green-800
+                                @elseif($epic->priority == 'medium') text-yellow-800
+                                @elseif($epic->priority == 'high') text-blue-800
+                                @else text-red-800 @endif">
                                 {{ ucfirst($epic->priority) }}
                             </span>
                         </td>
 
-                        <td class="p-3">
+                        <td class="p-2 text-center">
                             <div class="w-full bg-gray-200 rounded h-2">
                                 <div class="bg-green-500 h-2 rounded"
                                      style="width: {{ $epic->progress }}%"></div>
@@ -178,7 +187,7 @@
                             {{ $epic->progress }}%
                         </td>
 
-                        <td class="p-3 flex justify-end">
+                        <td class="p-2 flex justify-end text-center">
                             <button onclick="toggleEpic({{ $epic->id }})"
                                         class="text-sm text-blue-600">
                                     Show Tasks
@@ -208,23 +217,23 @@
 
                     </tr>
 
-                    <tr id="epic-{{ $epic->id }}" class="hidden ">
+                    <tr id="epic-{{ $epic->id }}" class="hidden  bg-black/80  ">
 
-                        <td colspan="7" class="p-4 border-b ">
+                        <td colspan="7" class="p-4 border-b mb-6">
 
                             @if($epic->tasks->count() > 0)
-                                <h3 class="font-semibold text-sm text-gray-700 ">
+                                <h3 class="font-semibold text-sm text-white ">
                                     Connected Tasks
                                 </h3>
-                                <table class="w-full text-sm text-left bg-gray-50 border rounded">
+                                <table class="w-full text-sm text-left bg-gray-50 border  rounded">
 
-                                    <thead class="text-left text-black">
+                                    <thead class=" text-left border-black">
                                         <tr>
-                                            <th class="p-2">Task</th>
-                                            <th class="p-2">Sprint</th>
-                                            <th class="p-2">Status</th>
-                                            <th class="p-2">Type</th>
-                                            <th class="p-2">Priority</th>
+                                            <th class="p-2 text-center">Task</th>
+                                            <th class="p-2 text-center">Sprint</th>
+                                            <th class="p-2 text-center">Status</th>
+                                            <th class="p-2 text-center">Type</th>
+                                            <th class="p-2 text-center">Priority</th>
                                             <th class="p-2 text-center">Actions</th>
                                         </tr>
                                     </thead>
@@ -233,36 +242,54 @@
 
                                         @foreach($epic->tasks as $task)
 
-                                            <tr class="border-t">
+                                            <tr class="border-t text-xs">
 
-                                                <td class="p-2 font-medium">
+                                                <td class="p-2 font-medium text-xs text-center">
                                                     {{ $task->title }}
                                                 </td>
 
-                                                <td class="p-2 text-purple-600">
+                                                <td class="p-2 text-xs text-center ">
                                                     {{ $task->sprint ?  $task->sprint->name : 'Backlog' }}
                                                 </td>
 
-                                                <td class="p-2 text-blue-600">
-                                                   {{ $task->statusModel->name ?? $task->status }}
+                                                <td class="p-2  text-center">
+                                                   @php
+                                                        $status = $task->projectStatus;
+                                                    @endphp
+
+                                                    <span class="px-2 py-1 rounded text-white text-xs"
+                                                        style="background-color: {{ $status->color ?? '#6b7280' }}">
+
+                                                        {{ $status->name ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                    </span>
                                                 </td>
 
-                                                <td class="p-2 text-green-600">
-                                                    {{ $task->type }}
+                                                <td class="p-2 text-center ">
+                                                    <span class="px-2 py-1 rounded
+                                                        ">
+
+                                                    {{ ucfirst($task->type) }}
                                                 </td>
 
-                                                <td class="p-2 text-yellow-600">
-                                                    {{ $task->priority }}
+                                                <td class="p-2 text-yellow-600 text-center">
+                                                    <span class="px-2 py-1 rounded text-xs
+                                                        @if($task->priority == 'low') text-green-600
+                                                        @elseif($task->priority == 'medium') text-yellow-600
+                                                        @elseif($task->priority == 'high') text-orange-600
+                                                        @else text-red-600 @endif">
+
+                                                        {{ ucfirst($task->priority) }}
+                                                    </span>
                                                 </td>
 
-                                                <td class="p-2 flex gap-3 justify-center">
+                                                <td class="p-2 flex text-xs gap-3 justify-center">
                                                     {{-- <a href="{{ route('projects.tasks.edit', [$project->id, $task->id]) }}"
                                                        class="text-sm text-blue-600">
                                                         Edit
                                                     </a> --}}
 
                                                     <button onclick="openTaskModal({{ $task->id }})"
-                                                            class="px-3 text-sm text-blue-600">
+                                                            class="px-3 text-blue-600">
                                                         Edit
                                                     </button>
 
@@ -272,9 +299,9 @@
                                                         @csrf
                                                         @method('DELETE')
 
-                                                        <button type="submit"
-                                                                class="text-sm text-red-600"
-                                                                onclick="return confirm('Delete task?')">
+                                                        <button type="button"
+                                                                class=" text-red-600 hover:text-red-400"
+                                                                onclick="confirmDelete(this.form)">
                                                             Delete
                                                         </button>
                                                     </form>
@@ -318,6 +345,23 @@
     </div>
 
     <script>
+
+        function confirmDelete(form) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This tasks will be deleted ",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+
         function toggleEpic(id)
         {
             let row = document.getElementById('epic-' + id);
