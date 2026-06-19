@@ -6,6 +6,18 @@
 <div class="flex justify-between items-center mb-4">
     <h2 class="text-2xl font-bold">Kanban Board</h2>
 
+    @if(session('error'))
+        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if(session('success'))
+        <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <button onclick="openStatusModal()"
         class="px-3 py-1 bg-black text-white rounded">
         + Add New Status
@@ -13,6 +25,8 @@
 
 
 </div>
+
+
 
 <div class="grid grid-cols-4 gap-4">
 
@@ -37,7 +51,10 @@
                         action="{{ route('projects.statuses.destroy', [$project->id, $status->id]) }}">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
+
+                            <button type="button"
+                                onclick="confirmDelete(this.form)"
+                                class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
                                 Delete Status
                             </button>
                         </form>
@@ -64,8 +81,22 @@
                 @foreach($tasks->where('status', $status->slug) as $task)
                     <div class="bg-white border border-gray-300 p-3 rounded shadow cursor-move" draggable="true" ondragstart="dragTask(event)" data-task-id="{{ $task->id }}">
                         <div class="font-semibold">{{ $task->title }}</div>
-                        <div class="text-xs text-gray-500">
+                        <div class="text-xs text-gray-500 py-1">
                             Epic: {{ $task->epic->title ?? 'No Epic' }}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            Assignee: {{ $task->assignee->name ?? 'Unassigned' }}
+                        </div>
+
+                        <div>
+                            <span class=" py-1 rounded  text-xs
+                                @if($task->priority == 'low') text-green-500
+                                @elseif($task->priority == 'medium') text-yellow-500
+                                @elseif($task->priority == 'high') text-orange-500
+                                @else text-red-500 @endif">
+
+                                Priority: {{ ucfirst($task->priority) }}
+                            </span>
                         </div>
                     </div>
                 @endforeach
@@ -134,6 +165,23 @@
 </div>
 
 <script>
+
+    function confirmDelete(form) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This status will be deleted if no tasks exist.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
     function openStatusModal() {
         document.getElementById('statusModal').classList.remove('hidden');
     }
@@ -230,5 +278,25 @@
                 });
 
 </script>
+
+@if(session('error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops!',
+        text: "{{ session('error') }}"
+    });
+</script>
+@endif
+
+@if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: "{{ session('success') }}"
+    });
+</script>
+@endif
 
 @endsection

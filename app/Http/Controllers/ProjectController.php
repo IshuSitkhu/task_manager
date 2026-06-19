@@ -105,9 +105,24 @@ class ProjectController extends Controller
     public function destroyStatus(Project $project, int $statusId)
     {
         $status = $project->statuses()->findOrFail($statusId);
+
+        $taskCount = $project->tasks()
+            ->where('status', $status->slug)
+            ->count();
+
+        if ($taskCount > 0) {
+            return back()->with(
+                'error',
+                'Cannot delete status because it contains tasks.'
+            );
+        }
+
         $status->delete();
 
-        return back();
+        return back()->with(
+            'success',
+            'Status deleted successfully.'
+        );
     }
 
     /**

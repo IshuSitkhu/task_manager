@@ -136,7 +136,7 @@
                 @forelse($epics as $epic)
 
 
-                    <tr class="bg-white ">
+                    <tr class="bg-white border-b hover:bg-gray-50 cursor-pointer ">
 
                         <td class="p-3 font-semibold">
                             {{ $epic->title }}
