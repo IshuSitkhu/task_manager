@@ -94,8 +94,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('projects/{project}')->group(function () {
     Route::get('/bugs', [BugController::class, 'index'])->name('projects.bugs.index');
     Route::post('/bugs', [BugController::class, 'store'])->name('projects.bugs.store');
-
     Route::get('/tasks/{task}/bugs', [BugController::class, 'taskBugs']);
+    
 });
 
 

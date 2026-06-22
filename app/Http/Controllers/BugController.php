@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Bug;
 use App\Models\Task;
+use Illuminate\Support\Facades\Storage;
 
 class BugController extends Controller
 {
@@ -48,5 +49,16 @@ class BugController extends Controller
         $bugs = $task->bugs()->latest()->get();
 
         return view('bugs.partials.list', compact('bugs'));
+    }
+
+    public function destroy(Project $project, Bug $bug)
+    {
+        if ($bug->image && Storage::exists('public/' . $bug->image)) {
+            Storage::delete('public/' . $bug->image);
+        }
+
+        $bug->delete();
+
+        return back()->with('success', 'Bug deleted successfully.');
     }
 }
