@@ -158,7 +158,7 @@ class TaskController extends Controller
     {
         $project->load('statuses');
 
-        $tasks = $project->tasks()->with('epic', 'assignee', 'projectStatus')->latest()->get();
+        $tasks = $project->tasks()->with('epic', 'assignee', 'projectStatus', 'bugs')->latest()->get();
 
         $epics = $project->epics;
         $sprints = $project->sprints;

@@ -50,4 +50,9 @@ class Task extends Model
         return $this->belongsTo(ProjectStatus::class, 'status', 'slug');
     }
 
+
+    public function bugs()
+    {
+        return $this->hasMany(\App\Models\Bug::class);
+    }
 }

@@ -76,48 +76,73 @@
             </div>
 
             <div class="space-y-2 min-h-[200px]"
-                ondragover="allowDrop(event)"
-                ondrop="dropTask(event, '{{ $status->slug }}')">
-                @foreach($tasks->where('status', $status->slug) as $task)
-                <div class="bg-white border border-gray-300 p-3 rounded shadow cursor-move"
-                    draggable="true"
-                    data-task-id="{{ $task->id }}">
+                            ondragover="allowDrop(event)"
+                            ondrop="dropTask(event, '{{ $status->slug }}')">
+                            @foreach($tasks->where('status', $status->slug) as $task)
+                            <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-4 cursor-move"
+                draggable="true"
+                data-task-id="{{ $task->id }}">
 
-                    <div class="font-semibold">{{ $task->title }}</div>
-
-                    <div class="text-xs text-gray-500 py-1">
-                        Epic: {{ $task->epic->title ?? 'No Epic' }}
+                <!-- Header -->
+                <div class="flex justify-between items-start gap-2">
+                    <div class="font-semibold text-gray-800 leading-snug">
+                        {{ $task->title }}
                     </div>
 
-                    <div class="text-xs mb-3 text-gray-500">
-                        Assignee: {{ $task->assignee->name ?? 'Unassigned' }}
+                    <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600 whitespace-nowrap">
+                        {{ $task->type }}
+                    </span>
+                </div>
+
+                <!-- Meta Info -->
+                <div class="mt-2 space-y-1 text-xs text-gray-500">
+                    <div>
+                        <span class="font-medium text-gray-600">Epic:</span>
+                        {{ $task->epic->title ?? 'No Epic' }}
                     </div>
 
-                     <button onclick="openBugModal()"
-                            class="px-3 py-1 bg-red-600 text-sm text-white rounded">
-                            Report Bug
-                        </button>
+                    <div>
+                        <span class="font-medium text-gray-600">Assignee:</span>
+                        {{ $task->assignee->name ?? 'Unassigned' }}
+                    </div>
+                </div>
 
-                    <div class="mt-3 flex justify-end">
+                <!-- Bugs -->
+                <div class="mt-3">
+                    <button onclick="openBugListModal({{ $task->id }})"
+                            class="text-xs px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition">
+                         Bugs ({{ $task->bugs->count() }})
+                    </button>
+                </div>
 
+                <!-- Actions -->
+                <div class="mt-4 flex justify-between items-center">
+
+                    <button onclick="openBugModal({{ $task->id }})"
+                            class="text-xs px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 transition">
+                        Report Bug
+                    </button>
+
+                    <div class="flex gap-2">
                         <button onclick="openEditTaskModal({{ $task->id }})"
-                                class="text-sm px-3 py-1 bg-blue-50 text-blue-600 rounded">
+                                class="text-xs px-3 py-1 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition">
                             Edit
                         </button>
-
 
                         <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
                             @csrf
                             @method('DELETE')
 
                             <button type="button"
-                            onclick="confirmDelete(this.form)"
-                            class="text-sm px-3 py-1 bg-red-50 text-red-600 rounded">
+                                    onclick="confirmDelete(this.form)"
+                                    class="text-xs px-3 py-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition">
                                 Delete
                             </button>
                         </form>
                     </div>
                 </div>
+
+            </div>
                 @endforeach
 
             </div>
@@ -165,7 +190,6 @@
     </div>
 </div>
 
-
 <div id="taskModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 
     <div class="bg-white p-4 rounded w-[700px] max-h-[99vh] overflow-y-auto">
@@ -185,9 +209,93 @@
     </div>
 </div>
 
+<div id="taskEditModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+    <div class="bg-white w-full max-w-3xl p-4 rounded shadow">
+
+        <div class="flex py-2 justify-between ">
+            <h2 class="  text-xl font-bold">Edit Task</h2>
+            <button onclick="closeEditTaskModal()">✕</button>
+        </div>
+
+        <div id="modalBody">
+            {{-- AJAX FORM WILL LOAD HERE --}}
+        </div>
+    </div>
+
+</div>
+
+<div id="bugModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+    <div class="bg-white p-4 rounded w-[600px]">
+
+        <div class="flex py-2 justify-between ">
+            <h2 class="  text-xl font-bold">Report Bug</h2>
+            <button onclick="closeBugModal()">✕</button>
+        </div>
+
+
+        <form method="POST" enctype="multipart/form-data"
+            action="{{ route('projects.bugs.store', $project->id) }}">
+            @csrf
+
+            <input type="hidden" name="task_id" id="bugTaskId">
+
+            <input type="text" name="title" placeholder="Bug title"
+                class="w-full border p-2 mb-2">
+
+            <textarea name="description" class="w-full border p-2 mb-2"
+                    placeholder="Describe the bug"></textarea>
+
+            <select name="severity" class="w-full border p-2 mb-2">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="critical">Critical</option>
+            </select>
+
+            <select name="assigned_to" class="w-full border p-2 mb-2">
+                <option value="">Assign Developer</option>
+
+                @foreach($users as $user)
+                    <option value="{{ $user->id }}">
+                        {{ $user->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            <div class="mb-2">
+                <lable class="block font-medium mb-1">Screenshot</lable>
+
+                <input type="file" name="image" class="w-full mb-2" placeholder="Bug Screenshot">
+
+
+            </div>
+
+            <button class="bg-red-600 text-white px-4 py-2 rounded">
+                Submit Bug
+            </button>
+        </form>
+
+
+    </div>
+</div>
+
+<div id="bugListModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white w-[600px] p-4 rounded">
+
+        <div class="flex justify-between mb-3">
+            <h2 class="text-xl font-bold">Bug List</h2>
+            <button onclick="closeBugListModal()">✕</button>
+        </div>
+
+        <div id="bugListBody">
+            <!-- AJAX bugs will load here -->
+        </div>
+
+    </div>
+</div>
+
 <script>
-
-
 
     function confirmDelete(form) {
         Swal.fire({
@@ -213,8 +321,7 @@
         document.getElementById('statusModal').classList.add('hidden');
     }
 
-    function openTaskModal(statusSlug = null)
-    {
+    function openTaskModal(statusSlug = null){
         const modal = document.getElementById('taskModal');
         modal.classList.remove('hidden');
 
@@ -227,26 +334,19 @@
         }
     }
 
-    function closeTaskModal()
-    {
+    function closeTaskModal(){
         document.getElementById('taskModal').classList.add('hidden');
-
-
-
         const select = document.getElementById('statusSelect');
         if (select) {
             select.selectedIndex = 0;
         }
     }
 
-    function closeEditTaskModal()
-    {
+    function closeEditTaskModal(){
         document.getElementById('taskEditModal').classList.add('hidden');
     }
 
-
-    function openEditTaskModal(taskId)
-    {
+    function openEditTaskModal(taskId){
         fetch(`/projects/{{ $project->id }}/tasks/${taskId}/editmodule`)
             .then(res => res.text())
             .then(html => {
@@ -262,52 +362,48 @@
     }
 
     //glabal variable
-let draggedTaskId = null;
+    let draggedTaskId = null;
 
+    //   DRAG START (GLOBAL SAFE)
+    document.addEventListener('dragstart', function (event) {
+        const task = event.target.closest('[data-task-id]');
+        if (!task) return;
 
-//   DRAG START (GLOBAL SAFE)
+        draggedTaskId = task.dataset.taskId;
+        console.log("Dragging task:", draggedTaskId);
+    });
 
-document.addEventListener('dragstart', function (event) {
-    const task = event.target.closest('[data-task-id]');
-    if (!task) return;
-
-    draggedTaskId = task.dataset.taskId;
-    console.log("Dragging task:", draggedTaskId);
-});
-
-
-//   ALLOW DROP
-function allowDrop(event) {
-    event.preventDefault();
-}
+    //   ALLOW DROP
+    function allowDrop(event) {
+        event.preventDefault();
+    }
 
    // DROP TASK
-function dropTask(event, newStatus) {
-    event.preventDefault();
+    function dropTask(event, newStatus) {
+        event.preventDefault();
 
-    if (!draggedTaskId) return;
+        if (!draggedTaskId) return;
 
-    fetch(`/tasks/${draggedTaskId}/move-status`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        body: JSON.stringify({
-            status: newStatus
+        fetch(`/tasks/${draggedTaskId}/move-status`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                status: newStatus
+            })
         })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        }
-    })
-    .catch(err => console.log(err));
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(err => console.log(err));
 
-    draggedTaskId = null;
-}
-
+        draggedTaskId = null;
+    }
 
     function toggleMenu(statusId) {
         let menu = document.getElementById(`menu-${statusId}`);
@@ -329,8 +425,7 @@ function dropTask(event, newStatus) {
         }
     });
 
-
-     document.getElementById("statusForm").addEventListener("submit", function () {
+    document.getElementById("statusForm").addEventListener("submit", function () {
         const btn = document.getElementById("statusSubmitBtn");
 
         if (btn) {
@@ -339,14 +434,36 @@ function dropTask(event, newStatus) {
         }
     });
 
+    //buymodal
+    function openBugModal(taskId) {
+        const input = document.getElementById('bugTaskId');
+        const modal = document.getElementById('bugModal');
 
-    function openBugModal() {
-        document.getElementById('bugModal').classList.remove('hidden');
+        if (!input || !modal) return;
+
+        input.value = taskId;
+        modal.classList.remove('hidden');
     }
 
     function closeBugModal() {
         document.getElementById('bugModal').classList.add('hidden');
     }
+
+    //show bug report
+    function openBugListModal(taskId){
+        fetch(`/projects/{{ $project->id }}/tasks/${taskId}/bugs`)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('bugListBody').innerHTML = html;
+                document.getElementById('bugListModal').classList.remove('hidden');
+            });
+    }
+
+    function closeBugListModal(){
+        document.getElementById('bugListModal').classList.add('hidden');
+    }
+
+
 </script>
 
 @if(session('error'))
@@ -368,90 +485,5 @@ function dropTask(event, newStatus) {
     });
 </script>
 @endif
-
-
-            <div id="taskEditModal"
-                class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-
-                <div class="bg-white w-full max-w-3xl p-4 rounded shadow">
-
-                    <div class="flex py-2 justify-between ">
-                        <h2 class="  text-xl font-bold">Edit Task</h2>
-                        <button onclick="closeEditTaskModal()">✕</button>
-                    </div>
-
-                    <div id="modalBody">
-                        {{-- AJAX FORM WILL LOAD HERE --}}
-                    </div>
-                </div>
-
-            </div>
-
-    <div id="bugModal"
-        class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-
-        <div class="bg-white w-full max-w-2xl p-4 rounded shadow">
-
-            <div class="flex justify-between items-center mb-3">
-                <h2 class="text-xl font-bold text-red-600">Report Bug</h2>
-                <button onclick="closeBugModal()">✕</button>
-            </div>
-
-            <form method="POST" action="{{ route('projects.tasks.store', $project->id) }}">
-                @csrf
-
-                <input type="hidden" name="status" value="bug">
-
-                <div class="mb-3">
-                    <label>Title</label>
-                    <input type="text" name="title" class="w-full border p-2" required>
-                </div>
-
-                <div class="mb-3">
-                    <label>Description</label>
-                    <textarea name="description" class="w-full border p-2"></textarea>
-                </div>
-
-                <button class="bg-red-600 text-white px-4 py-2 rounded">
-                    Submit Bug
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div id="bugModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-
-    <div class="bg-white p-4 rounded w-[600px]">
-
-        <h2 class="text-xl font-bold mb-3">Report Bug</h2>
-
-        <form method="POST" enctype="multipart/form-data"
-              action="{{ route('projects.bugs.store', $project->id) }}">
-            @csrf
-
-            <input type="text" name="title" placeholder="Bug title"
-                   class="w-full border p-2 mb-2">
-
-            <textarea name="description" class="w-full border p-2 mb-2"
-                      placeholder="Describe the bug"></textarea>
-
-            <select name="severity" class="w-full border p-2 mb-2">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="critical">Critical</option>
-            </select>
-
-            <input type="file" name="image" class="w-full mb-2">
-
-            <button class="bg-red-600 text-white px-4 py-2 rounded">
-                Submit Bug
-            </button>
-        </form>
-
-        <button onclick="closeBugModal()" class="mt-2 text-sm text-gray-500">
-            Close
-        </button>
-    </div>
-</div>
 
 @endsection

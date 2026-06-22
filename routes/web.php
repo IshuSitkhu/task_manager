@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EpicController;
 use App\Http\Controllers\SprintController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\BugController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -89,6 +90,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/tasks/{task}/move-status', [TaskController::class, 'moveStatus'])
     ->name('tasks.move-status');
+
+    Route::prefix('projects/{project}')->group(function () {
+    Route::get('/bugs', [BugController::class, 'index'])->name('projects.bugs.index');
+    Route::post('/bugs', [BugController::class, 'store'])->name('projects.bugs.store');
+
+    Route::get('/tasks/{task}/bugs', [BugController::class, 'taskBugs']);
+});
 
 
     //kanban

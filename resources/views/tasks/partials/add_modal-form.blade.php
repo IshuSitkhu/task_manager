@@ -79,6 +79,7 @@
                     <label class="block font-medium mb-1">Type</label>
                     <select name="type" class="w-full border rounded p-2" required>
                         <option value="feature">Feature</option>
+                        <option value="bug">Bug</option>
                         <option value="ui">UI</option>
                         <option value="backend">Backend</option>
                         <option value="test">Test</option>
