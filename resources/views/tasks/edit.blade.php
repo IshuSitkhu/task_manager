@@ -117,7 +117,7 @@
                     <label class="block font-medium mb-1">Type</label>
                     <select name="type" class="w-full border rounded p-2">
 
-                        @foreach(['feature','bug','ui','backend','test'] as $type)
+                        @foreach(['feature','ui','backend','test'] as $type)
                             <option value="{{ $type }}"
                                 {{ $task->type == $type ? 'selected' : '' }}>
                                 {{ ucfirst($type) }}

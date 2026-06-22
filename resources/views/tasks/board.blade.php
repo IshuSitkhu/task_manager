@@ -89,11 +89,17 @@
                         Epic: {{ $task->epic->title ?? 'No Epic' }}
                     </div>
 
-                    <div class="text-xs text-gray-500">
+                    <div class="text-xs mb-3 text-gray-500">
                         Assignee: {{ $task->assignee->name ?? 'Unassigned' }}
                     </div>
 
+                     <button onclick="openBugModal()"
+                            class="px-3 py-1 bg-red-600 text-sm text-white rounded">
+                            Report Bug
+                        </button>
+
                     <div class="mt-3 flex justify-end">
+
                         <button onclick="openEditTaskModal({{ $task->id }})"
                                 class="text-sm px-3 py-1 bg-blue-50 text-blue-600 rounded">
                             Edit
@@ -332,6 +338,15 @@ function dropTask(event, newStatus) {
             btn.innerText = "Saving...";
         }
     });
+
+
+    function openBugModal() {
+        document.getElementById('bugModal').classList.remove('hidden');
+    }
+
+    function closeBugModal() {
+        document.getElementById('bugModal').classList.add('hidden');
+    }
 </script>
 
 @if(session('error'))
@@ -355,7 +370,7 @@ function dropTask(event, newStatus) {
 @endif
 
 
- <div id="taskEditModal"
+            <div id="taskEditModal"
                 class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
                 <div class="bg-white w-full max-w-3xl p-4 rounded shadow">
@@ -370,6 +385,73 @@ function dropTask(event, newStatus) {
                     </div>
                 </div>
 
+            </div>
+
+    <div id="bugModal"
+        class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+        <div class="bg-white w-full max-w-2xl p-4 rounded shadow">
+
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-xl font-bold text-red-600">Report Bug</h2>
+                <button onclick="closeBugModal()">✕</button>
+            </div>
+
+            <form method="POST" action="{{ route('projects.tasks.store', $project->id) }}">
+                @csrf
+
+                <input type="hidden" name="status" value="bug">
+
+                <div class="mb-3">
+                    <label>Title</label>
+                    <input type="text" name="title" class="w-full border p-2" required>
+                </div>
+
+                <div class="mb-3">
+                    <label>Description</label>
+                    <textarea name="description" class="w-full border p-2"></textarea>
+                </div>
+
+                <button class="bg-red-600 text-white px-4 py-2 rounded">
+                    Submit Bug
+                </button>
+            </form>
+        </div>
     </div>
+
+    <div id="bugModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+    <div class="bg-white p-4 rounded w-[600px]">
+
+        <h2 class="text-xl font-bold mb-3">Report Bug</h2>
+
+        <form method="POST" enctype="multipart/form-data"
+              action="{{ route('projects.bugs.store', $project->id) }}">
+            @csrf
+
+            <input type="text" name="title" placeholder="Bug title"
+                   class="w-full border p-2 mb-2">
+
+            <textarea name="description" class="w-full border p-2 mb-2"
+                      placeholder="Describe the bug"></textarea>
+
+            <select name="severity" class="w-full border p-2 mb-2">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="critical">Critical</option>
+            </select>
+
+            <input type="file" name="image" class="w-full mb-2">
+
+            <button class="bg-red-600 text-white px-4 py-2 rounded">
+                Submit Bug
+            </button>
+        </form>
+
+        <button onclick="closeBugModal()" class="mt-2 text-sm text-gray-500">
+            Close
+        </button>
+    </div>
+</div>
 
 @endsection

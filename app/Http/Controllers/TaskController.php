@@ -65,7 +65,7 @@ class TaskController extends Controller
             'type' => $request->type,
             'github_link' => $request->github_link,
             'due_date' => $request->due_date,
-             'image' => $imagePath, 
+             'image' => $imagePath,
         ]);
 
 
@@ -176,7 +176,7 @@ class TaskController extends Controller
     public function updateStatus(Request $request, Task $task)
     {
         $request->validate([
-            'status' => 'required|in:todo,in_progress,review,done',
+            'status' => 'required|in:todo,in_progress,review,bug,done',
         ]);
 
         $task->update([
