@@ -1,16 +1,16 @@
 @forelse($bugs as $bug)
     <div class="border border-black p-3 mb-2 rounded bg-gray-50">
-    <div class="font-bold mb-1">{{ $bug->title }}</div>
+    <h1 class="font-bold mb-1"> Title: {{ $bug->title }}</h1>
 
     <div class="text-sm text-gray-700 mb-2">
-        {{ $bug->description }}
+         {{ $bug->description }}
     </div>
 
     <div class="text-xs text-gray-500 mb-2">
         Severity: {{ $bug->severity }}
     </div>
 
-   
+
 
     @if($bug->image)
         <img src="{{ asset('storage/' . $bug->image) }}"

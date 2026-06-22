@@ -222,52 +222,67 @@
 
     <div class="bg-white p-4 rounded w-[600px]">
 
-        <div class="flex py-2 justify-between ">
+        <div class="flex py-2 justify-between mb-4">
             <h2 class="  text-xl font-bold">Report Bug</h2>
             <button onclick="closeBugModal()">✕</button>
         </div>
 
 
-        <form method="POST" enctype="multipart/form-data"
-            action="{{ route('projects.bugs.store', $project->id) }}">
-            @csrf
-
-            <input type="hidden" name="task_id" id="bugTaskId">
-
-            <input type="text" name="title" placeholder="Bug title"
-                class="w-full border p-2 mb-2">
-
-            <textarea name="description" class="w-full border p-2 mb-2"
-                    placeholder="Describe the bug"></textarea>
-
-            <select name="severity" class="w-full border p-2 mb-2">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="critical">Critical</option>
-            </select>
-
-            <select name="assigned_to" class="w-full border p-2 mb-2">
-                <option value="">Assign Developer</option>
-
-                @foreach($users as $user)
-                    <option value="{{ $user->id }}">
-                        {{ $user->name }}
-                    </option>
-                @endforeach
-            </select>
-
-            <div class="mb-2">
-                <lable class="block font-medium mb-1">Screenshot</lable>
-
-                <input type="file" name="image" class="w-full mb-2" placeholder="Bug Screenshot">
+        <div class="bg-white p-3 rounded shadow">
+            <form method="POST" enctype="multipart/form-data"
+                action="{{ route('projects.bugs.store', $project->id) }}">
+                @csrf
 
 
-            </div>
+                <input type="hidden" name="task_id" id="bugTaskId">
 
-            <button class="bg-red-600 text-white px-4 py-2 rounded">
-                Submit Bug
-            </button>
-        </form>
+                <div class="mb-2">
+                    <label class="block font-medium mb-1">Bug Title</label>
+                    <input type="text" name="title" placeholder="Bug title"
+                    class="w-full border p-2 rounded" required>
+                </div>
+
+
+                <div class="mb-2">
+                    <label class="block font-medium mb-1">Description</label>
+                    <textarea name="description"
+                        class="w-full border rounded p-2 mb-2"
+                        placeholder="Describe the bug"
+                        rows="3">
+                    </textarea>
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">Severity</label>
+                    <select name="severity" class="w-full rounded border p-2 mb-2">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">Assign Developer</label>
+                    <select name="assigned_to" class="w-full border rounded p-2 mb-2">
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}">
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="block border font-medium mb-3">
+                    <lable class="block font-medium mb-1">Screenshot</lable>
+                    <input type="file" name="image" class="w-full rounded p-2" placeholder="Bug Screenshot">
+                </div>
+
+                <button class="bg-red-600 text-white px-2 py-2 rounded justify-end">
+                    Submit Bug
+                </button>
+            </form>
+        </div>
+
 
 
     </div>

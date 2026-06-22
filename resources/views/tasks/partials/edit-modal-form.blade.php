@@ -22,7 +22,8 @@
                 <label class="block font-medium mb-1">Description</label>
                 <textarea name="description"
                           class="w-full border rounded p-2"
-                          rows="3">{{ $task->description }}</textarea>
+                          rows="3"
+                          placeholder="Describe the task">{{ $task->description }}</textarea>
             </div>
 
             <div class="mb-2">
