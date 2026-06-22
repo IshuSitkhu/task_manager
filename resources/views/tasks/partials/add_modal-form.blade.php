@@ -81,6 +81,7 @@
                         <option value="feature">Feature</option>
                         <option value="bug">Bug</option>
                         <option value="ui">UI</option>
+                        <option value="frontend">Frontend</option>
                         <option value="backend">Backend</option>
                         <option value="test">Test</option>
                     </select>

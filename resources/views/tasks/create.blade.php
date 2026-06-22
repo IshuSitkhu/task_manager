@@ -109,7 +109,8 @@
                     <select name="type" class="w-full border rounded p-2" required>
                         <option value="feature">Feature</option>
                         <option value="bug">Bug</option>
-                        <option value="ui">UI</option>
+                        <option value="ui">UI/UX</option>
+                        <option value="frontend">Frontend</option>
                         <option value="backend">Backend</option>
                         <option value="test">Test</option>
                     </select>

@@ -76,73 +76,44 @@
             </div>
 
             <div class="space-y-2 min-h-[200px]"
-                            ondragover="allowDrop(event)"
-                            ondrop="dropTask(event, '{{ $status->slug }}')">
-                            @foreach($tasks->where('status', $status->slug) as $task)
-                            <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition p-4 cursor-move"
-                draggable="true"
-                data-task-id="{{ $task->id }}">
+                ondragover="allowDrop(event)"
+                ondrop="dropTask(event, '{{ $status->slug }}')">
+                @foreach($tasks->where('status', $status->slug) as $task)
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl hover:scale-[1.02] hover:border-blue-400 transition-all duration-200 p-4 cursor-pointer"
+                    draggable="true"
+                    data-task-id="{{ $task->id }}"
+                    onclick="openEditTaskModal({{ $task->id }})">
 
-                <!-- Header -->
-                <div class="flex justify-between items-start gap-2">
-                    <div class="font-semibold text-gray-800 leading-snug">
-                        {{ $task->title }}
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="font-semibold text-gray-800 leading-snug">
+                            {{ $task->title }}
+                        </div>
+
+                        <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600 whitespace-nowrap">
+                            {{ $task->type }}
+                        </span>
                     </div>
 
-                    <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600 whitespace-nowrap">
-                        {{ $task->type }}
-                    </span>
-                </div>
+                    <div class="mt-2 space-y-1 text-xs text-gray-500">
+                        <div>
+                            <span class="font-medium text-gray-600">Epic:</span>
+                            {{ $task->epic->title ?? 'No Epic' }}
+                        </div>
 
-                <!-- Meta Info -->
-                <div class="mt-2 space-y-1 text-xs text-gray-500">
-                    <div>
-                        <span class="font-medium text-gray-600">Epic:</span>
-                        {{ $task->epic->title ?? 'No Epic' }}
+                        <div>
+                            <span class="font-medium text-gray-600">Assignee:</span>
+                            {{ $task->assignee->name ?? 'Unassigned' }}
+                        </div>
                     </div>
 
-                    <div>
-                        <span class="font-medium text-gray-600">Assignee:</span>
-                        {{ $task->assignee->name ?? 'Unassigned' }}
-                    </div>
-                </div>
-
-                <!-- Bugs -->
-                <div class="mt-3">
-                    <button onclick="openBugListModal({{ $task->id }})"
-                            class="text-xs px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition">
-                         Bugs ({{ $task->bugs->count() }})
-                    </button>
-                </div>
-
-                <!-- Actions -->
-                <div class="mt-4 flex justify-between items-center">
-
-                    <button onclick="openBugModal({{ $task->id }})"
-                            class="text-xs px-3 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 transition">
-                        Report Bug
-                    </button>
-
-                    <div class="flex gap-2">
-                        <button onclick="openEditTaskModal({{ $task->id }})"
-                                class="text-xs px-3 py-1 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition">
-                            Edit
+                    <div class="mt-3">
+                        <button
+                                class="text-xs px-2 py-1 rounded bg-red-50 text-red-600 transition">
+                            Bugs ({{ $task->bugs->count() }})
                         </button>
-
-                        <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
-                            @csrf
-                            @method('DELETE')
-
-                            <button type="button"
-                                    onclick="confirmDelete(this.form)"
-                                    class="text-xs px-3 py-1 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition">
-                                Delete
-                            </button>
-                        </form>
                     </div>
-                </div>
 
-            </div>
+                </div>
                 @endforeach
 
             </div>
@@ -213,10 +184,32 @@
 
     <div class="bg-white w-full max-w-3xl p-4 rounded shadow">
 
-        <div class="flex py-2 justify-between ">
-            <h2 class="  text-xl font-bold">Edit Task</h2>
-            <button onclick="closeEditTaskModal()">✕</button>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">
+                Edit Task
+            </h2>
+
+            <div class="flex gap-3 items-center">
+
+                    <button onclick="openBugListFromEditModal()"
+                            class="px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition">
+                        View Bugs
+                    </button>
+
+                <button onclick="openBugFromEditModal()"
+                    class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
+                    Report Bug
+                </button>
+
+                <button onclick="closeEditTaskModal()"
+                    class="text-xl">
+                    ✕
+                </button>
+
+            </div>
         </div>
+
+        <input type="hidden" id="currentTaskId">
 
         <div id="modalBody">
             {{-- AJAX FORM WILL LOAD HERE --}}
@@ -347,6 +340,9 @@
     }
 
     function openEditTaskModal(taskId){
+
+        document.getElementById('currentTaskId').value = taskId;
+
         fetch(`/projects/{{ $project->id }}/tasks/${taskId}/editmodule`)
             .then(res => res.text())
             .then(html => {
@@ -355,7 +351,6 @@
 
                 document.getElementById('taskEditModal').classList.remove('hidden');
 
-                // RESET FILE INPUT ISSUE FIX
                 const fileInput = document.getElementById('imageInput');
                 if (fileInput) fileInput.value = "";
             });
@@ -443,6 +438,19 @@
 
         input.value = taskId;
         modal.classList.remove('hidden');
+    }
+
+    function openBugFromEditModal() {
+        const taskId = document.getElementById('currentTaskId').value;
+
+        closeEditTaskModal();
+        openBugModal(taskId);
+    }
+
+    function openBugListFromEditModal() {
+        const taskId = document.getElementById('currentTaskId').value;
+
+        openBugListModal(taskId);
     }
 
     function closeBugModal() {

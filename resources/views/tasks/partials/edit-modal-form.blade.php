@@ -89,7 +89,7 @@
                     <label class="block font-medium mb-1">Type</label>
                     <select name="type" class="w-full border rounded p-2">
 
-                        @foreach(['feature','ui','bug','backend','test'] as $type)
+                        @foreach(['feature','UI/UX','bug','frontend','backend','test'] as $type)
                             <option value="{{ $type }}"
                                 {{ $task->type == $type ? 'selected' : '' }}>
                                 {{ ucfirst($type) }}
@@ -145,12 +145,23 @@
 
             </div>
 
-            <div class="mt-3 flex justify-end">
+            <div class="mt-3 gap-4 flex justify-end">
 
                 <button
                         class="bg-blue-600 text-white px-6 py-2 rounded">
                     Update Task
                 </button>
+
+                <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="button"
+                            onclick="confirmDelete(this.form)"
+                            class=" px-3 py-1 rounded-md bg-red-500 text-white hover:bg-red-500 transition">
+                        Delete
+                    </button>
+                </form>
 
             </div>
 
