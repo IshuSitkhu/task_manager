@@ -88,12 +88,12 @@
 
                 <div>
                     <label class="block font-medium mb-1">Type</label>
-                    <select name="type" class="w-full border rounded p-2">
+                    <select name="type_id" class="w-full border rounded p-2">
 
                         @foreach($project->taskTypes as $type)
                             <option value="{{ $type->id }}"
-                                {{ $task->type == $type->slug ? 'selected' : '' }}>
-                                 {{ ucfirst(str_replace('_',' ', $type->name)) }}
+                                {{ $task->type_id == $type->id ? 'selected' : '' }}>
+                                {{ ucfirst(str_replace('_',' ', $type->name)) }}
                             </option>
                         @endforeach
 
@@ -153,20 +153,22 @@
                     Update Task
                 </button>
 
-                <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
-                    @csrf
-                    @method('DELETE')
+    </form>
 
-                    <button type="button"
-                            onclick="confirmDelete(this.form)"
-                            class=" px-3 py-1 rounded-md bg-red-500 text-white hover:bg-red-500 transition">
-                        Delete
-                    </button>
-                </form>
+
+    <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
+        @csrf
+        @method('DELETE')
+
+        <button type="button"
+                onclick="confirmDelete(this.form)"
+                class=" px-3 py-1 rounded-md bg-red-500 text-white hover:bg-red-500 transition">
+            Delete
+        </button>
+    </form>
 
             </div>
 
-    </form>
 </div>
 
 <script>

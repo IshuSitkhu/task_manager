@@ -228,7 +228,7 @@
 
 <div id="taskEditModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-    <div class="bg-white w-full max-w-3xl p-4 rounded shadow">
+    <div class="bg-white w-full max-w-3xl h-full mt-4 p-4 rounded shadow">
 
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">
@@ -255,12 +255,38 @@
             </div>
         </div>
 
-        <input type="hidden" id="currentTaskId">
+        <div class="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded shadow">
+             <input type="hidden" id="currentTaskId">
 
-        <div id="modalBody">
-            {{-- AJAX FORM WILL LOAD HERE --}}
+            <div id="modalBody">
+                {{-- AJAX FORM WILL LOAD HERE --}}
+            </div>
+
+            <div class="mt-4 border-t pt-3">
+
+                <div class="mt-3 flex gap-2 m-6">
+                    <input type="text" id="commentInput"
+                        class="w-full border p-2 rounded"
+                        placeholder="Add a comment...">
+
+                    <button onclick="sendComment()"
+                            class="bg-blue-600 text-white px-3 rounded">
+                        Send
+                    </button>
+                </div>
+
+                <h3 class="font-bold m-2">Comments</h3>
+
+                <div id="commentList" class="space-y-2  text-sm">
+                    <!-- comments load here -->
+                </div>
+            </div>
         </div>
+
+
     </div>
+
+
 
 </div>
 
@@ -408,6 +434,23 @@
         document.getElementById('taskEditModal').classList.add('hidden');
     }
 
+    // function openEditTaskModal(taskId){
+
+    //     document.getElementById('currentTaskId').value = taskId;
+
+    //     fetch(`/projects/{{ $project->id }}/tasks/${taskId}/editmodule`)
+    //         .then(res => res.text())
+    //         .then(html => {
+
+    //             document.getElementById('modalBody').innerHTML = html;
+
+    //             document.getElementById('taskEditModal').classList.remove('hidden');
+
+    //             const fileInput = document.getElementById('imageInput');
+    //             if (fileInput) fileInput.value = "";
+    //         });
+    // }
+
     function openEditTaskModal(taskId){
 
         document.getElementById('currentTaskId').value = taskId;
@@ -422,8 +465,133 @@
 
                 const fileInput = document.getElementById('imageInput');
                 if (fileInput) fileInput.value = "";
+
+                loadComments(taskId);
             });
     }
+
+// function loadComments(taskId){
+//     fetch(`/tasks/${taskId}/comments`)
+//         .then(res => res.json())
+//         .then(data => {
+
+//             const container = document.getElementById('commentList');
+//             container.innerHTML = '';
+
+//             data.forEach(comment => {
+//                 container.innerHTML += `
+//                     <div class="border p-2 rounded bg-gray-50">
+//                         <div class="text-xs text-gray-500">
+//                             ${comment.user.name}
+//                         </div>
+//                         <div>${comment.message}</div>
+//                     </div>
+//                 `;
+//             });
+//         });
+// }
+
+    function loadComments(taskId){
+        fetch(`/tasks/${taskId}/comments`)
+            .then(async res => {
+
+                if (res.status === 403) {
+                    const text = await res.text();
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Access Denied',
+                        text: 'You are not a member of this project'
+                    });
+
+                    return null;
+                }
+
+                return res.json();
+            })
+            .then(data => {
+                if (!data) return;
+
+                const container = document.getElementById('commentList');
+                container.innerHTML = '';
+
+                data.forEach(comment => {
+                    container.innerHTML += `
+                        <div class="border p-2 rounded m-2">
+                            <h1>
+                                ${comment.user.name}
+                            </h1>
+                            <div class="text-xs text-gray-500">${comment.message}</div>
+                        </div>
+                    `;
+                });
+            });
+    }
+
+// function sendComment(){
+//     const taskId = document.getElementById('currentTaskId').value;
+//     const input = document.getElementById('commentInput');
+
+//     if (!input.value.trim()) return;
+
+//     fetch(`/tasks/${taskId}/comments`, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//             "X-CSRF-TOKEN": "{{ csrf_token() }}"
+//         },
+//         body: JSON.stringify({
+//             message: input.value
+//         })
+//     })
+//     .then(res => res.json())
+//     .then(data => {
+
+//         input.value = '';
+
+//         // reload comments
+//         loadComments(taskId);
+//     });
+// }
+
+    function sendComment(){
+        const taskId = document.getElementById('currentTaskId').value;
+        const input = document.getElementById('commentInput');
+
+        if (!input.value.trim()) return;
+
+        fetch(`/tasks/${taskId}/comments`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                message: input.value
+            })
+        })
+        .then(async res => {
+
+            if (res.status === 403) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    text: 'You are not a member of this project so, you are not allowed to comment'
+                });
+                return null;
+            }
+
+            return res.json();
+        })
+        .then(data => {
+            if (!data) return;
+
+            input.value = '';
+            loadComments(taskId);
+        });
+    }
+
+
 
     //glabal variable
     let draggedTaskId = null;
