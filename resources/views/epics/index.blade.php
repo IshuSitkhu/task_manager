@@ -265,10 +265,15 @@
                                                 </td>
 
                                                 <td class="p-2 text-center ">
-                                                    <span class="px-2 py-1 rounded
-                                                        ">
+                                                    @php
+                                                        $type = $task->projectType;
+                                                    @endphp
 
-                                                    {{ ucfirst($task->type) }}
+                                                    <span class="px-2 py-1 rounded text-white text-xs"
+                                                        style="background-color: {{ ($task->type)->color ?? '#6b7280' }}">
+
+                                                        {{ ($task->type)->name  ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                    </span>
                                                 </td>
 
                                                 <td class="p-2 text-yellow-600 text-center">

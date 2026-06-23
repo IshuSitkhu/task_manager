@@ -47,4 +47,10 @@ class Project extends Model
     {
         return $this->hasMany(ProjectStatus::class);
     }
+
+
+public function taskTypes()
+{
+    return $this->hasMany(TaskType::class);
+}
 }

@@ -115,12 +115,12 @@
 
                 <div>
                     <label class="block font-medium mb-1">Type</label>
-                    <select name="type" class="w-full border rounded p-2">
+                    <select name="type_id" class="w-full border rounded p-2">
 
-                        @foreach(['feature','UI/UX', 'bug','frontend','backend','test'] as $type)
-                            <option value="{{ $type }}"
-                                {{ $task->type == $type ? 'selected' : '' }}>
-                                {{ ucfirst($type) }}
+                        @foreach($project->taskTypes as $type)
+                            <option value="{{ $type->id }}"
+                                {{ $task->type == $type->slug ? 'selected' : '' }}>
+                                 {{ ucfirst(str_replace('_',' ', $type->name)) }}
                             </option>
                         @endforeach
 

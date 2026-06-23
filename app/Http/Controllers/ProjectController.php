@@ -81,6 +81,18 @@ class ProjectController extends Controller
             $project->members()->syncWithoutDetaching($request->members);
         }
 
+        $defaultTypes = [
+            ['name' => 'Feature', 'slug' => 'feature', 'color' => '#3b82f6'],
+            ['name' => 'UI', 'slug' => 'ui', 'color' => '#a855f7'],
+            ['name' => 'Bug', 'slug' => 'bug', 'color' => '#ef4444'],
+            ['name' => 'Backend', 'slug' => 'backend', 'color' => '#22c55e'],
+            ['name' => 'Test', 'slug' => 'test', 'color' => '#f59e0b'],
+        ];
+
+        foreach ($defaultTypes as $type) {
+            $project->taskTypes()->create($type);
+        }
+
         return redirect()->route('projects.index')
             ->with('success', 'Project created successfully');
     }
@@ -133,6 +145,72 @@ class ProjectController extends Controller
             'Status deleted successfully.'
         );
     }
+
+    // public function storeType(Request $request, Project $project)
+    // {
+    //     $request->validate([
+    //         'name' => 'required',
+    //         'slug' => 'required',
+    //         'color' => 'nullable',
+    //     ]);
+
+    //     $exists = $project->types()
+    //         ->where('slug', $request->slug)
+    //         ->exists();
+
+    //     if ($exists) {
+    //         return back()->with('error', 'Type already exists!');
+    //     }
+
+    //     $project->types()->create([
+    //         'name' => $request->name,
+    //         'slug' => $request->slug,
+    //         'color' => $request->color,
+    //     ]);
+
+    //     return back()->with('success', 'Type added successfully!');
+    // }
+
+    public function storeType(Request $request, Project $project)
+{
+    $request->validate([
+        'name' => 'required'
+    ]);
+
+    $exists = $project->taskTypes()
+                      ->where('name', $request->name)
+                      ->exists();
+
+    if ($exists) {
+        return back()->with('error', 'Type already exists.');
+    }
+
+    $project->taskTypes()->create([
+        'name' => $request->name,
+        'slug' => $request->slug,
+        'color' => $request->color,
+
+    ]);
+
+    return back()->with('success', 'Type created.');
+}
+
+public function destroyType(Project $project, $typeId)
+{
+    $type = $project->taskTypes()->findOrFail($typeId);
+
+    $count = $project->tasks()
+                     ->where('type_id', $type->id)
+                     ->count();
+
+    if ($count > 0) {
+        return back()->with('error', 'Type contains tasks.');
+    }
+
+    $type->delete();
+
+    return back()->with('success', 'Type deleted.');
+}
 
     /**
      * Show project details

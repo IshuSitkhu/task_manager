@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\TaskType;
 
 class Task extends Model
 {
@@ -16,7 +17,7 @@ class Task extends Model
         'assigned_to',
         'status',
         'priority',
-        'type',
+        'type_id',
         'github_link',
         'due_date',
     ];
@@ -55,4 +56,9 @@ class Task extends Model
     {
         return $this->hasMany(\App\Models\Bug::class);
     }
+
+    public function type()
+{
+    return $this->belongsTo(TaskType::class, 'type_id');
+}
 }

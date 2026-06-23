@@ -106,13 +106,20 @@
 
                 <div>
                     <label class="block font-medium mb-1">Type</label>
-                    <select name="type" class="w-full border rounded p-2" required>
+                    {{-- <select name="type" class="w-full border rounded p-2" required>
                         <option value="feature">Feature</option>
                         <option value="bug">Bug</option>
                         <option value="ui">UI/UX</option>
                         <option value="frontend">Frontend</option>
                         <option value="backend">Backend</option>
                         <option value="test">Test</option>
+                    </select> --}}
+                    <select name="type_id" class="w-full border rounded p-2">
+                        @foreach($project->taskTypes as $type)
+                            <option value="{{ $type->id }}">
+                                {{ $type->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -137,6 +144,7 @@
                         @endforeach
                     </select>
                 </div>
+
 
                 <div>
                     <label class="block font-medium mb-1">GitHub Link</label>

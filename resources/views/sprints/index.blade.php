@@ -274,7 +274,7 @@
                                     </span>
 
                                     <span class="px-2 py-0.5 rounded text-green-700 whitespace-nowrap">
-                                        Type: {{ $task->type }}
+                                        Type: {{ $task->typeRelation->name ?? '' }}
                                     </span>
 
                                     <span class="px-2 py-0.5 rounded  text-yellow-700 whitespace-nowrap">

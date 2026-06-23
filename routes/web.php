@@ -34,6 +34,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/projects/{project}/statuses/{status}', [ProjectController::class, 'destroyStatus'])
     ->name('projects.statuses.destroy');
 
+    Route::post('/projects/{project}/types', [ProjectController::class, 'storeType'])
+    ->name('projects.types.store');
+
+    Route::delete('/projects/{project}/types/{type}',[ProjectController::class, 'destroyType'])->name('projects.types.destroy');
+
     // Route::get('/projects/{project}/epics', [ProjectController::class, 'epics'])->name('projects.epics');
 
     Route::get('/projects/{project}/sprints', [ProjectController::class, 'sprints'])->name('projects.sprints');
@@ -95,7 +100,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bugs', [BugController::class, 'index'])->name('projects.bugs.index');
     Route::post('/bugs', [BugController::class, 'store'])->name('projects.bugs.store');
     Route::get('/tasks/{task}/bugs', [BugController::class, 'taskBugs']);
-    
+
 });
 
 

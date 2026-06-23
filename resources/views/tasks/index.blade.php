@@ -92,7 +92,15 @@
                             @elseif($task->type == 'backend') text-yellow-600
                             @else text-gray-600 @endif"> --}}
 
-                        {{ ucfirst($task->type) }}
+                        @php
+                            $type = $task->projectType;
+                        @endphp
+
+                        <span class="px-2 py-1 rounded text-white text-xs"
+                            style="background-color: {{ ($task->type)->color ?? '#6b7280' }}">
+
+                            {{ ($task->type)->name  ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                        </span>
                     </span>
                     </td>
 

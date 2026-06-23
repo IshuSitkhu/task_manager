@@ -17,18 +17,25 @@
             {{ session('success') }}
         </div>
     @endif --}}
+    <div class="flex flex-col gap-2">
+        <button onclick="openStatusModal()"
+            class="px-3 py-1 bg-black/50 rounded text-white rounded">
+            + Add New Status
+        </button>
 
-    <button onclick="openStatusModal()"
-        class="px-3 py-1 bg-black text-white rounded">
-        + Add New Status
-    </button>
+        <button onclick="openTypeModal()"
+            class="px-3 py-1 bg-black/70 rounded text-white rounded">
+            + Add New Type
+        </button>
+    </div>
+
 
 
 </div>
 
 
 
-<div class="grid grid-cols-4 gap-4">
+<div class="grid grid-cols-5 gap-4">
 
     @foreach($project->statuses as $status)
 
@@ -89,8 +96,10 @@
                             {{ $task->title }}
                         </div>
 
-                        <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600 whitespace-nowrap">
-                            {{ $task->type }}
+                        <span class="text-white text-sm px-1 rounded"
+                            style="background: {{ optional($task->type)->color ?? '#ef4444' }}">
+                            {{ optional($task->type)->name ?? 'No Type' }}
+
                         </span>
                     </div>
 
@@ -153,6 +162,43 @@
                 id="statusSubmitBtn"
                 class="bg-blue-500 text-white px-4 py-2 rounded w-full">
                 Save Status
+            </button>
+        </form>
+
+
+
+    </div>
+</div>
+
+<div id="typeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+
+    <div class="bg-white p-6 rounded w-96">
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Add New Type</h2>
+            <button onclick="closeTypeModal()" class="text-black font-bold text-lg">
+                ✖
+            </button>
+        </div>
+
+        <form method="POST" action="{{ route('projects.types.store', $project->id) }}">
+            @csrf
+
+            <input type="text" name="name" placeholder="Type Name"
+                class="w-full border p-2 mb-3" required>
+
+            <input type="text" name="slug" placeholder="slug"
+                class="w-full border p-2 mb-3" required>
+
+            <div class="mb-3 flex">
+                <label class="block font-medium mb-1">Background Color: </label>
+                <input type="color" name="color" class=" mb-3">
+            </div>
+
+            <button type="submit"
+                id="typeSubmitBtn"
+                class="bg-blue-500 text-white px-4 py-2 rounded w-full">
+                Save Type
             </button>
         </form>
 
@@ -325,6 +371,14 @@
         document.getElementById('statusModal').classList.remove('hidden');
     }
 
+    function openTypeModal(){
+        document.getElementById('typeModal').classList.remove('hidden')
+    }
+
+    function closeTypeModal(){
+        document.getElementById('typeModal').classList.add('hidden');
+    }
+
     function closeStatusModal() {
         document.getElementById('statusModal').classList.add('hidden');
     }
@@ -437,6 +491,15 @@
 
     document.getElementById("statusForm").addEventListener("submit", function () {
         const btn = document.getElementById("statusSubmitBtn");
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+        }
+    });
+
+    document.getElementById("typeForm").addEventListener("submit", function () {
+        const btn = document.getElementById("typeSubmitBtn");
 
         if (btn) {
             btn.disabled = true;

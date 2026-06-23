@@ -27,8 +27,9 @@ class TaskController extends Controller
         $epics = $project->epics;
         $sprints = $project->sprints;
         $users = $project->members; // only project members
+        $types = $project->taskTypes;
 
-        return view('tasks.create', compact('project', 'epics', 'sprints', 'users'));
+        return view('tasks.create', compact('project', 'epics', 'sprints', 'users','types'));
     }
 
     public function store(Request $request, Project $project)
@@ -42,7 +43,7 @@ class TaskController extends Controller
             'assigned_to' => 'required|exists:users,id',
             'status' => 'required',
             'priority' => 'required',
-            'type' => 'required',
+            'type_id' => 'required|exists:task_types,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -62,7 +63,7 @@ class TaskController extends Controller
             'assigned_to' => $request->assigned_to,
             'status' => $request->status,
             'priority' => $request->priority,
-            'type' => $request->type,
+            'type_id' => $request->type_id,
             'github_link' => $request->github_link,
             'due_date' => $request->due_date,
              'image' => $imagePath,
@@ -105,7 +106,7 @@ class TaskController extends Controller
             'assigned_to' => 'required|exists:users,id',
             'status' => 'required',
             'priority' => 'required',
-            'type' => 'required',
+            'type_id' => 'required|exists:task_types,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
@@ -133,7 +134,7 @@ class TaskController extends Controller
             'assigned_to' => $request->assigned_to,
             'status' => $request->status,
             'priority' => $request->priority,
-            'type' => $request->type,
+            'type_id' => $request->type_id,
             'github_link' => $request->github_link,
             'due_date' => $request->due_date,
 
@@ -158,7 +159,8 @@ class TaskController extends Controller
     {
         $project->load('statuses');
 
-        $tasks = $project->tasks()->with('epic', 'assignee', 'projectStatus', 'bugs')->latest()->get();
+        $tasks = $project->tasks()->with('epic', 'assignee', 'projectStatus', 'bugs','type')->latest()->get();
+        $types = $project->taskTypes;
 
         $epics = $project->epics;
         $sprints = $project->sprints;
@@ -169,7 +171,8 @@ class TaskController extends Controller
             'tasks',
             'epics',
             'sprints',
-            'users'
+            'users',
+            'types'
         ));
     }
 

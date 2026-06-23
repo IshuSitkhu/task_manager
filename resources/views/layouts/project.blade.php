@@ -25,7 +25,7 @@
             <div
                 class="grid gap-6"
                 :class="sidebarOpen
-                    ? 'grid-cols-1 md:grid-cols-4'
+                    ? 'grid-cols-1 md:grid-cols-5'
                     : 'grid-cols-1 md:grid-cols-1'"
             >
 
@@ -79,7 +79,7 @@
 
                 <div
                     class="bg-white p-6 rounded shadow"
-                    :class="sidebarOpen ? 'md:col-span-3' : 'md:col-span-4'"
+                    :class="sidebarOpen ? 'md:col-span-4' : 'md:col-span-5'"
                 >
 
                     @yield('content')
