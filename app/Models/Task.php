@@ -58,7 +58,12 @@ class Task extends Model
     }
 
     public function type()
-{
-    return $this->belongsTo(TaskType::class, 'type_id');
-}
+    {
+        return $this->belongsTo(TaskType::class, 'type_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
