@@ -57,4 +57,56 @@ class CommentController extends Controller
 
         abort_unless($isMember, 403);
     }
+
+// UPDATE COMMENT
+public function update(Request $request, Comment $comment)
+{
+    $this->authorizeComment($comment);
+
+    $request->validate([
+        'message' => 'required|string'
+    ]);
+
+    $comment->update([
+        'message' => $request->message
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'comment' => $comment->load('user')
+    ]);
+}
+
+// DELETE COMMENT
+public function destroy(Comment $comment)
+{
+    $this->authorizeComment($comment);
+
+    $comment->delete();
+
+    return response()->json([
+        'success' => true
+    ]);
+}
+
+private function authorizeComment(Comment $comment)
+{
+    $userId = Auth::id();
+
+    // must be logged-in owner
+    if ($comment->user_id !== $userId) {
+        abort(403, 'You are not allowed to modify this comment');
+    }
+
+    // optional extra safety: ensure same project access
+    if (!$comment->task || !$comment->task->project) {
+        abort(403, 'Invalid comment context');
+    }
+
+    $isMember = $comment->task->project->members()
+        ->where('users.id', $userId)
+        ->exists();
+
+    abort_unless($isMember, 403);
+}
 }

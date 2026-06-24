@@ -140,6 +140,8 @@ Route::middleware('auth')->group(function () {
     //comment
     Route::post('/tasks/{task}/comments', [CommentController::class, 'store']);
     Route::get('/tasks/{task}/comments', [CommentController::class, 'index']);
+    Route::put('/comments/{comment}', [CommentController::class, 'update']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 
 
 

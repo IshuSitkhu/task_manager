@@ -259,11 +259,12 @@
              <input type="hidden" id="currentTaskId">
 
             <div id="modalBody">
-                {{-- AJAX FORM WILL LOAD HERE --}}
+
             </div>
 
             <div class="mt-4 border-t pt-3">
 
+                <h1>Activity</h1>
                 <div class="mt-3 flex gap-2 m-6">
                     <input type="text" id="commentInput"
                         class="w-full border p-2 rounded"
@@ -278,7 +279,7 @@
                 <h3 class="font-bold m-2">Comments</h3>
 
                 <div id="commentList" class="space-y-2  text-sm">
-                    <!-- comments load here -->
+
                 </div>
             </div>
         </div>
@@ -289,6 +290,8 @@
 
 
 </div>
+
+
 
 <div id="bugModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
@@ -374,6 +377,48 @@
 
     </div>
 </div>
+
+<div id="editCommentModal"
+     class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+    <div class="bg-white w-[500px] p-4 rounded shadow">
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">
+                Edit Comment
+            </h2>
+
+            <button onclick="closeEditCommentModal()">
+                ✕
+            </button>
+        </div>
+
+        <input type="hidden" id="editCommentId">
+
+        <textarea id="editCommentText"
+                  rows="4"
+                  class="w-full border rounded p-2">
+        </textarea>
+
+        <div class="flex justify-end mt-4 gap-2">
+            <button onclick="closeEditCommentModal()"
+                    class="px-4 py-2 border rounded">
+                Cancel
+            </button>
+
+            <button onclick="updateComment()"
+                    class="bg-blue-600 text-white px-4 py-2 rounded">
+                Update
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    const currentUserId = {{ auth()->id() }};
+</script>
 
 <script>
 
@@ -517,11 +562,35 @@
 
                 data.forEach(comment => {
                     container.innerHTML += `
-                        <div class="border p-2 rounded m-2">
-                            <h1>
-                                ${comment.user.name}
-                            </h1>
-                            <div class="text-xs text-gray-500">${comment.message}</div>
+                        <div class="border p-2 rounded bg-gray-50" data-id="${comment.id}">
+
+                            <div class="flex justify-between items-center">
+                                <div class="text-xs text-gray-500">
+                                    ${comment.user.name}
+                                </div>
+
+                                ${comment.user_id === currentUserId ? `
+                                    <div class="flex gap-2 text-xs">
+                                        <button onclick='openEditCommentModal(
+                                                ${comment.id},
+                                                ${JSON.stringify(comment.message)}
+                                            )'
+                                                class="text-blue-500">
+                                            Edit
+                                        </button>
+
+                                        <button onclick="deleteComment(${comment.id})"
+                                                class="text-red-500">
+                                            Delete
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            <div id="comment-text-${comment.id}">
+                                ${comment.message}
+                            </div>
+
                         </div>
                     `;
                 });
@@ -553,6 +622,171 @@
 //         loadComments(taskId);
 //     });
 // }
+
+function openEditCommentModal(id, message) {
+    document.getElementById('editCommentId').value = id;
+    document.getElementById('editCommentText').value = message;
+
+    document
+        .getElementById('editCommentModal')
+        .classList.remove('hidden');
+}
+
+function closeEditCommentModal() {
+    document
+        .getElementById('editCommentModal')
+        .classList.add('hidden');
+}
+
+// function editComment(id, message) {
+
+//     Swal.fire({
+//         title: 'Edit Comment',
+//         input: 'text',
+//         inputValue: message,
+//         inputPlaceholder: 'Write your comment',
+//         showCancelButton: true,
+//         confirmButtonText: 'Update'
+//     }).then((result) => {
+
+//         if (!result.isConfirmed || !result.value.trim()) return;
+
+//         fetch(`/comments/${id}`, {
+//             method: "PUT",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
+//             },
+//             body: JSON.stringify({
+//                 message: result.value
+//             })
+//         })
+//         .then(async res => {
+
+//             if (!res.ok) {
+//                 throw new Error();
+//             }
+
+//             return res.json();
+//         })
+//         .then(() => {
+
+//             Swal.fire({
+//                 icon: "success",
+//                 title: "Updated",
+//                 text: "Comment updated successfully."
+//             });
+
+//             loadComments(
+//                 document.getElementById('currentTaskId').value
+//             );
+//         })
+//         .catch(() => {
+//             Swal.fire({
+//                 icon: "error",
+//                 title: "Access Denied",
+//                 text: "You can only edit your own comments."
+//             });
+//         });
+//     });
+// }
+
+function updateComment() {
+
+    const id = document.getElementById('editCommentId').value;
+    const message = document.getElementById('editCommentText').value;
+
+    if (!message.trim()) return;
+
+    fetch(`/comments/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({
+            message: message
+        })
+    })
+    .then(async res => {
+
+        if (!res.ok) {
+            throw new Error();
+        }
+
+        return res.json();
+    })
+    .then(() => {
+
+        closeEditCommentModal();
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Updated',
+            text: 'Comment updated successfully.'
+        });
+
+        loadComments(
+            document.getElementById('currentTaskId').value
+        );
+    })
+    .catch(() => {
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Access Denied',
+            text: 'You can only edit your own comments.'
+        });
+    });
+}
+
+function deleteComment(id) {
+
+    Swal.fire({
+        title: 'Delete comment?',
+        text: 'This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete'
+    }).then((result) => {
+
+        if (!result.isConfirmed) return;
+
+        fetch(`/comments/${id}`, {
+            method: "DELETE",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            }
+        })
+        .then(async res => {
+            if (!res.ok) {
+                throw new Error();
+            }
+
+            return res.json();
+        })
+        .then(() => {
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted',
+                text: 'Comment deleted successfully'
+            });
+
+            loadComments(
+                document.getElementById('currentTaskId').value
+            );
+        })
+        .catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Access Denied',
+                text: 'You can only delete your own comments.'
+            });
+        });
+
+    });
+}
 
     function sendComment(){
         const taskId = document.getElementById('currentTaskId').value;
