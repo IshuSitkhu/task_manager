@@ -118,9 +118,11 @@
 
                 <div>
                     <label class="block font-medium mb-1">Due Date</label>
-                    <input type="date"
-                           name="due_date"
-                           class="w-full border rounded p-2">
+                    <input type="text"
+                        id="task_due_date"
+                        name="due_date"
+                        class="w-full border rounded p-2"
+                        placeholder="Select due date">
                 </div>
 
             </div>

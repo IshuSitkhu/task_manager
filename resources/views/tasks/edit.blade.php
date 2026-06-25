@@ -165,8 +165,9 @@
 
                 <div>
                     <label class="block font-medium mb-1">Due Date</label>
-                    <input type="date"
-                           name="due_date"
+                    <input type="text"
+                           id="task_due_date"
+                            name="due_date"
                            value="{{ $task->due_date }}"
                            class="w-full border rounded p-2"
                            required >

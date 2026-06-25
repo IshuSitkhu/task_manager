@@ -68,28 +68,26 @@
 
                 {{-- START DATE --}}
                 <div>
-
                     <label class="block font-medium mb-1">
                         Start Date
                     </label>
 
-                    <input type="date"
-                           name="start_date"
-                           class="w-full border rounded p-2">
-
+                    <input type="text"
+                        id="sprint_start_date"
+                        name="start_date"
+                        class="w-full border rounded p-2">
                 </div>
 
                 {{-- END DATE --}}
                 <div>
-
                     <label class="block font-medium mb-1">
                         End Date
                     </label>
 
-                    <input type="date"
-                           name="end_date"
-                           class="w-full border rounded p-2">
-
+                    <input type="text"
+                        id="sprint_end_date"
+                        name="end_date"
+                        class="w-full border rounded p-2">
                 </div>
 
                 {{-- STATUS --}}

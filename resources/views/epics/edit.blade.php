@@ -109,23 +109,25 @@
                            max="100">
                 </div>
 
-                {{-- START DATE --}}
+
                 <div>
                     <label class="block font-medium mb-1">Start Date</label>
-                    <input type="date"
-                           name="planned_start_date"
-                           value="{{ $epic->planned_start_date }}"
-                           class="w-full border rounded p-2">
+                    <input type="text"
+                        id="start_date"
+                        name="planned_start_date"
+                        value="{{ $epic->planned_start_date }}"
+                        class="w-full border rounded p-2">
                 </div>
 
                 {{-- END DATE --}}
                 <div>
                     <label class="block font-medium mb-1">End Date</label>
-                    <input type="date"
-                           name="planned_end_date"
-
-                           class="w-full border rounded p-2">
-                </div>value="{{ $epic->planned_end_date }}"
+                    <input type="text"
+                        id="end_date"
+                        name="planned_end_date"
+                        value="{{ $epic->planned_end_date }}"
+                        class="w-full border rounded p-2">
+                </div>
 
                 {{-- CONNECTED TASKS (UI ONLY FOR NOW) --}}
                 {{-- <div>
