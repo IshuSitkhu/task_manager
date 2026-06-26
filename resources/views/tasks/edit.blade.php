@@ -177,7 +177,7 @@
 
             <div class="col-span-2 mt-6">
                 <label class="block font-semibold text-gray-700 text-lg">
-                    Checklist
+                    Sub Task
                 </label>
 
                 <p class="text-sm text-gray-500 mb-3">
@@ -201,7 +201,8 @@
 
                     @foreach($task->checklists as $item)
                     <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50"
-                        data-id="{{ $item->id }}">
+                        data-id="{{ $item->id }}"
+                        data-image="{{ $item->image ? asset('storage/'.$item->image) : '' }}">
 
                         <div class="flex items-center gap-3">
 
@@ -274,9 +275,16 @@
                 <div class="bg-white p-6 rounded-lg w-[600px]">
 
 
-                    <h3 class="text-lg font-bold mb-4">
-                        Edit Subtask
-                    </h3>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold">
+                            Edit Subtask
+                        </h2>
+                        <button type="button"
+                                    id="closeModal"
+                                    class=" text-black font-bold text-lg">
+                                ✖
+                            </button>
+                    </div>
 
                     <!-- TITLE -->
                     <div class="mb-3">
@@ -332,18 +340,22 @@
                             class="w-full border p-2 rounded">
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-4 ">
                         <label class="block mb-1 font-medium">
                             Image
                         </label>
 
-                        <input type="file"
-                            id="modalImage"
-                            name="modalImage"
-                            class="w-full border p-2 rounded">
+                        <div class="flex items-start gap-2">
+                            <input type="file"
+                                id="modalImage"
+                                name="modalImage"
+                                class="flex-1 border border-gray-300 p-2 rounded-lg">
 
-                        <img id="modalPreview"
-                            class="mt-2 max-h-32 rounded hidden">
+                            <img id="modalPreview"
+                                class="hidden w-42 h-32 rounded-lg border object-cover">
+                        </div>
+
+
                     </div>
 
                     <div class="flex gap-2">
@@ -353,13 +365,6 @@
                                 class="bg-blue-600 text-white px-4 py-2 rounded">
                             Save
                         </button>
-
-                        <button type="button"
-                                id="closeModal"
-                                class="bg-gray-500 text-white px-4 py-2 rounded">
-                            Close
-                        </button>
-
                     </div>
 
                 </div>
@@ -527,103 +532,6 @@
     });
 </script>
 
-{{-- <script>
-    const addBtn = document.getElementById('addChecklist');
-    const input = document.getElementById('checklistInput');
-    const container = document.getElementById('checklistContainer');
-
-    addBtn.addEventListener('click', function () {
-
-        if (input.value.trim() === '') return;
-
-            fetch('/tasks/{{ $task->id }}/checklists', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN':
-                    document.querySelector(
-                        'meta[name="csrf-token"]'
-                    ).content
-            },
-            body: JSON.stringify({
-                title: input.value
-            })
-        })
-        .then(response => response.json())
-        .then(checklist => {
-
-            const id = checklist.id;
-
-        const html = `
-    <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
-
-                <div class="flex items-center gap-3 flex-1">
-
-                    <input type="checkbox"
-                        class="check-toggle w-4 h-4">
-
-                    <span>${input.value}</span>
-
-                    <input type="hidden"
-                     class="sub-title"
-                        name="checklists[${id}][title]"
-                        value="${input.value}">
-
-                    <input type="hidden"
-                        class="check-status"
-                        name="checklists[${id}][is_completed]"
-                        value="0">
-
-                    <input type="hidden"
-                      class="sub-description"
-                        name="checklists[${id}][description]"
-                        value="">
-
-                    <input type="hidden"
-                      class="sub-assigned"
-                        name="checklists[${id}][assigned_to]"
-                        value="">
-
-                    <input type="hidden"
-                     class="sub-due-date"
-                        name="checklists[${id}][due_date]"
-                        value="">
-
-                    <input type="file"
-                        class="sub-image hidden"
-                        name="subtask_images[${id}]">
-                </div>
-
-                <div class="flex gap-2">
-                    <button type="button"
-                            class="editSubtask text-blue-600">
-                        Edit
-                    </button>
-
-                    <button type="button"
-                            class="removeChecklist text-red-500">
-                        Delete
-                    </button>
-                </div>
-
-            </div>
-    `;
-});
-
-
-
-        container.insertAdjacentHTML('beforeend', html);
-
-        input.value = '';
-    });
-
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('removeChecklist')) {
-            e.target.closest('.border').remove();
-        }
-    });
-</script> --}}
-
 <script>
     document.addEventListener('change', function (e) {
 
@@ -660,6 +568,18 @@
     const modalAssigned = document.getElementById('modalAssigned');
     const modalDueDate = document.getElementById('modalDueDate');
     const modalImage = document.getElementById('modalImage');
+    const modalPreview = document.getElementById('modalPreview');
+
+    modalImage.addEventListener('change', function () {
+
+        if (this.files.length > 0) {
+
+            modalPreview.src =
+                URL.createObjectURL(this.files[0]);
+
+            modalPreview.classList.remove('hidden');
+        }
+    });
 
     let currentSubtask = null;
     let currentFileInput = null;
@@ -685,6 +605,18 @@
 
             modalDueDate.value =
                 currentSubtask.querySelector('.sub-due-date').value;
+
+            const imageUrl = currentSubtask.dataset.image;
+
+            if (imageUrl) {
+
+                modalPreview.src = imageUrl;
+                modalPreview.classList.remove('hidden');
+
+            } else {
+
+                modalPreview.classList.add('hidden');
+            }
 
             modal.classList.remove('hidden');
         }
@@ -715,6 +647,8 @@
                 console.log(currentFileInput);
 
                 currentFileInput.files = dataTransfer.files;
+
+                currentSubtask.dataset.image = URL.createObjectURL(modalImage.files[0]);
             }
 
         const id = currentSubtask.dataset.id;
