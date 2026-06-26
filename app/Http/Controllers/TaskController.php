@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\Epic;
 use App\Models\Sprint;
 use App\Models\User;
+use App\Models\TaskChecklist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,9 +16,14 @@ class TaskController extends Controller
     public function index(Project $project)
     {
         $tasks = Task::where('project_id', $project->id)
-            ->with(['epic', 'sprint', 'assignee'])
-            ->latest()
-            ->get();
+        ->with([
+            'epic',
+            'sprint',
+            'assignee',
+            'checklists'
+        ])
+        ->latest()
+        ->get();
 
         return view('tasks.index', compact('project', 'tasks'));
     }
@@ -45,6 +51,10 @@ class TaskController extends Controller
             'priority' => 'required',
             'type_id' => 'required|exists:task_types,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+
+            'checklists' => 'nullable|array',
+            'checklists.*.title' => 'required|string|max:255',
+            'checklists.*.is_completed' => 'nullable|boolean',
         ]);
 
         $imagePath = null;
@@ -54,7 +64,7 @@ class TaskController extends Controller
         }
 
 
-        Task::create([
+        $task = Task::create([
             'project_id' => $project->id,
             'epic_id' => $request->epic_id,
             'sprint_id' => $request->sprint_id,
@@ -69,6 +79,20 @@ class TaskController extends Controller
              'image' => $imagePath,
         ]);
 
+        if ($request->filled('checklists')) {
+            $order = 0;
+
+            foreach ($request->checklists as $item) {
+
+                $task->checklists()->create([
+                    'title' => $item['title'],
+                    'is_completed' => $item['is_completed'] ?? 0,
+                    'sort_order' => $order,
+                ]);
+
+                $order++;
+            }
+        }
 
         // return redirect()->route('projects.tasks', $project->id)
         //     ->with('success', 'Task created successfully');
@@ -79,6 +103,7 @@ class TaskController extends Controller
 
     public function edit(Project $project, Task $task)
     {
+
         $epics = $project->epics;
         $sprints = $project->sprints;
         $users = $project->members;
@@ -108,6 +133,10 @@ class TaskController extends Controller
             'priority' => 'required',
             'type_id' => 'required|exists:task_types,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+
+            'checklists' => 'nullable|array',
+            'checklists' => 'nullable|array',
+            'completed' => 'nullable|array',
         ]);
 
         //  STEP 1: KEEP OLD IMAGE BY DEFAULT
@@ -141,6 +170,31 @@ class TaskController extends Controller
             //  THIS IS WHERE IMAGE GOES
             'image' => $imagePath,
         ]);
+        $order = 0;
+
+        foreach ($request->checklists as $id => $item) {
+
+            $checklist = TaskChecklist::find($id);
+
+            if ($checklist) {
+
+                $checklist->update([
+                    'title' => $item['title'],
+                    'is_completed' => $item['is_completed'] ?? 0,
+                    'sort_order' => $order,
+                ]);
+
+            } else {
+
+                $task->checklists()->create([
+                    'title' => $item['title'],
+                    'is_completed' => $item['is_completed'] ?? 0,
+                    'sort_order' => $order,
+                ]);
+            }
+
+            $order++;
+        }
 
         return redirect()->back()
             ->with('success', 'Task updated successfully');
@@ -196,6 +250,18 @@ class TaskController extends Controller
     {
         $task->update([
             'status' => $request->status
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+
+    public function toggleChecklist(Request $request, TaskChecklist $checklist)
+    {
+        $checklist->update([
+            'is_completed' => $request->is_completed
         ]);
 
         return response()->json([

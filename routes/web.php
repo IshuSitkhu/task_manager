@@ -7,6 +7,7 @@ use App\Http\Controllers\SprintController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\BugController;
 use App\Http\Controllers\CommentController;
+use App\Models\TaskChecklist;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -144,6 +145,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 
 
+    //CHECKLIST
+    Route::post(
+    '/checklists/{checklist}/toggle',
+    [TaskController::class, 'toggleChecklist']
+)->name('checklists.toggle');
 
 });
 

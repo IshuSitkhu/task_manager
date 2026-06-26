@@ -66,4 +66,10 @@ class Task extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function checklists()
+    {
+        return $this->hasMany(TaskChecklist::class)
+                    ->orderBy('sort_order');
+    }
 }

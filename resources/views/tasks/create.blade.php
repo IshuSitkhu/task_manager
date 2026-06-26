@@ -29,8 +29,8 @@
         @endif
 
         <form method="POST"
-        enctype="multipart/form-data"
-        action="{{ route('projects.tasks.store', $project->id) }}">
+            enctype="multipart/form-data"
+            action="{{ route('projects.tasks.store', $project->id) }}">
             @csrf
 
             <div class="mb-4">
@@ -44,10 +44,11 @@
 
             <div class="mb-4">
                 <label class="block font-medium mb-1">Description</label>
-                <textarea name="description"
-                          class="w-full border rounded p-2"
-                          rows="4"
-                          placeholder="Describe the task..."></textarea>
+                <textarea
+                    name="description"
+                    class="w-full border rounded p-3"
+                    rows="3"
+                    placeholder="Describe the task..."></textarea>
             </div>
 
             <div class="mb-2">
@@ -163,6 +164,32 @@
                         placeholder="Select due date">
                 </div>
 
+                <div class="col-span-2 mt-6">
+                    <label class="block font-semibold text-gray-700 text-lg">
+                        Subtasks
+                    </label>
+
+
+                    <p class="text-sm text-gray-500 mb-3">
+                        Add checklist items for this task.
+                    </p>
+
+                    <div class="flex gap-2 mb-4">
+                        <input type="text"
+                            id="checklistInput"
+                            class="flex-1 border rounded-lg p-3"
+                            placeholder="Enter checklist item...">
+
+                        <button type="button"
+                                id="addChecklist"
+                                class="bg-blue-600 text-white px-4 rounded-lg hover:bg-blue-700">
+                            +
+                        </button>
+                    </div>
+
+                    <div id="checklistContainer" class="space-y-2">
+                    </div>
+                </div>
             </div>
 
             <div class="mt-6 flex justify-end">
@@ -172,11 +199,15 @@
                 </button>
             </div>
 
+            {{-- <button type="button" onclick="checkData()">
+                Test Checklist
+            </button> --}}
+
         </form>
 
     </div>
 
-    <script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
 
         const input = document.getElementById('imageInput');
@@ -211,6 +242,72 @@
         });
 
     });
+</script>
+
+
+<script>
+
+
+    const addBtn = document.getElementById('addChecklist');
+    const input = document.getElementById('checklistInput');
+    const container = document.getElementById('checklistContainer');
+
+    addBtn.addEventListener('click', function () {
+
+        if (input.value.trim() === '') return;
+
+        const id = Date.now();
+
+        const html = `
+            <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
+
+                <div class="flex items-center gap-3">
+
+                    <input type="checkbox"
+                           class="check-toggle w-4 h-4">
+
+                    <span>${input.value}</span>
+
+                    <input type="hidden"
+                           name="checklists[${id}][title]"
+                           value="${input.value}">
+
+                    <input type="hidden"
+                           class="check-status"
+                           name="checklists[${id}][is_completed]"
+                           value="0">
+
+                </div>
+
+            </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', html);
+
+        input.value = '';
+        input.focus();
+    });
+
+    document.addEventListener('change', function (e) {
+
+        if (e.target.classList.contains('check-toggle')) {
+
+            const hidden =
+                e.target.parentElement.querySelector('.check-status');
+
+            hidden.value = e.target.checked ? 1 : 0;
+        }
+
+    });
+
+    document.addEventListener('click', function (e) {
+
+        if (e.target.classList.contains('removeChecklist')) {
+            e.target.closest('.border').remove();
+        }
+
+    });
+
 </script>
 
 @endsection
