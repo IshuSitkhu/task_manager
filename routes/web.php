@@ -156,6 +156,15 @@ Route::middleware('auth')->group(function () {
         [TaskController::class, 'updateChecklist']
     );
 
+    Route::post(
+        '/tasks/{task}/checklists',
+        [TaskController::class, 'storeChecklist']
+    );
+
+    Route::delete(
+        '/checklists/{checklist}/destroy',
+        [TaskController::class, 'destroyChecklist']
+    );
 });
 
 require __DIR__.'/auth.php';

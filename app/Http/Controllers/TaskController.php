@@ -56,8 +56,8 @@ class TaskController extends Controller
             'checklists.*.title' => 'required|string|max:255',
             'checklists.*.is_completed' => 'nullable|boolean',
             'checklists.*.description' => 'nullable|string',
-'checklists.*.assigned_to' => 'nullable|exists:users,id',
-'checklists.*.due_date' => 'nullable|date',
+            'checklists.*.assigned_to' => 'nullable|exists:users,id',
+            'checklists.*.due_date' => 'nullable|date',
         ]);
 
         $imagePath = null;
@@ -182,50 +182,7 @@ class TaskController extends Controller
             //  THIS IS WHERE IMAGE GOES
             'image' => $imagePath,
         ]);
-        $order = 0;
 
-        foreach ($request->checklists as $id => $item) {
-
-            $checklist = TaskChecklist::find($id);
-
-            // Keep old image if it exists
-            $imagePath = $checklist?->image;
-
-            // Upload new image if selected
-            if ($request->hasFile("subtask_images.$id")) {
-
-                $imagePath = $request
-                    ->file("subtask_images.$id")
-                    ->store('subtasks', 'public');
-            }
-
-            if ($checklist) {
-
-                $checklist->update([
-                    'title' => $item['title'],
-                    'description' => $item['description'] ?? null,
-                    'assigned_to' => $item['assigned_to'] ?? null,
-                    'due_date' => $item['due_date'] ?? null,
-                    'image' => $imagePath,
-                    'is_completed' => $item['is_completed'] ?? 0,
-                    'sort_order' => $order,
-                ]);
-
-            } else {
-
-                $task->checklists()->create([
-                    'title' => $item['title'],
-                    'description' => $item['description'] ?? null,
-                    'assigned_to' => $item['assigned_to'] ?? null,
-                    'due_date' => $item['due_date'] ?? null,
-                    'image' => $imagePath,
-                    'is_completed' => $item['is_completed'] ?? 0,
-                    'sort_order' => $order,
-                ]);
-            }
-
-            $order++;
-        }
 
         return redirect()->back()
             ->with('success', 'Task updated successfully');
@@ -237,9 +194,6 @@ class TaskController extends Controller
 
         return back()->with('success', 'Task deleted successfully');
     }
-
-
-
     public function board(Project $project)
     {
         $project->load('statuses');
@@ -321,6 +275,29 @@ class TaskController extends Controller
             'due_date' => $request->due_date,
             'image' => $imagePath,
         ]);
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    public function storeChecklist(Request $request, Task $task)
+    {
+        $checklist = $task->checklists()->create([
+            'title' => $request->title,
+            'description' => null,
+            'assigned_to' => null,
+            'due_date' => null,
+            'is_completed' => 0,
+            'sort_order' => 0,
+        ]);
+
+        return response()->json($checklist);
+    }
+
+    public function destroyChecklist(TaskChecklist $checklist)
+    {
+        $checklist->delete();
 
         return response()->json([
             'success' => true

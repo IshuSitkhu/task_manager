@@ -371,8 +371,6 @@
     </div>
 
 <script>
-
-
     document.addEventListener('DOMContentLoaded', function () {
 
         const input = document.getElementById('imageInput');
@@ -418,9 +416,145 @@
 
         if (input.value.trim() === '') return;
 
-    const id = Date.now();
+        fetch('/tasks/{{ $task->id }}/checklists', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN':
+                    document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content
+            },
+            body: JSON.stringify({
+                title: input.value
+            })
+        })
+        .then(response => response.json())
+        .then(checklist => {
 
-    const html = `
+            const id = checklist.id;
+
+            const html = `
+            <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50"
+                 data-id="${id}">
+
+                <div class="flex items-center gap-3 flex-1">
+
+                    <input type="checkbox"
+                           class="check-toggle w-4 h-4"
+                           data-id="${id}">
+
+                    <span>${checklist.title}</span>
+
+                    <input type="hidden"
+                           class="sub-title"
+                           name="checklists[${id}][title]"
+                           value="${checklist.title}">
+
+                    <input type="hidden"
+                           class="check-status"
+                           name="checklists[${id}][is_completed]"
+                           value="0">
+
+                    <input type="hidden"
+                           class="sub-description"
+                           name="checklists[${id}][description]"
+                           value="">
+
+                    <input type="hidden"
+                           class="sub-assigned"
+                           name="checklists[${id}][assigned_to]"
+                           value="">
+
+                    <input type="hidden"
+                           class="sub-due-date"
+                           name="checklists[${id}][due_date]"
+                           value="">
+
+                    <input type="file"
+                           class="sub-image hidden"
+                           name="subtask_images[${id}]">
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="button"
+                            class="editSubtask text-blue-600">
+                        Edit
+                    </button>
+
+                    <button type="button"
+                            class="removeChecklist text-red-500">
+                        Delete
+                    </button>
+                </div>
+
+            </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', html);
+
+            input.value = '';
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    });
+
+    document.addEventListener('click', function (e) {
+
+        if (e.target.classList.contains('removeChecklist')) {
+
+            const row = e.target.closest('[data-id]');
+            const id = row.dataset.id;
+
+            fetch('/checklists/' + id + '/destroy', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN':
+                        document.querySelector(
+                            'meta[name="csrf-token"]'
+                        ).content
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                if (data.success) {
+                    row.remove();
+                }
+            });
+        }
+    });
+</script>
+
+{{-- <script>
+    const addBtn = document.getElementById('addChecklist');
+    const input = document.getElementById('checklistInput');
+    const container = document.getElementById('checklistContainer');
+
+    addBtn.addEventListener('click', function () {
+
+        if (input.value.trim() === '') return;
+
+            fetch('/tasks/{{ $task->id }}/checklists', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN':
+                    document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content
+            },
+            body: JSON.stringify({
+                title: input.value
+            })
+        })
+        .then(response => response.json())
+        .then(checklist => {
+
+            const id = checklist.id;
+
+        const html = `
     <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
 
                 <div class="flex items-center gap-3 flex-1">
@@ -474,6 +608,9 @@
 
             </div>
     `;
+});
+
+
 
         container.insertAdjacentHTML('beforeend', html);
 
@@ -485,7 +622,7 @@
             e.target.closest('.border').remove();
         }
     });
-</script>
+</script> --}}
 
 <script>
     document.addEventListener('change', function (e) {
