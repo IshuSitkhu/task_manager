@@ -147,9 +147,14 @@ Route::middleware('auth')->group(function () {
 
     //CHECKLIST
     Route::post(
-    '/checklists/{checklist}/toggle',
-    [TaskController::class, 'toggleChecklist']
-)->name('checklists.toggle');
+        '/checklists/{checklist}/toggle',
+        [TaskController::class, 'toggleChecklist']
+    )->name('checklists.toggle');
+
+    Route::post(
+        '/checklists/{checklist}/update',
+        [TaskController::class, 'updateChecklist']
+    );
 
 });
 

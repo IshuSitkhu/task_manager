@@ -97,3 +97,10 @@ if (taskDueDate) {
         dateFormat: "Y-m-d"
     });
 }
+
+
+//subtasks
+flatpickr("#modalDueDate", {
+    dateFormat: "Y-m-d",
+    maxDate: document.getElementById("task_due_date").value
+});

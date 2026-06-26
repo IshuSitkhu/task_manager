@@ -200,18 +200,20 @@
                 <div id="checklistContainer" class="space-y-2">
 
                     @foreach($task->checklists as $item)
-                    <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
+                    <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50"
+                        data-id="{{ $item->id }}">
 
                         <div class="flex items-center gap-3">
 
-                    <input type="checkbox"
-                        class="check-toggle w-4 h-4"
-                        data-id="{{ $item->id }}"
-                        {{ $item->is_completed ? 'checked' : '' }}>
+                            <input type="checkbox"
+                            class="check-toggle w-4 h-4"
+                            data-id="{{ $item->id }}"
+                            {{ $item->is_completed ? 'checked' : '' }}>
 
                             <span>{{ $item->title }}</span>
 
                             <input type="hidden"
+                                class="sub-title"
                                 name="checklists[{{ $item->id }}][title]"
                                 value="{{ $item->title }}">
 
@@ -219,12 +221,38 @@
                                 class="check-status"
                                 name="checklists[{{ $item->id }}][is_completed]"
                                 value="{{ $item->is_completed }}">
+
+                            <input type="hidden"
+                                class="sub-description"
+                                name="checklists[{{ $item->id }}][description]"
+                                value="{{ $item->description }}">
+
+                            <input type="hidden"
+                                class="sub-assigned"
+                                name="checklists[{{ $item->id }}][assigned_to]"
+                                value="{{ $item->assigned_to }}">
+
+                            <input type="hidden"
+                                class="sub-due-date"
+                                name="checklists[{{ $item->id }}][due_date]"
+                                value="{{ $item->due_date }}">
+
+                                <input type="file"
+                                    class="sub-image hidden"
+                                    name="subtask_images[{{ $item->id }}]">
                         </div>
 
-                        {{-- <button type="button"
-                                class="removeChecklist text-red-500">
-                            Delete
-                        </button> --}}
+                        <div class="flex gap-2">
+                            <button type="button"
+                                    class="editSubtask text-blue-600">
+                                Edit
+                            </button>
+
+                            <button type="button"
+                                    class="removeChecklist text-red-500">
+                                Delete
+                            </button>
+                        </div>
 
                     </div>
                     @endforeach
@@ -240,11 +268,111 @@
 
             </div>
 
+
+            <div id="subtaskModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+                <div class="bg-white p-6 rounded-lg w-[600px]">
+
+
+                    <h3 class="text-lg font-bold mb-4">
+                        Edit Subtask
+                    </h3>
+
+                    <!-- TITLE -->
+                    <div class="mb-3">
+                        <label class="block mb-1 font-medium">
+                            Title
+                        </label>
+
+                        <input type="text"
+                            id="modalTitle"
+                            class="w-full border p-2 rounded">
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div class="mb-3">
+                        <label class="block mb-1 font-medium">
+                            Description
+                        </label>
+
+                        <textarea id="modalDescription"
+                                class="w-full border p-2 rounded"
+                                rows="4"></textarea>
+                    </div>
+
+                    <!-- ASSIGNEE -->
+                    <div class="mb-3">
+                        <label class="block mb-1 font-medium">
+                            Assignee
+                        </label>
+
+                        <select id="modalAssigned"
+                                class="w-full border p-2 rounded">
+
+                            <option value="">
+                                Select Member
+                            </option>
+
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}">
+                                    {{ $user->name }}
+                                </option>
+                            @endforeach
+
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="block mb-1 font-medium">
+                            Due Date
+                        </label>
+
+                        <input type="text"
+                            id="modalDueDate"
+                            class="w-full border p-2 rounded">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block mb-1 font-medium">
+                            Image
+                        </label>
+
+                        <input type="file"
+                            id="modalImage"
+                            name="modalImage"
+                            class="w-full border p-2 rounded">
+
+                        <img id="modalPreview"
+                            class="mt-2 max-h-32 rounded hidden">
+                    </div>
+
+                    <div class="flex gap-2">
+
+                        <button type="button"
+                                id="saveSubtask"
+                                class="bg-blue-600 text-white px-4 py-2 rounded">
+                            Save
+                        </button>
+
+                        <button type="button"
+                                id="closeModal"
+                                class="bg-gray-500 text-white px-4 py-2 rounded">
+                            Close
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </form>
 
     </div>
 
 <script>
+
+
     document.addEventListener('DOMContentLoaded', function () {
 
         const input = document.getElementById('imageInput');
@@ -295,73 +423,200 @@
     const html = `
     <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
 
-        <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 flex-1">
 
-            <input type="checkbox"
-                class="check-toggle w-4 h-4">
+                    <input type="checkbox"
+                        class="check-toggle w-4 h-4">
 
-            <span>${input.value}</span>
+                    <span>${input.value}</span>
 
-            <input type="hidden"
-                name="checklists[${id}][title]"
-                value="${input.value}">
+                    <input type="hidden"
+                     class="sub-title"
+                        name="checklists[${id}][title]"
+                        value="${input.value}">
 
-            <input type="hidden"
-                class="check-status"
-                name="checklists[${id}][is_completed]"
-                value="0">
-        </div>
+                    <input type="hidden"
+                        class="check-status"
+                        name="checklists[${id}][is_completed]"
+                        value="0">
 
-        <button type="button"
-                class="removeChecklist text-red-500">
-            Delete
-        </button>
+                    <input type="hidden"
+                      class="sub-description"
+                        name="checklists[${id}][description]"
+                        value="">
 
-    </div>
+                    <input type="hidden"
+                      class="sub-assigned"
+                        name="checklists[${id}][assigned_to]"
+                        value="">
+
+                    <input type="hidden"
+                     class="sub-due-date"
+                        name="checklists[${id}][due_date]"
+                        value="">
+
+                    <input type="file"
+                        class="sub-image hidden"
+                        name="subtask_images[${id}]">
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="button"
+                            class="editSubtask text-blue-600">
+                        Edit
+                    </button>
+
+                    <button type="button"
+                            class="removeChecklist text-red-500">
+                        Delete
+                    </button>
+                </div>
+
+            </div>
     `;
 
-    container.insertAdjacentHTML('beforeend', html);
+        container.insertAdjacentHTML('beforeend', html);
 
-    input.value = '';
-});
+        input.value = '';
+    });
 
-document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('removeChecklist')) {
-        e.target.closest('.border').remove();
-    }
-});
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('removeChecklist')) {
+            e.target.closest('.border').remove();
+        }
+    });
 </script>
 
 <script>
+    document.addEventListener('change', function (e) {
 
+        if (e.target.classList.contains('check-toggle')) {
 
-document.addEventListener('change', function (e) {
+            const hidden =
+                e.target.parentElement.querySelector('.check-status');
 
-    if (e.target.classList.contains('check-toggle')) {
+            hidden.value = e.target.checked ? 1 : 0;
 
-        const hidden =
-            e.target.parentElement.querySelector('.check-status');
-
-        hidden.value = e.target.checked ? 1 : 0;
-
-        fetch('/checklists/' + e.target.dataset.id + '/toggle', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN':
-                    document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({
-                is_completed: e.target.checked ? 1 : 0
+            fetch('/checklists/' + e.target.dataset.id + '/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    is_completed: e.target.checked ? 1 : 0
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-        });
-    }
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            });
+        }
 
-});
+    });
+
+    const modal = document.getElementById('subtaskModal');
+
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const modalAssigned = document.getElementById('modalAssigned');
+    const modalDueDate = document.getElementById('modalDueDate');
+    const modalImage = document.getElementById('modalImage');
+
+    let currentSubtask = null;
+    let currentFileInput = null;
+
+    document.addEventListener('click', function(e){
+
+        if(e.target.classList.contains('editSubtask')){
+
+            currentSubtask = e.target.closest('.border');
+
+            currentFileInput =
+                currentSubtask.querySelector('.sub-image');
+                console.log(currentFileInput);
+
+            modalTitle.value =
+                currentSubtask.querySelector('.sub-title').value;
+
+            modalDescription.value =
+                currentSubtask.querySelector('.sub-description').value;
+
+            modalAssigned.value =
+                currentSubtask.querySelector('.sub-assigned').value;
+
+            modalDueDate.value =
+                currentSubtask.querySelector('.sub-due-date').value;
+
+            modal.classList.remove('hidden');
+        }
+    });
+
+    document.getElementById('saveSubtask').addEventListener('click', function () {
+
+        currentSubtask.querySelector('.sub-title').value =
+            modalTitle.value;
+
+        currentSubtask.querySelector('.sub-description').value =
+            modalDescription.value;
+
+        currentSubtask.querySelector('.sub-assigned').value =
+            modalAssigned.value;
+
+        currentSubtask.querySelector('.sub-due-date').value =
+            modalDueDate.value;
+
+        currentSubtask.querySelector('span').innerText =
+            modalTitle.value;
+
+            if (modalImage.files.length > 0) {
+                const dataTransfer = new DataTransfer();
+
+                dataTransfer.items.add(modalImage.files[0]);
+                console.log(modalImage.files[0]);
+                console.log(currentFileInput);
+
+                currentFileInput.files = dataTransfer.files;
+            }
+
+        const id = currentSubtask.dataset.id;
+
+        if (id) {
+
+            const formData = new FormData();
+
+            formData.append('title', modalTitle.value);
+            formData.append('description', modalDescription.value);
+            formData.append('assigned_to', modalAssigned.value);
+            formData.append('due_date', modalDueDate.value);
+
+            if (modalImage.files.length > 0) {
+                formData.append('image', modalImage.files[0]);
+            }
+
+            fetch('/checklists/' + id + '/update', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN':
+                        document.querySelector(
+                            'meta[name="csrf-token"]'
+                        ).content
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Saved');
+            });
+        }
+
+        modal.classList.add('hidden');
+    });
+
+    document.getElementById('closeModal').addEventListener('click', function(){
+        modal.classList.add('hidden');
+    });
 </script>
 
 @endsection

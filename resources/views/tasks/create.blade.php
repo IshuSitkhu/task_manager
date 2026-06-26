@@ -164,7 +164,7 @@
                         placeholder="Select due date">
                 </div>
 
-                <div class="col-span-2 mt-6">
+                {{-- <div class="col-span-2 mt-6">
                     <label class="block font-semibold text-gray-700 text-lg">
                         Subtasks
                     </label>
@@ -189,7 +189,7 @@
 
                     <div id="checklistContainer" class="space-y-2">
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <div class="mt-6 flex justify-end">
@@ -202,6 +202,8 @@
             {{-- <button type="button" onclick="checkData()">
                 Test Checklist
             </button> --}}
+
+
 
         </form>
 
@@ -261,22 +263,51 @@
         const html = `
             <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50">
 
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 flex-1">
 
                     <input type="checkbox"
-                           class="check-toggle w-4 h-4">
+                        class="check-toggle w-4 h-4">
 
                     <span>${input.value}</span>
 
                     <input type="hidden"
-                           name="checklists[${id}][title]"
-                           value="${input.value}">
+                     class="sub-title"
+                        name="checklists[${id}][title]"
+                        value="${input.value}">
 
                     <input type="hidden"
-                           class="check-status"
-                           name="checklists[${id}][is_completed]"
-                           value="0">
+                        class="check-status"
+                        name="checklists[${id}][is_completed]"
+                        value="0">
 
+                    <input type="hidden"
+                      class="sub-description"
+                        name="checklists[${id}][description]"
+                        value="">
+
+                    <input type="hidden"
+                      class="sub-assigned"
+                        name="checklists[${id}][assigned_to]"
+                        value="">
+
+                    <input type="hidden"
+                     class="sub-due-date"
+                        name="checklists[${id}][due_date]"
+                        value="">
+
+                    <input type="hidden"
+                     class="sub-image"
+                        name="checklists[${id}][image]"
+                        value="">
+                </div>
+
+                <div class="flex gap-2">
+
+
+                    <button type="button"
+                            class="removeChecklist text-red-500">
+                        Delete
+                    </button>
                 </div>
 
             </div>
@@ -306,6 +337,22 @@
             e.target.closest('.border').remove();
         }
 
+    });
+
+
+    const modal = document.getElementById('subtaskModal');
+    const closeBtn = document.getElementById('closeModal');
+
+    document.addEventListener('click', function(e){
+
+        if(e.target.classList.contains('editSubtask')){
+            modal.classList.remove('hidden');
+        }
+
+    });
+
+    closeBtn.addEventListener('click', function(){
+        modal.classList.add('hidden');
     });
 
 </script>

@@ -55,6 +55,9 @@ class TaskController extends Controller
             'checklists' => 'nullable|array',
             'checklists.*.title' => 'required|string|max:255',
             'checklists.*.is_completed' => 'nullable|boolean',
+            'checklists.*.description' => 'nullable|string',
+'checklists.*.assigned_to' => 'nullable|exists:users,id',
+'checklists.*.due_date' => 'nullable|date',
         ]);
 
         $imagePath = null;
@@ -86,6 +89,9 @@ class TaskController extends Controller
 
                 $task->checklists()->create([
                     'title' => $item['title'],
+                    'description' => $item['description'] ?? null,
+                    'assigned_to' => $item['assigned_to'] ?? null,
+                    'due_date' => $item['due_date'] ?? null,
                     'is_completed' => $item['is_completed'] ?? 0,
                     'sort_order' => $order,
                 ]);
@@ -125,6 +131,9 @@ class TaskController extends Controller
 
     public function update(Request $request, Project $project, Task $task)
     {
+
+
+
         $request->validate([
             'title' => 'required|string|max:255',
             'epic_id' => 'required|exists:epics,id',
@@ -135,8 +144,11 @@ class TaskController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
             'checklists' => 'nullable|array',
-            'checklists' => 'nullable|array',
-            'completed' => 'nullable|array',
+            'checklists.*.title' => 'required|string|max:255',
+            'checklists.*.description' => 'nullable|string',
+            'checklists.*.assigned_to' => 'nullable|exists:users,id',
+            'checklists.*.due_date' => 'nullable|date',
+            'checklists.*.is_completed' => 'nullable|boolean',
         ]);
 
         //  STEP 1: KEEP OLD IMAGE BY DEFAULT
@@ -176,10 +188,25 @@ class TaskController extends Controller
 
             $checklist = TaskChecklist::find($id);
 
+            // Keep old image if it exists
+            $imagePath = $checklist?->image;
+
+            // Upload new image if selected
+            if ($request->hasFile("subtask_images.$id")) {
+
+                $imagePath = $request
+                    ->file("subtask_images.$id")
+                    ->store('subtasks', 'public');
+            }
+
             if ($checklist) {
 
                 $checklist->update([
                     'title' => $item['title'],
+                    'description' => $item['description'] ?? null,
+                    'assigned_to' => $item['assigned_to'] ?? null,
+                    'due_date' => $item['due_date'] ?? null,
+                    'image' => $imagePath,
                     'is_completed' => $item['is_completed'] ?? 0,
                     'sort_order' => $order,
                 ]);
@@ -188,6 +215,10 @@ class TaskController extends Controller
 
                 $task->checklists()->create([
                     'title' => $item['title'],
+                    'description' => $item['description'] ?? null,
+                    'assigned_to' => $item['assigned_to'] ?? null,
+                    'due_date' => $item['due_date'] ?? null,
+                    'image' => $imagePath,
                     'is_completed' => $item['is_completed'] ?? 0,
                     'sort_order' => $order,
                 ]);
@@ -262,6 +293,33 @@ class TaskController extends Controller
     {
         $checklist->update([
             'is_completed' => $request->is_completed
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    public function updateChecklist(Request $request, TaskChecklist $checklist)
+    {
+        $imagePath = $checklist->image;
+
+        if ($request->hasFile('image')) {
+
+            if ($checklist->image) {
+                Storage::disk('public')->delete($checklist->image);
+            }
+
+            $imagePath = $request->file('image')
+                ->store('subtasks', 'public');
+        }
+
+        $checklist->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'assigned_to' => $request->assigned_to,
+            'due_date' => $request->due_date,
+            'image' => $imagePath,
         ]);
 
         return response()->json([
