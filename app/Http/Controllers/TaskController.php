@@ -303,4 +303,12 @@ class TaskController extends Controller
             'success' => true
         ]);
     }
+
+    public function subtaskModal(Task $task)
+    {
+        return view(
+            'tasks.partials.subtasks',
+            compact('task')
+        );
+    }
 }

@@ -35,7 +35,7 @@
 
 
 
-<div class="grid grid-cols-5 gap-4">
+<div class="grid grid-cols-3 gap-6">
 
     @foreach($project->statuses as $status)
 
@@ -89,9 +89,9 @@
                 <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-xl hover:scale-[1.02] hover:border-blue-400 transition-all duration-200 p-4 cursor-pointer"
                     draggable="true"
                     data-task-id="{{ $task->id }}"
-                    onclick="openEditTaskModal({{ $task->id }})">
+                    >
 
-                    <div class="flex justify-between items-start gap-2">
+                    <div class="flex justify-between items-start gap-2"  onclick="openEditTaskModal({{ $task->id }})">
                         <div class="font-semibold text-gray-800 leading-snug">
                             {{ $task->title }}
                         </div>
@@ -103,7 +103,7 @@
                         </span>
                     </div>
 
-                    <div class="mt-2 space-y-1 text-xs text-gray-500">
+                    <div class="mt-2 space-y-1 text-xs text-gray-500 "  onclick="openEditTaskModal({{ $task->id }})">
                         <div>
                             <span class="font-medium text-gray-600">Epic:</span>
                             {{ $task->epic->title ?? 'No Epic' }}
@@ -115,11 +115,70 @@
                         </div>
                     </div>
 
-                    <div class="mt-3">
+                    <div class="mt-3 flex gap-2">
                         <button
                                 class="text-xs px-2 py-1 rounded bg-red-50 text-red-600 transition">
                             Bugs ({{ $task->bugs->count() }})
                         </button>
+
+                        <button
+                            type="button"
+                            onclick="event.stopPropagation(); toggleSubtasks({{ $task->id }})"
+                            class="text-xs px-2 py-1 rounded bg-blue-50 text-blue-600">
+                            {{ $task->checklists->count() }} Subtasks
+                        </button>
+
+
+                    </div>
+
+                    <div id="subtasks-{{ $task->id }}"
+                        class="hidden mt-3 border-t pt-2 max-h-40 overflow-y-auto space-y-2">
+
+                        @foreach($task->checklists as $subtask)
+
+                            <div class="flex items-center justify-between bg-gray-50 rounded p-2 text-sm border"
+                                data-id="{{ $subtask->id }}"
+                                data-image="{{ $subtask->image ? asset('storage/'.$subtask->image) : '' }}">
+
+                                <div class="flex items-center gap-2">
+
+                                    <input type="checkbox"
+                                        class="check-toggle"
+                                        data-id="{{ $subtask->id }}"
+                                        {{ $subtask->is_completed ? 'checked' : '' }}>
+
+                                    <span>{{ $subtask->title }}</span>
+
+                                    <input type="hidden"
+                                        class="sub-title"
+                                        value="{{ $subtask->title }}">
+
+                                    <input type="hidden"
+                                        class="sub-description"
+                                        value="{{ $subtask->description }}">
+
+                                    <input type="hidden"
+                                        class="sub-assigned"
+                                        value="{{ $subtask->assigned_to }}">
+
+                                    <input type="hidden"
+                                        class="sub-due-date"
+                                        value="{{ $subtask->due_date }}">
+
+                                    <input type="file"
+                                        class="sub-image hidden">
+                                </div>
+
+                                <button type="button"
+                                        class="editSubtask text-blue-600 text-xs"
+                                       >
+                                    Edit
+                                </button>
+
+                            </div>
+
+                        @endforeach
+
                     </div>
 
                 </div>
@@ -416,6 +475,7 @@
 </div>
 
 
+
 <script>
     const currentUserId = {{ auth()->id() }};
 </script>
@@ -479,23 +539,6 @@
         document.getElementById('taskEditModal').classList.add('hidden');
     }
 
-    // function openEditTaskModal(taskId){
-
-    //     document.getElementById('currentTaskId').value = taskId;
-
-    //     fetch(`/projects/{{ $project->id }}/tasks/${taskId}/editmodule`)
-    //         .then(res => res.text())
-    //         .then(html => {
-
-    //             document.getElementById('modalBody').innerHTML = html;
-
-    //             document.getElementById('taskEditModal').classList.remove('hidden');
-
-    //             const fileInput = document.getElementById('imageInput');
-    //             if (fileInput) fileInput.value = "";
-    //         });
-    // }
-
     function openEditTaskModal(taskId){
 
         document.getElementById('currentTaskId').value = taskId;
@@ -514,27 +557,6 @@
                 loadComments(taskId);
             });
     }
-
-// function loadComments(taskId){
-//     fetch(`/tasks/${taskId}/comments`)
-//         .then(res => res.json())
-//         .then(data => {
-
-//             const container = document.getElementById('commentList');
-//             container.innerHTML = '';
-
-//             data.forEach(comment => {
-//                 container.innerHTML += `
-//                     <div class="border p-2 rounded bg-gray-50">
-//                         <div class="text-xs text-gray-500">
-//                             ${comment.user.name}
-//                         </div>
-//                         <div>${comment.message}</div>
-//                     </div>
-//                 `;
-//             });
-//         });
-// }
 
     function loadComments(taskId){
         fetch(`/tasks/${taskId}/comments`)
@@ -597,168 +619,40 @@
             });
     }
 
-// function sendComment(){
-//     const taskId = document.getElementById('currentTaskId').value;
-//     const input = document.getElementById('commentInput');
+    function openEditCommentModal(id, message) {
+        document.getElementById('editCommentId').value = id;
+        document.getElementById('editCommentText').value = message;
 
-//     if (!input.value.trim()) return;
+        document
+            .getElementById('editCommentModal')
+            .classList.remove('hidden');
+    }
 
-//     fetch(`/tasks/${taskId}/comments`, {
-//         method: "POST",
-//         headers: {
-//             "Content-Type": "application/json",
-//             "X-CSRF-TOKEN": "{{ csrf_token() }}"
-//         },
-//         body: JSON.stringify({
-//             message: input.value
-//         })
-//     })
-//     .then(res => res.json())
-//     .then(data => {
+    function closeEditCommentModal() {
+        document
+            .getElementById('editCommentModal')
+            .classList.add('hidden');
+    }
 
-//         input.value = '';
+    function updateComment() {
 
-//         // reload comments
-//         loadComments(taskId);
-//     });
-// }
+        const id = document.getElementById('editCommentId').value;
+        const message = document.getElementById('editCommentText').value;
 
-function openEditCommentModal(id, message) {
-    document.getElementById('editCommentId').value = id;
-    document.getElementById('editCommentText').value = message;
-
-    document
-        .getElementById('editCommentModal')
-        .classList.remove('hidden');
-}
-
-function closeEditCommentModal() {
-    document
-        .getElementById('editCommentModal')
-        .classList.add('hidden');
-}
-
-// function editComment(id, message) {
-
-//     Swal.fire({
-//         title: 'Edit Comment',
-//         input: 'text',
-//         inputValue: message,
-//         inputPlaceholder: 'Write your comment',
-//         showCancelButton: true,
-//         confirmButtonText: 'Update'
-//     }).then((result) => {
-
-//         if (!result.isConfirmed || !result.value.trim()) return;
-
-//         fetch(`/comments/${id}`, {
-//             method: "PUT",
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
-//             },
-//             body: JSON.stringify({
-//                 message: result.value
-//             })
-//         })
-//         .then(async res => {
-
-//             if (!res.ok) {
-//                 throw new Error();
-//             }
-
-//             return res.json();
-//         })
-//         .then(() => {
-
-//             Swal.fire({
-//                 icon: "success",
-//                 title: "Updated",
-//                 text: "Comment updated successfully."
-//             });
-
-//             loadComments(
-//                 document.getElementById('currentTaskId').value
-//             );
-//         })
-//         .catch(() => {
-//             Swal.fire({
-//                 icon: "error",
-//                 title: "Access Denied",
-//                 text: "You can only edit your own comments."
-//             });
-//         });
-//     });
-// }
-
-function updateComment() {
-
-    const id = document.getElementById('editCommentId').value;
-    const message = document.getElementById('editCommentText').value;
-
-    if (!message.trim()) return;
-
-    fetch(`/comments/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        body: JSON.stringify({
-            message: message
-        })
-    })
-    .then(async res => {
-
-        if (!res.ok) {
-            throw new Error();
-        }
-
-        return res.json();
-    })
-    .then(() => {
-
-        closeEditCommentModal();
-
-        Swal.fire({
-            icon: 'success',
-            title: 'Updated',
-            text: 'Comment updated successfully.'
-        });
-
-        loadComments(
-            document.getElementById('currentTaskId').value
-        );
-    })
-    .catch(() => {
-
-        Swal.fire({
-            icon: 'error',
-            title: 'Access Denied',
-            text: 'You can only edit your own comments.'
-        });
-    });
-}
-
-function deleteComment(id) {
-
-    Swal.fire({
-        title: 'Delete comment?',
-        text: 'This action cannot be undone.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Delete'
-    }).then((result) => {
-
-        if (!result.isConfirmed) return;
+        if (!message.trim()) return;
 
         fetch(`/comments/${id}`, {
-            method: "DELETE",
+            method: "PUT",
             headers: {
+                "Content-Type": "application/json",
                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            }
+            },
+            body: JSON.stringify({
+                message: message
+            })
         })
         .then(async res => {
+
             if (!res.ok) {
                 throw new Error();
             }
@@ -767,10 +661,12 @@ function deleteComment(id) {
         })
         .then(() => {
 
+            closeEditCommentModal();
+
             Swal.fire({
                 icon: 'success',
-                title: 'Deleted',
-                text: 'Comment deleted successfully'
+                title: 'Updated',
+                text: 'Comment updated successfully.'
             });
 
             loadComments(
@@ -778,15 +674,62 @@ function deleteComment(id) {
             );
         })
         .catch(() => {
+
             Swal.fire({
                 icon: 'error',
                 title: 'Access Denied',
-                text: 'You can only delete your own comments.'
+                text: 'You can only edit your own comments.'
             });
         });
+    }
 
-    });
-}
+    function deleteComment(id) {
+
+        Swal.fire({
+            title: 'Delete comment?',
+            text: 'This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Delete'
+        }).then((result) => {
+
+            if (!result.isConfirmed) return;
+
+            fetch(`/comments/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                }
+            })
+            .then(async res => {
+                if (!res.ok) {
+                    throw new Error();
+                }
+
+                return res.json();
+            })
+            .then(() => {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted',
+                    text: 'Comment deleted successfully'
+                });
+
+                loadComments(
+                    document.getElementById('currentTaskId').value
+                );
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    text: 'You can only delete your own comments.'
+                });
+            });
+
+        });
+    }
 
     function sendComment(){
         const taskId = document.getElementById('currentTaskId').value;
@@ -824,8 +767,6 @@ function deleteComment(id) {
             loadComments(taskId);
         });
     }
-
-
 
     //glabal variable
     let draggedTaskId = null;
@@ -951,6 +892,32 @@ function deleteComment(id) {
         document.getElementById('bugListModal').classList.add('hidden');
     }
 
+    function toggleSubtasks(taskId) {
+
+        const box = document.getElementById(
+            'subtasks-' + taskId
+        );
+
+        box.classList.toggle('hidden');
+    }
+
+    document.addEventListener('change', function(e){
+
+        if(e.target.classList.contains('board-check')){
+
+            fetch('/checklists/' + e.target.dataset.id + '/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    is_completed: e.target.checked ? 1 : 0
+                })
+            });
+        }
+    });
+
 
 </script>
 
@@ -973,5 +940,8 @@ function deleteComment(id) {
     });
 </script>
 @endif
+
+@include('tasks.partials.subtask-modal')
+@include('tasks.partials.subtask-script')
 
 @endsection

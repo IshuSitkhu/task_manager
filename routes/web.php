@@ -165,6 +165,12 @@ Route::middleware('auth')->group(function () {
         '/checklists/{checklist}/destroy',
         [TaskController::class, 'destroyChecklist']
     );
+
+
+    Route::get(
+        '/tasks/{task}/subtasks',
+        [TaskController::class, 'subtaskModal']
+    );
 });
 
 require __DIR__.'/auth.php';
