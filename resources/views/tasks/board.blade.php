@@ -116,8 +116,11 @@
                     </div>
 
                     <div class="mt-3 flex gap-2">
-                        <button
-                                class="text-xs px-2 py-1 rounded bg-red-50 text-red-600 transition">
+                        {{-- <button
+                            type="button"
+
+                           onclick="event.stopPropagation(); toggleBugs({{ $task->id }})"
+                            class="text-xs px-2 py-1 rounded bg-red-50 text-red-600">
                             Bugs ({{ $task->bugs->count() }})
                         </button>
 
@@ -126,9 +129,24 @@
                             onclick="event.stopPropagation(); toggleSubtasks({{ $task->id }})"
                             class="text-xs px-2 py-1 rounded bg-blue-50 text-blue-600">
                             {{ $task->checklists->count() }} Subtasks
+                        </button> --}}
+
+                        <button
+                            type="button"
+                            {{-- onclick="event.stopPropagation(); openBugListModal({{ $task->id }})" --}}
+                            onclick="event.stopPropagation(); toggleBugs({{ $task->id }})"
+                            class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition">
+
+                             {{ $task->bugs->count() }} Bugs
                         </button>
 
+                        <button
+                            type="button"
+                            onclick="event.stopPropagation(); toggleSubtasks({{ $task->id }})"
+                            class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition">
 
+                             {{ $task->checklists->count() }} Subtasks
+                        </button>
                     </div>
 
                     <div id="subtasks-{{ $task->id }}"
@@ -179,6 +197,47 @@
 
                         @endforeach
 
+                    </div>
+
+                    <div id="bugs-{{ $task->id }}"
+                        class="hidden mt-3 border-t pt-2 max-h-40 overflow-y-auto space-y-2">
+
+                        @foreach($task->bugs as $bug)
+
+                            <div class="border rounded p-2 bg-gray-50 text-sm"
+                                data-id="{{ $bug->id }}">
+
+                                <div class="flex justify-between items-center">
+
+                                    <span class="font-medium text-gray-700">
+                                        {{ $bug->title }}
+                                    </span>
+
+                                    <div class="flex items-center gap-2">
+
+                                        <span class="text-[10px] font-semibold text-gray-500 uppercase">
+                                            {{ $bug->severity }}
+                                        </span>
+
+                                        <button type="button"
+                                                class="editBug text-blue-600 text-xs"
+                                                data-id="{{ $bug->id }}">
+                                            Edit
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                                @if($bug->description)
+                                    <div class="text-xs text-gray-500 mt-1">
+                                        {{ $bug->description }}
+                                    </div>
+                                @endif
+
+                            </div>
+
+                        @endforeach
                     </div>
 
                 </div>
@@ -917,6 +976,25 @@
             });
         }
     });
+
+
+    function toggleBugs(taskId) {
+        let bugs = document.getElementById('bugs-' + taskId);
+        let subtasks = document.getElementById('subtasks-' + taskId);
+
+        subtasks.classList.add('hidden');
+
+        bugs.classList.toggle('hidden');
+    }
+
+    function toggleSubtasks(taskId) {
+        let bugs = document.getElementById('bugs-' + taskId);
+        let subtasks = document.getElementById('subtasks-' + taskId);
+
+        bugs.classList.add('hidden');
+
+        subtasks.classList.toggle('hidden');
+    }
 
 
 </script>
