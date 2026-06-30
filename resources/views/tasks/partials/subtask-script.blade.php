@@ -1,99 +1,77 @@
 <script>
     console.log('Subtask script loaded');
-    const addBtn = document.getElementById('addChecklist');
-if (addBtn) {
+document.addEventListener('click', function (e) {
+
+    if (e.target.id !== 'addChecklist') return;
+
+    console.log("Add button clicked");
 
     const input = document.getElementById('checklistInput');
     const container = document.getElementById('checklistContainer');
 
-    addBtn.addEventListener('click', function () {
+    if (input.value.trim() === '') return;
 
-        if (input.value.trim() === '') return;
+    const taskId = document.getElementById('currentTaskId').value;
 
-        fetch('/tasks/{{ $task->id }}/checklists', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN':
-                    document.querySelector(
-                        'meta[name="csrf-token"]'
-                    ).content
-            },
-            body: JSON.stringify({
-                title: input.value
-            })
+    fetch('/tasks/' + taskId + '/checklists', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN':
+                document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            title: input.value
         })
-        .then(response => response.json())
-        .then(checklist => {
+    })
+    .then(response => response.json())
+    .then(checklist => {
 
-            const id = checklist.id;
+        const id = checklist.id;
 
-            const html = `
-            <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50"
-                 data-id="${id}">
+        const html = `
+        <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50"
+             data-id="${id}"
+             data-image="">
 
-                <div class="flex items-center gap-3 flex-1">
+            <div class="flex items-center gap-3 flex-1">
 
-                    <input type="checkbox"
-                           class="check-toggle w-4 h-4"
-                           data-id="${id}">
+                <input type="checkbox"
+                       class="check-toggle"
+                       data-id="${id}">
 
-                    <span>${checklist.title}</span>
+                <span>${checklist.title}</span>
 
-                    <input type="hidden"
-                           class="sub-title"
-                           name="checklists[${id}][title]"
-                           value="${checklist.title}">
+                <input type="hidden" class="sub-title" value="${checklist.title}">
+                <input type="hidden" class="sub-description" value="">
+                <input type="hidden" class="sub-assigned" value="">
+                <input type="hidden" class="sub-due-date" value="">
+                <input type="hidden" class="check-status" value="0">
 
-                    <input type="hidden"
-                           class="check-status"
-                           name="checklists[${id}][is_completed]"
-                           value="0">
-
-                    <input type="hidden"
-                           class="sub-description"
-                           name="checklists[${id}][description]"
-                           value="">
-
-                    <input type="hidden"
-                           class="sub-assigned"
-                           name="checklists[${id}][assigned_to]"
-                           value="">
-
-                    <input type="hidden"
-                           class="sub-due-date"
-                           name="checklists[${id}][due_date]"
-                           value="">
-
-                    <input type="file"
-                           class="sub-image hidden"
-                           name="subtask_images[${id}]">
-                </div>
-
-                <div class="flex gap-2">
-                    <button type="button"
-                            class="editSubtask text-blue-600">
-                        Edit
-                    </button>
-
-                    <button type="button"
-                            class="removeChecklist text-red-500">
-                        Delete
-                    </button>
-                </div>
+                <input type="file" class="sub-image hidden">
 
             </div>
-            `;
 
-            container.insertAdjacentHTML('beforeend', html);
+            <div class="flex gap-2">
+                <button type="button"
+                        class="editSubtask text-blue-600">
+                    Edit
+                </button>
 
-            input.value = '';
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                <button type="button"
+                        class="removeChecklist text-red-500">
+                    Delete
+                </button>
+            </div>
+
+        </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', html);
+
+        input.value = '';
     });
-}
+});
 
     document.addEventListener('click', function (e) {
 
@@ -157,7 +135,7 @@ if (addBtn) {
     });
 
     const modal = document.getElementById('subtaskModal');
-    console.log(modal);
+    console.log("modal:", modal);
 
 
     const modalTitle = document.getElementById('modalTitle');
@@ -182,6 +160,7 @@ if (addBtn) {
     let currentFileInput = null;
 
     document.addEventListener('click', function(e){
+         console.log("Clicked:", e.target);
 
         if(e.target.classList.contains('editSubtask')){
             console.log('Edit clicked');

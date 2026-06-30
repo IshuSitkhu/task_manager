@@ -145,7 +145,9 @@
                             onclick="event.stopPropagation(); toggleSubtasks({{ $task->id }})"
                             class="flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition">
 
-                             {{ $task->checklists->count() }} Subtasks
+                             {{-- {{ $task->checklists->count() }} Subtasks --}}
+                             {{ $task->checklists->where('is_completed', 1)->count() }}/{{ $task->checklists->count() }}
+                                Subtasks
                         </button>
                     </div>
 

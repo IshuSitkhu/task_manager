@@ -148,12 +148,98 @@
 
             </div>
 
+            <div class="col-span-2 mt-6">
+                <label class="block font-semibold text-gray-700 text-lg">
+                    Sub Task
+                </label>
+
+                <p class="text-sm text-gray-500 mb-3">
+                    Manage task checklist items.
+                </p>
+
+                <div class="flex gap-2 mb-4">
+                    <input type="text"
+                        id="checklistInput"
+                        class="flex-1 border rounded-lg p-3"
+                        placeholder="Enter checklist item...">
+
+                    <button type="button"
+                            id="addChecklist"
+                            class="bg-blue-600 text-white px-4 rounded-lg">
+                        +
+                    </button>
+                </div>
+
+                <div id="checklistContainer" class="space-y-2">
+
+                    @foreach($task->checklists as $item)
+                    <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50"
+                        data-id="{{ $item->id }}"
+                        data-image="{{ $item->image ? asset('storage/'.$item->image) : '' }}">
+
+                        <div class="flex items-center gap-3">
+
+                            <input type="checkbox"
+                            class="check-toggle w-4 h-4"
+                            data-id="{{ $item->id }}"
+                            {{ $item->is_completed ? 'checked' : '' }}>
+
+                            <span>{{ $item->title }}</span>
+
+                            <input type="hidden"
+                                class="sub-title"
+                                name="checklists[{{ $item->id }}][title]"
+                                value="{{ $item->title }}">
+
+                            <input type="hidden"
+                                class="check-status"
+                                name="checklists[{{ $item->id }}][is_completed]"
+                                value="{{ $item->is_completed }}">
+
+                            <input type="hidden"
+                                class="sub-description"
+                                name="checklists[{{ $item->id }}][description]"
+                                value="{{ $item->description }}">
+
+                            <input type="hidden"
+                                class="sub-assigned"
+                                name="checklists[{{ $item->id }}][assigned_to]"
+                                value="{{ $item->assigned_to }}">
+
+                            <input type="hidden"
+                                class="sub-due-date"
+                                name="checklists[{{ $item->id }}][due_date]"
+                                value="{{ $item->due_date }}">
+
+                                <input type="file"
+                                    class="sub-image hidden"
+                                    name="subtask_images[{{ $item->id }}]">
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button type="button"
+                                    class="editSubtask text-blue-600">
+                                Edit
+                            </button>
+
+                            <button type="button"
+                                    class="removeChecklist text-red-500">
+                                Delete
+                            </button>
+                        </div>
+
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="mt-3 gap-4 flex justify-end">
 
                 <button
                         class="bg-blue-600 text-white px-6 py-2 rounded">
                     Update Task
                 </button>
+            </div>
 
     </form>
 
@@ -169,7 +255,9 @@
         </button>
     </form>
 
-            </div>
+
+
+
 
 </div>
 
@@ -209,3 +297,6 @@
 
     });
 </script>
+
+@include('tasks.partials.subtask-modal')
+@include('tasks.partials.subtask-script')
