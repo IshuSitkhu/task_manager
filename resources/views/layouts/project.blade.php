@@ -73,6 +73,13 @@
                             </a>
                         </li>
 
+                        <li>
+                            <a href="{{ route('projects.bugs.index', $project->id) }}"
+                            class="{{ request()->routeIs('projects.bugs.*') ? 'text-blue-600 font-semibold' : '' }}">
+                                Bugs
+                            </a>
+                        </li>
+
                     </ul>
 
                 </div>

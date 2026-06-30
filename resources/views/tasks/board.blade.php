@@ -364,10 +364,10 @@
 
             <div class="flex gap-3 items-center">
 
-                    <button onclick="openBugListFromEditModal()"
+                    {{-- <button onclick="openBugListFromEditModal()"
                             class="px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition">
                         View Bugs
-                    </button>
+                    </button> --}}
 
                 <button onclick="openBugFromEditModal()"
                     class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
@@ -391,7 +391,7 @@
 
             <div class="mt-4 border-t pt-3">
 
-                <h1>Activity</h1>
+                <h1 class="font-bold m-2 text-center" >Activity</h1>
                 <div class="mt-3 flex gap-2 m-6">
                     <input type="text" id="commentInput"
                         class="w-full border p-2 rounded"
@@ -460,6 +460,15 @@
                         <option value="low">Low</option>
                         <option value="medium">Medium</option>
                         <option value="critical">Critical</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-medium mb-1">Status</label>
+                    <select name="status" class="w-full rounded border p-2 mb-2">
+                        <option value="open">Open</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="fixed">Fixed</option>
                     </select>
                 </div>
 
@@ -936,29 +945,29 @@
         openBugModal(taskId);
     }
 
-    function openBugListFromEditModal() {
-        const taskId = document.getElementById('currentTaskId').value;
+    // function openBugListFromEditModal() {
+    //     const taskId = document.getElementById('currentTaskId').value;
 
-        openBugListModal(taskId);
-    }
+    //     openBugListModal(taskId);
+    // }
 
     function closeBugModal() {
         document.getElementById('bugModal').classList.add('hidden');
     }
 
     //show bug report
-    function openBugListModal(taskId){
-        fetch(`/projects/{{ $project->id }}/tasks/${taskId}/bugs`)
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('bugListBody').innerHTML = html;
-                document.getElementById('bugListModal').classList.remove('hidden');
-            });
-    }
+    // function openBugListModal(taskId){
+    //     fetch(`/projects/{{ $project->id }}/tasks/${taskId}/bugs`)
+    //         .then(res => res.text())
+    //         .then(html => {
+    //             document.getElementById('bugListBody').innerHTML = html;
+    //             document.getElementById('bugListModal').classList.remove('hidden');
+    //         });
+    // }
 
-    function closeBugListModal(){
-        document.getElementById('bugListModal').classList.add('hidden');
-    }
+    // function closeBugListModal(){
+    //     document.getElementById('bugListModal').classList.add('hidden');
+    // }
 
     function toggleSubtasks(taskId) {
 

@@ -233,10 +233,10 @@
                 </div>
             </div>
 
-            <div class="mt-3 gap-4 flex justify-end">
+            <div>
 
                 <button
-                        class="bg-blue-600 text-white px-6 py-2 rounded">
+                        class=" w-full px-3 py-1 rounded-md bg-blue-500 mt-4 mb-3 justify-end text-white hover:bg-blue-800 transition">
                     Update Task
                 </button>
             </div>
@@ -250,8 +250,8 @@
 
         <button type="button"
                 onclick="confirmDelete(this.form)"
-                class=" px-3 py-1 rounded-md bg-red-500 text-white hover:bg-red-500 transition">
-            Delete
+                class=" w-full px-3 py-1 rounded-md bg-red-500 justify-end text-white hover:bg-red-800 transition">
+            Delete Task
         </button>
     </form>
 

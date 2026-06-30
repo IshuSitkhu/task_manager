@@ -53,4 +53,9 @@ public function taskTypes()
 {
     return $this->hasMany(TaskType::class);
 }
+
+public function bugs()
+{
+    return $this->hasMany(Bug::class);
+}
 }

@@ -12,7 +12,10 @@ class BugController extends Controller
 {
     public function index(Project $project)
     {
-        $bugs = Bug::where('project_id', $project->id)->get();
+        $bugs = Bug::where('project_id', $project->id)
+    ->with(['task', 'assignee'])
+    ->latest()
+    ->get();
 
         return view('bugs.index', compact('project', 'bugs'));
     }
@@ -50,6 +53,49 @@ class BugController extends Controller
 
         return view('bugs.partials.list', compact('bugs'));
     }
+
+    public function edit(Project $project, Bug $bug)
+{
+    $tasks = Task::where('project_id', $project->id)->get();
+
+    return view('bugs.edit', compact(
+        'project',
+        'bug',
+        'tasks'
+    ));
+}
+
+public function update(Request $request, Project $project, Bug $bug)
+{
+    $request->validate([
+        'title' => 'required',
+        'severity' => 'required',
+    ]);
+
+    if ($request->hasFile('image')) {
+
+        if ($bug->image) {
+            Storage::delete('public/' . $bug->image);
+        }
+
+        $bug->image = $request->file('image')
+            ->store('bugs', 'public');
+    }
+
+    $bug->update([
+        'task_id' => $request->task_id,
+        'title' => $request->title,
+        'description' => $request->description,
+        'severity' => $request->severity,
+        'assigned_to' => $request->assigned_to,
+        'status' => $request->status,
+        'image' => $bug->image,
+    ]);
+
+    return redirect()
+        ->route('projects.bugs.index', $project)
+        ->with('success', 'Bug updated successfully.');
+}
 
     public function destroy(Project $project, Bug $bug)
     {

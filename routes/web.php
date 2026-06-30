@@ -99,11 +99,25 @@ Route::middleware('auth')->group(function () {
     ->name('tasks.move-status');
 
     Route::prefix('projects/{project}')->group(function () {
-    Route::get('/bugs', [BugController::class, 'index'])->name('projects.bugs.index');
-    Route::post('/bugs', [BugController::class, 'store'])->name('projects.bugs.store');
-    Route::get('/tasks/{task}/bugs', [BugController::class, 'taskBugs']);
 
-});
+        Route::get('/bugs', [BugController::class, 'index'])
+        ->name('projects.bugs.index');
+
+        Route::post('/bugs', [BugController::class, 'store'])
+        ->name('projects.bugs.store');
+
+        Route::get('/tasks/{task}/bugs', [BugController::class, 'taskBugs']);
+
+        Route::get('/bugs/{bug}/edit', [BugController::class, 'edit'])
+        ->name('projects.bugs.edit');
+
+        Route::put('/bugs/{bug}', [BugController::class, 'update'])
+        ->name('projects.bugs.update');
+
+        Route::delete('/bugs/{bug}', [BugController::class, 'destroy'])
+        ->name('projects.bugs.destroy');
+
+    });
 
 
     //kanban
@@ -171,6 +185,7 @@ Route::middleware('auth')->group(function () {
         '/tasks/{task}/subtasks',
         [TaskController::class, 'subtaskModal']
     );
+
 });
 
 require __DIR__.'/auth.php';
