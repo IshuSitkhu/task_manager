@@ -6,25 +6,33 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Bug;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 class BugController extends Controller
 {
     public function index(Project $project)
-    {
-        $bugs = Bug::where('project_id', $project->id)
-    ->with(['task', 'assignee'])
-    ->latest()
-    ->get();
+{
+    $bugs = Bug::where('project_id', $project->id)
+        ->with(['task', 'assignee'])
+        ->latest()
+        ->get();
 
-        return view('bugs.index', compact('project', 'bugs'));
-    }
+    $users = User::all();
+
+    return view('bugs.index', compact(
+        'project',
+        'bugs',
+        'users'
+    ));
+}
 
     public function store(Request $request, Project $project)
     {
         $request->validate([
             'title' => 'required',
             'severity' => 'required',
+            'status' => 'required|in:open,in_progress,fixed',
         ]);
 
         $imagePath = null;
@@ -41,7 +49,7 @@ class BugController extends Controller
             'severity' => $request->severity,
             'image' => $imagePath,
             'assigned_to' => $request->assigned_to,
-            'status' => 'open',
+            'status' => $request->status,
         ]);
 
         return back()->with('success', 'Bug reported successfully');
@@ -54,14 +62,18 @@ class BugController extends Controller
         return view('bugs.partials.list', compact('bugs'));
     }
 
-    public function edit(Project $project, Bug $bug)
+public function edit(Project $project, Bug $bug)
 {
     $tasks = Task::where('project_id', $project->id)->get();
+
+
+
+    $users = User::all();
 
     return view('bugs.edit', compact(
         'project',
         'bug',
-        'tasks'
+        'users'
     ));
 }
 
@@ -70,6 +82,7 @@ public function update(Request $request, Project $project, Bug $bug)
     $request->validate([
         'title' => 'required',
         'severity' => 'required',
+        'status' => 'required|in:open,in_progress,fixed',
     ]);
 
     if ($request->hasFile('image')) {

@@ -221,20 +221,11 @@
                                     <span class="font-medium text-gray-700">
                                         {{ $bug->title }}
                                     </span>
-
-                                    <div class="flex items-center gap-2">
-
-                                        <span class="text-[10px] font-semibold text-gray-500 uppercase">
-                                            {{ $bug->severity }}
-                                        </span>
-
                                         <button type="button"
                                                 class="editBug text-blue-600 text-xs"
                                                 data-id="{{ $bug->id }}">
                                             Edit
                                         </button>
-
-                                    </div>
 
                                 </div>
 

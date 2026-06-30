@@ -111,7 +111,7 @@
 
                 <td  class="border px-4 py-2">
 
-                    @if($bug->status=='open')
+                    @if($bug->status=='fixed')
                     <span class="   text-sm">
                             Fixed
                     </span>
@@ -139,11 +139,11 @@
                 <td class="border px-4 py-2">
 
                     <div class="flex gap-2">
-
-                        <a onclick="openEditBugModal({{ $bug->id }}, {{ $bug->task_id }})"
-                        class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                        <button
+                            onclick="openEditBugModal({{ $bug->id }})"
+                            class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-sm">
                             Edit
-                        </a>
+                        </button>
 
                         <form method="POST"
                             action="{{ route('projects.bugs.destroy', [$project, $bug]) }}">
@@ -186,111 +186,56 @@
 
 </div>
 
-{{-- <div id="BugEditModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+<div id="BugEditModal"
+     class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-    <div class="bg-white p-4 rounded w-[600px]">
+    <div class="bg-white rounded w-[650px] p-5">
 
-        <div class="flex py-2 justify-between mb-4">
-            <h2 class="  text-xl font-bold">Report Bug</h2>
-            <button onclick="closeBugModal()">✕</button>
+        <div class="flex justify-between mb-4">
+
+            <h2 class="text-xl font-bold">
+                Edit Bug
+            </h2>
+
+            <button onclick="closeEditBugModal()">
+                ✕
+            </button>
+
         </div>
 
+        <div id="bugEditBody">
 
-        <div class="bg-white p-3 rounded shadow">
-            <form method="PUT" enctype="multipart/form-data"
-                action="{{ route('projects.bugs.update', [$project,$bug]) }}">
-                @csrf
-
-
-                <input type="hidden" name="task_id" id="bugTaskId">
-
-                <div class="mb-2">
-                    <label class="block font-medium mb-1">Bug Title</label>
-                    <input type="text" name="title" placeholder="Bug title"
-                    class="w-full border p-2 rounded" required>
-                </div>
-
-
-                <div class="mb-2">
-                    <label class="block font-medium mb-1">Description</label>
-                    <textarea name="description"
-                        class="w-full border rounded p-2 mb-2"
-                        placeholder="Describe the bug"
-                        rows="3">
-                    </textarea>
-                </div>
-
-                <div>
-                    <label class="block font-medium mb-1">Severity</label>
-                    <select name="severity" class="w-full rounded border p-2 mb-2">
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="critical">Critical</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block font-medium mb-1">Status</label>
-                    <select name="status" class="w-full rounded border p-2 mb-2">
-                        <option value="open">Open</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="fixed">Fixed</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block font-medium mb-1">Assign Developer</label>
-                    <select name="assigned_to" class="w-full border rounded p-2 mb-2">
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}">
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="block border font-medium mb-3">
-                    <lable class="block font-medium mb-1">Screenshot</lable>
-                    <input type="file" name="image" class="w-full rounded p-2" placeholder="Bug Screenshot">
-                </div>
-
-                <button class="bg-red-600 text-white px-2 py-2 rounded justify-end">
-                    Submit Bug
-                </button>
-            </form>
         </div>
-
-
 
     </div>
 
-
-
-</div> --}}
+</div>
 
 <script>
-        function closeEditBugModal(){
-        document.getElementById('BugEditModal').classList.add('hidden');
-    }
+function openEditBugModal(id)
+{
+    fetch(`/projects/{{ $project->id }}/bugs/${id}/edit`)
+        .then(res => res.text())
+        .then(html => {
 
-    function openEditBugModal(taskId){
+            document.getElementById('bugEditBody').innerHTML = html;
 
-        document.getElementById('currentTaskId').value = taskId;
+            document
+                .getElementById('BugEditModal')
+                .classList.remove('hidden');
 
-        fetch(`/projects/{{ $project->id }}/bugs/${id}/edit`)
-            .then(res => res.text())
-            .then(html => {
+        });
+}
 
-                document.getElementById('modalBody').innerHTML = html;
+function closeEditBugModal()
+{
+    document
+        .getElementById('BugEditModal')
+        .classList.add('hidden');
+}
 
-                document.getElementById('BugEditModal').classList.remove('hidden');
 
-                const fileInput = document.getElementById('imageInput');
-                if (fileInput) fileInput.value = "";
 
-                loadComments(taskId);
-            });
-    }
 </script>
 
 

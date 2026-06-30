@@ -98,6 +98,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/tasks/{task}/move-status', [TaskController::class, 'moveStatus'])
     ->name('tasks.move-status');
 
+    //bug
     Route::prefix('projects/{project}')->group(function () {
 
         Route::get('/bugs', [BugController::class, 'index'])
