@@ -15,7 +15,6 @@
                             </button>
                     </div>
 
-                    <!-- TITLE -->
                     <div class="mb-3">
                         <label class="block mb-1 font-medium">
                             Title
@@ -26,7 +25,6 @@
                             class="w-full border p-2 rounded">
                     </div>
 
-                    <!-- DESCRIPTION -->
                     <div class="mb-3">
                         <label class="block mb-1 font-medium">
                             Description
@@ -37,7 +35,6 @@
                                 rows="4"></textarea>
                     </div>
 
-                    <!-- ASSIGNEE -->
                     <div class="mb-3">
                         <label class="block mb-1 font-medium">
                             Assignee
@@ -69,19 +66,19 @@
                             class="w-full border p-2 rounded">
                     </div>
 
-                    <div class="mb-4 ">
+                    <div class="mb-2 ">
                         <label class="block mb-1 font-medium">
                             Image
                         </label>
 
-                        <div class="flex items-start gap-2">
+                        <div class="flex items-start gap-3">
                             <input type="file"
                                 id="modalImage"
                                 name="modalImage"
                                 class="flex-1 border border-gray-300 p-2 rounded-lg">
 
                             <img id="modalPreview"
-                                class="hidden w-42 h-32 rounded-lg border object-cover">
+                                class="hidden w-32 h-32 rounded-lg border object-cover">
                         </div>
 
 
