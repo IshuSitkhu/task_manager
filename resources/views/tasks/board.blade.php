@@ -187,11 +187,18 @@
                                         class="sub-image hidden">
                                 </div>
 
-                                <button type="button"
-                                        class="editSubtask text-blue-600 text-xs"
-                                       >
-                                    Edit
-                                </button>
+                                <div class="flex gap-2">
+                                    <button type="button"
+                                            class="editSubtask text-blue-600 text-xs"
+                                        >
+                                        Edit
+                                    </button>
+
+                                    <button type="button"
+                                            class="removeChecklist text-red-500 text-xs">
+                                        Delete
+                                    </button>
+                                </div>
 
                             </div>
 
