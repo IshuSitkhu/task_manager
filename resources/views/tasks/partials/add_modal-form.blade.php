@@ -122,7 +122,8 @@
                         id="task_due_date"
                         name="due_date"
                         class="w-full border rounded p-2"
-                        placeholder="Select due date">
+                        placeholder="Select due date"
+                        required >
                 </div>
 
             </div>

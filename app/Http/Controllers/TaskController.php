@@ -10,23 +10,45 @@ use App\Models\User;
 use App\Models\TaskChecklist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class TaskController extends Controller
 {
-    public function index(Project $project)
-    {
-        $tasks = Task::where('project_id', $project->id)
+public function index(Project $project)
+{
+    $tasks = Task::where('project_id', $project->id)
         ->with([
             'epic',
             'sprint',
             'assignee',
-            'checklists'
+            'checklists',
+            'projectStatus',
+            'type'
         ])
         ->latest()
         ->get();
 
-        return view('tasks.index', compact('project', 'tasks'));
-    }
+    // Backlog = due date before today AND not done
+    $backlogTasks = $tasks->filter(function ($task) {
+        return $task->due_date &&
+            Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+            $task->status != 'done';
+    });
+
+    // Remaining tasks
+    $tasks = $tasks->reject(function ($task) {
+        return $task->due_date &&
+            Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+            $task->status != 'done';
+    });
+
+    return view('tasks.index', compact(
+        'project',
+        'tasks',
+        'backlogTasks'
+    ));
+}
+
 
     public function create(Project $project)
     {
@@ -35,7 +57,7 @@ class TaskController extends Controller
         $users = $project->members; // only project members
         $types = $project->taskTypes;
 
-        return view('tasks.create', compact('project', 'epics', 'sprints', 'users','types'));
+        return view('tasks.create', compact('project', 'epics', 'sprints', 'users','types' ));
     }
 
     public function store(Request $request, Project $project)
@@ -51,6 +73,7 @@ class TaskController extends Controller
             'priority' => 'required',
             'type_id' => 'required|exists:task_types,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'due_date' => 'required|date',
 
             'checklists' => 'nullable|array',
             'checklists.*.title' => 'required|string|max:255',
@@ -129,11 +152,9 @@ class TaskController extends Controller
         ]);
     }
 
+
     public function update(Request $request, Project $project, Task $task)
     {
-
-
-
         $request->validate([
             'title' => 'required|string|max:255',
             'epic_id' => 'required|exists:epics,id',
@@ -311,4 +332,6 @@ class TaskController extends Controller
             compact('task')
         );
     }
+
+
 }

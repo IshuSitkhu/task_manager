@@ -161,35 +161,10 @@
                         id="task_due_date"
                         name="due_date"
                         class="w-full border rounded p-2"
-                        placeholder="Select due date">
+                        placeholder="Select due date"
+                        required >
                 </div>
 
-                {{-- <div class="col-span-2 mt-6">
-                    <label class="block font-semibold text-gray-700 text-lg">
-                        Subtasks
-                    </label>
-
-
-                    <p class="text-sm text-gray-500 mb-3">
-                        Add checklist items for this task.
-                    </p>
-
-                    <div class="flex gap-2 mb-4">
-                        <input type="text"
-                            id="checklistInput"
-                            class="flex-1 border rounded-lg p-3"
-                            placeholder="Enter checklist item...">
-
-                        <button type="button"
-                                id="addChecklist"
-                                class="bg-blue-600 text-white px-4 rounded-lg hover:bg-blue-700">
-                            +
-                        </button>
-                    </div>
-
-                    <div id="checklistContainer" class="space-y-2">
-                    </div>
-                </div> --}}
             </div>
 
             <div class="mt-6 flex justify-end">
@@ -199,9 +174,7 @@
                 </button>
             </div>
 
-            {{-- <button type="button" onclick="checkData()">
-                Test Checklist
-            </button> --}}
+
 
 
 

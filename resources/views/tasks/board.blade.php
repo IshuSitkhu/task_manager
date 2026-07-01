@@ -149,14 +149,7 @@
                     <div id="subtasks-{{ $task->id }}"
                         class="hidden mt-3 border-t pt-2 max-h-40 overflow-y-auto space-y-2">
 
-                        <div class="flex justify-end mb-2">
-                            <button
-                                type="button"
-                                onclick="openSubtaskModal({{ $task->id }})"
-                                class="text-sm h-7 px-3 rounded-full">
-                                + Add subtask
-                            </button>
-                        </div>
+
 
 
                         @foreach($task->checklists as $subtask)
@@ -547,49 +540,7 @@
     </div>
 </div>
 
-<div id="subtaskModal"
-     class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-    <div class="bg-white rounded-lg w-[700px] max-h-[90vh] overflow-y-auto p-6">
-
-        <div class="flex justify-between items-center mb-5">
-            <h2 class="text-xl font-bold">
-                Manage Subtasks
-            </h2>
-
-            <button
-                onclick="closeSubtaskModal()"
-                class="text-xl">
-                ✕
-            </button>
-        </div>
-
-        <input type="hidden" id="modalTaskId">
-
-        <div class="flex gap-2 mb-4">
-
-            <input
-                type="text"
-                id="checklistInput"
-                class="flex-1 border rounded-lg p-3"
-                placeholder="Enter subtask item...">
-
-            <button
-                type="button"
-                id="addChecklist"
-                class="bg-blue-600 text-white px-4 rounded-lg">
-                +
-            </button>
-
-        </div>
-
-
-
-
-
-    </div>
-
-</div>
 
 
 

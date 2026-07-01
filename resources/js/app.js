@@ -93,8 +93,10 @@ if (sprintStart && sprintEnd) {
 const taskDueDate = document.querySelector("#task_due_date");
 
 if (taskDueDate) {
-    flatpickr("#task_due_date", {
-        dateFormat: "Y-m-d"
+    flatpickr(taskDueDate, {
+        dateFormat: "Y-m-d",
+        allowInput: false,
+        clickOpens: true
     });
 }
 
