@@ -39,9 +39,6 @@ class EpicController extends Controller
                             Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
                             $task->status != 'done';
                     });
-
-
-
             }
 
             $backlogEpics = $epics->filter(function ($epic) {

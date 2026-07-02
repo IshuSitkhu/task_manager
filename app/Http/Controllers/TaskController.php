@@ -14,40 +14,40 @@ use Carbon\Carbon;
 
 class TaskController extends Controller
 {
-public function index(Project $project)
-{
-    $tasks = Task::where('project_id', $project->id)
-        ->with([
-            'epic',
-            'sprint',
-            'assignee',
-            'checklists',
-            'projectStatus',
-            'type'
-        ])
-        ->latest()
-        ->get();
+    public function index(Project $project)
+    {
+        $tasks = Task::where('project_id', $project->id)
+            ->with([
+                'epic',
+                'sprint',
+                'assignee',
+                'checklists',
+                'projectStatus',
+                'type'
+            ])
+            ->latest()
+            ->get();
 
-    // Backlog = due date before today AND not done
-    $backlogTasks = $tasks->filter(function ($task) {
-        return $task->due_date &&
-            Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
-            $task->status != 'done';
-    });
+        // Backlog = due date before today AND not done
+        $backlogTasks = $tasks->filter(function ($task) {
+            return $task->due_date &&
+                Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+                $task->status != 'done';
+        });
 
-    // Remaining tasks
-    $tasks = $tasks->reject(function ($task) {
-        return $task->due_date &&
-            Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
-            $task->status != 'done';
-    });
+        // Remaining tasks
+        $tasks = $tasks->reject(function ($task) {
+            return $task->due_date &&
+                Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+                $task->status != 'done';
+        });
 
-    return view('tasks.index', compact(
-        'project',
-        'tasks',
-        'backlogTasks'
-    ));
-}
+        return view('tasks.index', compact(
+            'project',
+            'tasks',
+            'backlogTasks'
+        ));
+    }
     public function create(Project $project)
     {
         $epics = $project->epics;

@@ -31,7 +31,7 @@
 
             <tbody>
                 @forelse($epics as $epic)
-                    <tr class= border-b cursor-pointer mb-6">
+                    <tr class= "border-b cursor-pointer mb-6">
 
                         <td class="p-2 font-semibold border">
                             {{ $epic->title }}
@@ -53,11 +53,11 @@
                         </td>
 
                         <td class="p-2 text-center border ">
-                            <span class="px-2 py-1 rounded text-sm text-white
-                            @if($epic->status == 'not_started')  bg-red-500
-                            @elseif($epic->status == 'in_progress') bg-blue-500
-                            @elseif($epic->status == 'testing') bg-yellow-500
-                            @else bg-green-800 @endif
+                            <span class="px-2 py-1 rounded text-sm
+                            @if($epic->status == 'not_started')  bg-red-200
+                            @elseif($epic->status == 'in_progress') bg-blue-200
+                            @elseif($epic->status == 'testing') bg-yellow-200
+                            @else bg-green-200 @endif
                             ">
                                 {{ ucfirst($epic->status) }}
                             </span>
@@ -286,11 +286,11 @@
                         </td>
 
                         <td class="p-2 text-center border ">
-                            <span class="px-2 py-1 rounded text-sm text-white
-                            @if($epic->status == 'not_started')  bg-red-500
-                            @elseif($epic->status == 'in_progress') bg-blue-500
-                            @elseif($epic->status == 'testing') bg-yellow-500
-                            @else bg-green-800 @endif
+                            <span class="px-2 py-1 rounded text-sm
+                            @if($epic->status == 'not_started')  bg-red-200
+                            @elseif($epic->status == 'in_progress') bg-blue-200
+                            @elseif($epic->status == 'testing') bg-yellow-200
+                            @else bg-green-200 @endif
                             ">
                                 {{ ucfirst($epic->status) }}
                             </span>
@@ -441,8 +441,6 @@
                         <hr>
 
                     </tr>
-
-
                 @empty
 
                     <tr>

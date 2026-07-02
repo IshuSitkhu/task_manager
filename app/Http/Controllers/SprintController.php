@@ -19,9 +19,18 @@ class SprintController extends Controller
                     Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
                     $task->status != 'done';
             });
+            $sprint->normalTasks = $sprint->tasks->reject(function ($task) {
+                        return $task->due_date &&
+                            Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+                            $task->status != 'done';
+                    });
         }
 
-        return view('sprints.index', compact('project', 'sprints'));
+        $backlogSprints = $sprints->filter(function ($sprint){
+            return $sprint->backlogTasks->count() > 0;
+        });
+
+        return view('sprints.index', compact('project', 'sprints', 'backlogSprints'));
     }
 
     public function create(Project $project)

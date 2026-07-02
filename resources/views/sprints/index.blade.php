@@ -2,7 +2,6 @@
 
 @section('content')
 
-    {{-- HEADER --}}
     <div class="flex justify-between items-center mb-4">
 
         <h2 class="text-2xl font-bold">
@@ -17,63 +16,50 @@
     </div>
 
     {{-- TABLE --}}
-    {{-- <div class="bg-white rounded shadow overflow-x-auto mb-12">
+    <div class="bg-white shadow rounded overflow-x-auto">
 
-         <table class="w-full text-sm text-left">
+         <table class="w-full text-sm text-left ">
 
-            <thead class="bg-gray-100">
-
+            <thead class="bg-black/80 border text-white uppercase text-xs">
                 <tr>
-                    <th class="p-3 text-left">Sprint</th>
-                    <th class="p-3 text-left">Goal</th>
-                    <th class="p-3 text-left">Timeline</th>
-                    <th class="p-3 text-left">Status</th>
-                    <th class="p-3 text-left">Progress</th>
-                    <th class="p-3 text-left">Connected Tasks</th>
-                    <th class="p-3 text-left">Actions</th>
+                    <th class="p-3 border">Sprint</th>
+                    <th class="p-3 border text-center">Goal</th>
+                    <th class="p-3 border text-center">Timeline</th>
+                    <th class="p-3 border text-center">Status</th>
+                    <th class="p-3 border text-center">Progress</th>
+                    <th class="p-3 border text-center">Actions</th>
                 </tr>
-
             </thead>
 
             <tbody>
-
                 @forelse($sprints as $sprint)
+                    <tr class= "border-b cursor-pointer mb-6">
 
-                    <tr class="border-b">
-
-                        <td class="p-3 font-medium">
+                        <td class="p-2 font-semibold border">
                             {{ $sprint->name }}
                         </td>
 
-                        <td class="p-3">
+                        <td class="p-3 border">
                             {{ $sprint->goal ?? '-' }}
                         </td>
 
-                        <td class="p-3">
+                        <td class="p-3 border">
 
-                            @if($sprint->start_date || $sprint->end_date)
-
-                                {{ $sprint->start_date }}
-
-                                →
-
-                                {{ $sprint->end_date }}
-
-                            @else
-
-                                -
-
-                            @endif
-
+                            <span>
+                                {{ \Carbon\Carbon::parse($sprint->start_date)->format('d M Y') }}
+                            </span>
+                            <span class="text-gray-400 mx-1">→</span>
+                            <span>
+                                {{ \Carbon\Carbon::parse($sprint->end_date)->format('d M Y') }}
+                            </span>
                         </td>
 
-                        <td class="p-3">
-
+                        <td class="p-3 text-center border">
                             <span class="px-2 py-1 rounded text-xs
                                 @if($sprint->status == 'planned')
-                                    bg-gray-200
+                                    bg-red-200
                                 @elseif($sprint->status == 'active')
-                                    bg-blue-200
+                                    bg-yellow-200
                                 @else
                                     bg-green-200
                                 @endif
@@ -83,7 +69,7 @@
 
                         </td>
 
-                        <td class="p-3">
+                        <td class="p-3 text-center border">
 
                             <div class="w-full bg-gray-200 rounded h-2">
 
@@ -97,23 +83,16 @@
                             <span class="text-xs">
                                 {{ $sprint->progress }}%
                             </span>
-
                         </td>
 
-                        <td class="p-3">
-
-                            <span class="text-gray-600">
-                                {{ $sprint->tasks->count() }} Tasks
-                            </span>
-
-                        </td>
-
-                        <td class="p-3">
-
-                            <div class="flex gap-2">
+                        <td class="p-2 flex justify-end text-center border gap-2">
+                            <button onclick="toggleSprint({{ $sprint->id }})"
+                                        class="text-sm bg-blue-600 text-white px-1 rounded">
+                                    Show Tasks
+                            </button>
 
                                 <a href="{{ route('projects.sprints.edit', [$project->id, $sprint->id]) }}"
-                                   class="text-blue-600">
+                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     Edit
                                 </a>
 
@@ -125,20 +104,135 @@
 
                                     <button
                                         onclick="return confirm('Delete sprint?')"
-                                        class="text-red-600">
+                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                                         Delete
                                     </button>
-
                                 </form>
-
-                            </div>
-
                         </td>
-
                     </tr>
 
-                @empty
+                    <tr id="sprint-{{ $sprint->id }}" class="hidden  ">
 
+                        <td colspan="7" class="pt-6 pb-8 px-9 border mb-6">
+
+                            @if($sprint->tasks->count() > 0)
+                                <h3 class="font-semibold text-sm">
+                                    Connected Tasks
+                                </h3>
+                                <table class="w-full text-sm text-left bg-white border rounded">
+
+                                    <thead class=" bg-gray-600 text-white text-left uppercase text-xs border-black">
+                                        <tr>
+                                            <th class="p-2 border text-center border">Task</th>
+                                            <th class="p-2 border text-center border">Epic</th>
+                                            <th class="p-2 border text-center border">Status</th>
+                                            <th class="p-2 border text-center border">Type</th>
+                                            <th class="p-2 border text-center border">Priority</th>
+                                            <th class="p-3 text-center border">Due Date</th>
+                                            <th class="p-2 border text-center border">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        @foreach($sprint->normalTasks as $task)
+
+                                            <tr class="border-t text-xs">
+
+                                                <td class="p-2 border font-medium text-xs text-center">
+                                                    {{ $task->title }}
+                                                </td>
+
+                                                <td class="p-2 text-xs border text-center ">
+                                                    {{ $task->epic->title ?? 'Backlog' }}
+                                                </td>
+
+                                                <td class="p-2 border text-center">
+                                                   @php
+                                                        $status = $task->projectStatus;
+                                                    @endphp
+
+                                                    <span class="px-2 py-1 rounded border text-white text-xs"
+                                                        style="background-color: {{ $status->color ?? '#6b7280' }}">
+
+                                                        {{ $status->name ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                    </span>
+                                                </td>
+
+                                                <td class="p-2 border text-center ">
+                                                    @php
+                                                        $type = $task->projectType;
+                                                    @endphp
+
+                                                    <span class="px-2 py-1 border rounded text-white text-xs"
+                                                        style="background-color: {{ ($task->type)->color ?? '#6b7280' }}">
+
+                                                        {{ ($task->type)->name  ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                    </span>
+                                                </td>
+
+                                                <td class="p-2 text-yellow-600 border text-center">
+                                                    <span class="px-2 py-1 rounded text-xs
+                                                        @if($task->priority == 'low') text-green-600
+                                                        @elseif($task->priority == 'medium') text-yellow-600
+                                                        @elseif($task->priority == 'high') text-orange-600
+                                                        @else text-red-600 @endif">
+
+                                                        {{ ucfirst($task->priority) }}
+                                                    </span>
+                                                </td>
+
+                                                <td class="border p-3 text-center">
+                                                    @if($task->due_date)
+                                                        <span class="px-2 py-1 rounded text-sm
+                                                            @if(\Carbon\Carbon::parse($task->due_date)->isPast() && $task->status != 'done') text-red-600
+                                                            @else text-gray-800 @endif">
+
+                                                            {{ $task->due_date }}
+                                                        </span>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+
+                                                <td class="p-2 flex border text-xs gap-3 justify-center">
+
+                                                    <button onclick="openTaskModal({{ $task->id }})"
+                                                            class="px-3 text-blue-600">
+                                                        Edit
+                                                    </button>
+
+                                                    <form method="POST"
+                                                          action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                          class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
+
+                                                        <button type="button"
+                                                                class=" text-red-600 hover:text-red-400"
+                                                                onclick="confirmDelete(this.form)">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </td>
+
+                                            </tr>
+
+                                        @endforeach
+
+                                    </tbody>
+
+                                </table>
+
+                            @else
+                                <p class="text-gray-500">No tasks in this sprint</p>
+                            @endif
+                        </td>
+
+                        <hr>
+
+                    </tr>
+                @empty
                     <tr>
 
                         <td colspan="7" class="p-6 text-center text-gray-500">
@@ -146,17 +240,221 @@
                         </td>
 
                     </tr>
-
                 @endforelse
 
             </tbody>
 
         </table>
-    </div> --}}
+    </div>
+
+    <h2 class="text-2xl font-bold mb-4 text-red-600 mt-8">Backlog</h2>
+
+    <table class="w-full text-sm text-left ">
+
+        <thead class="bg-red-600 text-white uppercase text-xs">
+            <tr>
+                <th class="p-3 border">Sprint</th>
+                <th class="p-3 border text-center">Goal</th>
+                <th class="p-3 border text-center">Timeline</th>
+                <th class="p-3 border text-center">Status</th>
+                <th class="p-3 border text-center">Progress</th>
+                <th class="p-3 border text-center">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse($backlogSprints as $sprint)
+                <tr class= "border-b cursor-pointer mb-6">
+
+                        <td class="p-2 font-semibold border">
+                            {{ $sprint->name }}
+                        </td>
+
+                        <td class="p-3 border">
+                            {{ $sprint->goal ?? '-' }}
+                        </td>
+
+                        <td class="p-3 border">
+
+                            <span>
+                                {{ \Carbon\Carbon::parse($sprint->start_date)->format('d M Y') }}
+                            </span>
+                            <span class="text-gray-400 mx-1">→</span>
+                            <span>
+                                {{ \Carbon\Carbon::parse($sprint->end_date)->format('d M Y') }}
+                            </span>
+                        </td>
+
+                        <td class="p-3 text-center border">
+                            <span class="px-2 py-1 rounded text-xs
+                                @if($sprint->status == 'planned')
+                                    bg-red-200
+                                @elseif($sprint->status == 'active')
+                                    bg-yellow-200
+                                @else
+                                    bg-green-200
+                                @endif
+                            ">
+                                {{ ucfirst($sprint->status) }}
+                            </span>
+
+                        </td>
+
+                        <td class="p-3 text-center border">
+
+                            <div class="w-full bg-gray-200 rounded h-2">
+
+                                <div
+                                    class="bg-green-500 h-2 rounded"
+                                    style="width: {{ $sprint->progress }}%">
+                                </div>
+
+                            </div>
+
+                            <span class="text-xs">
+                                {{ $sprint->progress }}%
+                            </span>
+                        </td>
+
+                        <td class="p-2 flex justify-end text-center border gap-2">
+                            <button onclick="toggleBacklogSprint({{ $sprint->id }})"
+                                        class="text-sm bg-blue-600 text-white px-1 rounded">
+                                    Show Backlog Tasks
+                            </button>
+                        </td>
+                </tr>
+
+                <tr id="backlog-sprint-{{ $sprint->id }}" class="hidden  ">
+
+                    <td colspan="7" class="pt-6 pb-8 px-9 border mb-6">
+
+                        @if($sprint->backlogTasks->count() > 0)
+
+                            <h3 class="font-semibold text-sm">
+                                Backlog Tasks
+                            </h3>
+
+                            <table class="w-full text-sm text-left  border rounded">
+
+                                    <thead class="bg-red-600 text-white uppercase text-xs">
+                                    <tr>
+                                        <th class="p-2 border text-center border">Task</th>
+                                        <th class="p-2 border text-center border">Epic</th>
+                                        <th class="p-2 border text-center border">Status</th>
+                                        <th class="p-2 border text-center border">Type</th>
+                                        <th class="p-2 border text-center border">Priority</th>
+                                        <th class="p-3 text-center border">Due Date</th>
+                                        <th class="p-2 border text-center border">Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+
+                                @foreach($sprint->backlogTasks as $task)
+                                    <tr class="border-t text-xs">
+
+                                        <td class="p-2 border font-medium text-xs text-center">
+                                                {{ $task->title }}
+                                        </td>
+
+                                        <td class="p-2 border text-center">
+                                            {{ $task->epic->title ?? 'Backlog' }}
+                                        </td>
+
+                                        <td class="p-2 border text-center">
+                                                @php
+                                                    $status = $task->projectStatus;
+                                                @endphp
+
+                                                <span class="px-2 py-1 rounded border text-white text-xs"
+                                                    style="background-color: {{ $status->color ?? '#6b7280' }}">
+
+                                                    {{ $status->name ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                </span>
+                                        </td>
+
+                                        <td class="p-2 border text-center ">
+                                                @php
+                                                    $type = $task->projectType;
+                                                @endphp
+
+                                                <span class="px-2 py-1 border rounded text-white text-xs"
+                                                    style="background-color: {{ ($task->type)->color ?? '#6b7280' }}">
+
+                                                    {{ ($task->type)->name  ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                </span>
+                                        </td>
+
+                                        <td class="p-2 text-yellow-600 border text-center">
+                                            <span class="px-2 py-1 rounded text-xs
+                                                @if($task->priority == 'low') text-green-600
+                                                @elseif($task->priority == 'medium') text-yellow-600
+                                                @elseif($task->priority == 'high') text-orange-600
+                                                @else text-red-600 @endif">
+
+                                                {{ ucfirst($task->priority) }}
+                                            </span>
+                                        </td>
+
+                                        <td class="p-3 border text-center text-red-600 font-semibold">
+                                            {{ $task->due_date }}
+                                        </td>
+
+                                        <td class="p-2 flex border text-xs gap-3 justify-center">
+                                            <button onclick="openTaskModal({{ $task->id }})"
+                                                    class="px-3 text-blue-600">
+                                                Edit
+                                            </button>
+
+                                            <form method="POST"
+                                                action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                class="inline">
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="button"
+                                                        class=" text-red-600 hover:text-red-400"
+                                                        onclick="confirmDelete(this.form)">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </td>
+
+                                    </tr>
+
+                                @endforeach
+
+                                </tbody>
+
+                            </table>
+
+                        @endif
+
+
+
+                    </td>
+
+                    <hr>
+
+                </tr>
+            @empty
+
+                <tr>
+                    <td colspan="7" class="p-4 text-center text-gray-500">
+                        No sprint found
+                    </td>
+                </tr>
+
+            @endforelse
+
+            </tbody>
+
+    </table>
 
 
     @foreach($sprints as $sprint)
-                <div class="border rounded-lg mb-8 border-black shadow-sm overflow-hidden">
+                <div class="border rounded-lg mb-8 border-black shadow-sm overflow-hidden mt-8">
 
             <div class="grid grid-cols-12 items-center gap-4 px-5 py-3  border-b text-sm font-medium text-gray-600">
 
@@ -431,80 +729,96 @@
         </div>
     @endforeach
 
+    <script>
+        function toggleMenu(id) {
 
+            let menu = document.getElementById('menu-' + id);
 
+            // close all others
+            document.querySelectorAll('[id^="menu-"]').forEach(el => {
+                if (el !== menu) el.classList.add('hidden');
+            });
 
-            <script>
-                function toggleMenu(id) {
+            // toggle current
+            menu.classList.toggle('hidden');
+        }
 
-                    let menu = document.getElementById('menu-' + id);
-
-                    // close all others
-                    document.querySelectorAll('[id^="menu-"]').forEach(el => {
-                        if (el !== menu) el.classList.add('hidden');
-                    });
-
-                    // toggle current
-                    menu.classList.toggle('hidden');
-                }
-
-                // click outside to close
-                document.addEventListener('click', function (e) {
-                    if (!e.target.closest('.relative')) {
-                        document.querySelectorAll('[id^="menu-"]').forEach(el => {
-                            el.classList.add('hidden');
-                        });
-                    }
+        // click outside to close
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('[id^="menu-"]').forEach(el => {
+                    el.classList.add('hidden');
                 });
+            }
+        });
 
-                function openTaskModal(taskId)
-                {
-                    fetch(`/projects/{{ $project->id }}/tasks/${taskId}/editmodule`)
-                        .then(res => res.text())
-                        .then(html => {
+        function openTaskModal(taskId)
+        {
+            fetch(`/projects/{{ $project->id }}/tasks/${taskId}/editmodule`)
+                .then(res => res.text())
+                .then(html => {
 
-                            //TAKE HTML AND PUT IN MODAL BODY
-                            document.getElementById('modalBody').innerHTML = html;
+                    //TAKE HTML AND PUT IN MODAL BODY
+                    document.getElementById('modalBody').innerHTML = html;
 
-                            //MODAL IS SHOWN, NOW ATTACH FORM SUBMIT HANDLER
-                            document.getElementById('taskModal').classList.remove('hidden');
-                        })
-                        .catch(err => console.log(err));
-                }
+                    //MODAL IS SHOWN, NOW ATTACH FORM SUBMIT HANDLER
+                    document.getElementById('taskModal').classList.remove('hidden');
+                })
+                .catch(err => console.log(err));
+        }
 
-                function closeModal()
-                {
-                    document.getElementById('taskModal').classList.add('hidden');
-                }
+        function closeModal()
+        {
+            document.getElementById('taskModal').classList.add('hidden');
+        }
 
-                function attachFormSubmit()
-                {
-                    const form = document.getElementById('taskForm');
+        function attachFormSubmit()
+        {
+            const form = document.getElementById('taskForm');
 
-                    //ATTACH SUBMIT HANDLER
-                    form.addEventListener('submit', function(e) {
-                        e.preventDefault();
+            //ATTACH SUBMIT HANDLER
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-                        //AJAX SUBMIT FORM
-                        fetch(form.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json'
-                            },
-                            body: new FormData(form)
-                        })
-                        .then(res => res.json())
-                        .then(() => {
+                //AJAX SUBMIT FORM
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: new FormData(form)
+                })
+                .then(res => res.json())
+                .then(() => {
 
-                            closeModal();
+                    closeModal();
 
-                            location.reload();
-                        });
-                    });
-                }
+                    location.reload();
+                });
+            });
+        }
 
-            </script>
+    </script>
+
+    <script>
+        function toggleSprint(id)
+        {
+            let row = document.getElementById('sprint-' + id);
+
+            if (row.classList.contains('hidden')) {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        }
+
+        function toggleBacklogSprint(id) {
+            document
+                .getElementById('backlog-sprint-' + id)
+                .classList.toggle('hidden');
+        }
+    </script>
 
     <div id="taskModal"
                 class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
