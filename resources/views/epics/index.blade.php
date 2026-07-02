@@ -84,7 +84,7 @@
 
                         <td class="p-2 flex justify-end text-center border gap-2">
                             <button onclick="toggleEpic({{ $epic->id }})"
-                                        class="text-sm text-blue-600">
+                                        class="text-sm bg-blue-600 text-white px-1 rounded">
                                     Show Tasks
                             </button>
 
@@ -195,10 +195,6 @@
                                                 </td>
 
                                                 <td class="p-2 flex border text-xs gap-3 justify-center">
-                                                    {{-- <a href="{{ route('projects.tasks.edit', [$project->id, $task->id]) }}"
-                                                       class="text-sm text-blue-600">
-                                                        Edit
-                                                    </a> --}}
 
                                                     <button onclick="openTaskModal({{ $task->id }})"
                                                             class="px-3 text-blue-600">
@@ -319,28 +315,10 @@
                             {{ $epic->progress }}%
                         </td>
 
-                        <td class="p-2 flex justify-end text-center border gap-2">
-                            <button onclick="toggleBacklogEpic({{ $epic->id }})"
-                                        class="text-sm text-blue-600">
+                        <td class="p-2 border text-center border">
+                            <button onclick="toggleBacklogEpic({{ $epic->id }})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">
                                     Show Backlog Tasks
                             </button>
-
-                                    <a href="{{ route('projects.epics.edit', [$project->id, $epic->id]) }}"
-                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        Edit
-                                    </a>
-
-                                    <form method="POST"
-                                        action="{{ route('projects.epics.destroy', [$project->id, $epic->id]) }}">
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button type="submit"
-                                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                                                onclick="return confirm('Delete epic?')">
-                                            Delete
-                                        </button>
-                                    </form>
                         </td>
 
                         <td>

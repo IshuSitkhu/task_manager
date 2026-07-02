@@ -48,8 +48,6 @@ public function index(Project $project)
         'backlogTasks'
     ));
 }
-
-
     public function create(Project $project)
     {
         $epics = $project->epics;
@@ -62,8 +60,6 @@ public function index(Project $project)
 
     public function store(Request $request, Project $project)
     {
-
-
         $request->validate([
             'title' => 'required|string|max:255',
             'epic_id' => 'required|exists:epics,id',
@@ -151,8 +147,6 @@ public function index(Project $project)
             'users' => $project->members,
         ]);
     }
-
-
     public function update(Request $request, Project $project, Task $task)
     {
         $request->validate([
