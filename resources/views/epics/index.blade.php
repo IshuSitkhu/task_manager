@@ -2,7 +2,6 @@
 
 @section('content')
 
-    {{-- HEADER --}}
     <div class="flex justify-between items-center mb-4">
 
         <h2 class="text-2xl font-bold">Epics</h2>
@@ -14,14 +13,6 @@
 
     </div>
 
-    {{-- SUCCESS MESSAGE --}}
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-2 rounded mb-3">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    {{-- TABLE --}}
     <div class="bg-white shadow rounded overflow-x-auto">
 
         <table class="w-full text-sm text-left ">
@@ -39,11 +30,8 @@
             </thead>
 
             <tbody>
-
                 @forelse($epics as $epic)
-
-
-                    <tr class="bg-gray-100 border-b cursor-pointer mb-6">
+                    <tr class= border-b cursor-pointer mb-6">
 
                         <td class="p-2 font-semibold border">
                             {{ $epic->title }}
@@ -124,22 +112,23 @@
 
                     <tr id="epic-{{ $epic->id }}" class="hidden  ">
 
-                        <td colspan="7" class="p-4 border-b mb-6">
+                        <td colspan="7" class="pt-6 pb-8 px-9 border mb-6">
 
                             @if($epic->tasks->count() > 0)
                                 <h3 class="font-semibold text-sm">
                                     Connected Tasks
                                 </h3>
-                                <table class="w-full text-sm text-left  border  rounded">
+                                <table class="w-full text-sm text-left bg-white border rounded">
 
-                                    <thead class=" text-left border-black">
+                                    <thead class=" bg-gray-600 text-white text-left uppercase text-xs border-black">
                                         <tr>
-                                            <th class="p-2 border text-center">Task</th>
-                                            <th class="p-2 border text-center">Sprint</th>
-                                            <th class="p-2 border text-center">Status</th>
-                                            <th class="p-2 border text-center">Type</th>
-                                            <th class="p-2 border text-center">Priority</th>
-                                            <th class="p-2 border text-center">Actions</th>
+                                            <th class="p-2 border text-center border">Task</th>
+                                            <th class="p-2 border text-center border">Sprint</th>
+                                            <th class="p-2 border text-center border">Status</th>
+                                            <th class="p-2 border text-center border">Type</th>
+                                            <th class="p-2 border text-center border">Priority</th>
+                                            <th class="p-3 text-center border">Due Date</th>
+                                            <th class="p-2 border text-center border">Actions</th>
                                         </tr>
                                     </thead>
 
@@ -192,6 +181,19 @@
                                                     </span>
                                                 </td>
 
+                                                <td class="border p-3 text-center">
+                                                    @if($task->due_date)
+                                                        <span class="px-2 py-1 rounded text-sm
+                                                            @if(\Carbon\Carbon::parse($task->due_date)->isPast() && $task->status != 'done') text-red-600
+                                                            @else text-gray-800 @endif">
+
+                                                            {{ $task->due_date }}
+                                                        </span>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+
                                                 <td class="p-2 flex border text-xs gap-3 justify-center">
                                                     {{-- <a href="{{ route('projects.tasks.edit', [$project->id, $task->id]) }}"
                                                        class="text-sm text-blue-600">
@@ -228,29 +230,152 @@
                             @else
                                 <p class="text-gray-500">No tasks in this epic</p>
                             @endif
+                        </td>
+
+                        <hr>
+
+                    </tr>
+                @empty
+
+                    <tr>
+                        <td colspan="7" class="p-4 text-center text-gray-500">
+                            No epics found
+                        </td>
+                    </tr>
+
+                @endforelse
+
+            </tbody>
+
+        </table>
+    </div>
+
+    <h2 class="text-2xl font-bold mb-4 text-red-600 mt-8">Backlog</h2>
+
+        <table class="w-full text-sm text-left ">
+
+            <thead class="bg-red-600 text-white uppercase text-xs">
+                <tr>
+                    <th class="p-3 border  ">Epic</th>
+                    <th class="p-3 border text-center">Owner</th>
+                    <th class="p-3 border text-center">Planned timeline</th>
+                    <th class="p-3 border text-center">Status</th>
+                    <th class="p-3 border text-center">Priority</th>
+                    <th class="p-3 border text-center">Progress</th>
+                    <th class="p-3 border text-center">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @forelse($backlogEpics as $epic)
+                    <tr class=" border-b cursor-pointer mb-6">
+
+                        <td class="p-2 font-semibold border">
+                            {{ $epic->title }}
+                        </td>
+
+                        <td class="p-2 text-sm text-gray-800 border text-center">
+                            {{ $epic->owner->name ?? 'N/A' }}
+                        </td>
+
+                        <td class="p-2 text-sm border text-center ">
+
+                            <span>
+                                {{ \Carbon\Carbon::parse($epic->planned_start_date)->format('d M Y') }}
+                            </span>
+                            <span class="text-gray-400 mx-1">→</span>
+                            <span>
+                                {{ \Carbon\Carbon::parse($epic->planned_end_date)->format('d M Y') }}
+                            </span>
+                        </td>
+
+                        <td class="p-2 text-center border ">
+                            <span class="px-2 py-1 rounded text-sm text-white
+                            @if($epic->status == 'not_started')  bg-red-500
+                            @elseif($epic->status == 'in_progress') bg-blue-500
+                            @elseif($epic->status == 'testing') bg-yellow-500
+                            @else bg-green-800 @endif
+                            ">
+                                {{ ucfirst($epic->status) }}
+                            </span>
+                        </td>
+
+                        <td class="p-2 text-center border">
+                            <span class="px-2 py-1 rounded text-sm
+                                @if($epic->priority == 'low') text-green-800
+                                @elseif($epic->priority == 'medium') text-yellow-800
+                                @elseif($epic->priority == 'high') text-blue-800
+                                @else text-red-800 @endif">
+                                {{ ucfirst($epic->priority) }}
+                            </span>
+                        </td>
+
+                        <td class="p-2 text-center border">
+                            <div class="w-full bg-gray-200 rounded h-2">
+                                <div class="bg-green-500 h-2 rounded"
+                                    style="width: {{ $epic->progress }}%"></div>
+                            </div>
+                            <span class="text-xs text-gray-600">
+                            {{ $epic->progress }}%
+                        </td>
+
+                        <td class="p-2 flex justify-end text-center border gap-2">
+                            <button onclick="toggleBacklogEpic({{ $epic->id }})"
+                                        class="text-sm text-blue-600">
+                                    Show Backlog Tasks
+                            </button>
+
+                                    <a href="{{ route('projects.epics.edit', [$project->id, $epic->id]) }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Edit
+                                    </a>
+
+                                    <form method="POST"
+                                        action="{{ route('projects.epics.destroy', [$project->id, $epic->id]) }}">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                                onclick="return confirm('Delete epic?')">
+                                            Delete
+                                        </button>
+                                    </form>
+                        </td>
+
+                        <td>
+
+                    </tr>
+
+                    <tr id="backlog-epic-{{ $epic->id }}" class="hidden  ">
+
+                        <td colspan="7" class="pt-6 pb-8 px-9 border mb-6">
 
                             @if($epic->backlogTasks->count() > 0)
 
-                                <h3 class="font-semibold text-sm text-red-500 mt-6">
-                                    Backlog
+                                <h3 class="font-semibold text-sm">
+                                    Backlog Tasks
                                 </h3>
 
                                 <table class="w-full text-sm text-left  border rounded">
 
-                                    <thead>
+                                     <thead class="bg-red-600 text-white uppercase text-xs">
                                         <tr>
-                                            <th class="p-2 border text-center">Task</th>
-                                            <th class="p-2 border text-center">Sprint</th>
-                                            <th class="p-2 border text-center">Status</th>
-                                            <th class="p-2 border text-center">Type</th>
-                                            <th class="p-2 border text-center">Priority</th>
-                                            <th class="p-2 border text-center">Actions</th>
+                                            <th class="p-2 border text-center border">Task</th>
+                                            <th class="p-2 border text-center border">Sprint</th>
+                                            <th class="p-2 border text-center border">Status</th>
+                                            <th class="p-2 border text-center border">Type</th>
+                                            <th class="p-2 border text-center border">Priority</th>
+                                            <th class="p-3 text-center border">Due Date</th>
+                                            <th class="p-2 border text-center border">Actions</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
 
+
                                     @foreach($epic->backlogTasks as $task)
+
 
                                         <tr class="border-t text-xs">
 
@@ -263,7 +388,7 @@
                                             </td>
 
                                             <td class="p-2 border text-center">
-                                                     @php
+                                                    @php
                                                         $status = $task->projectStatus;
                                                     @endphp
 
@@ -297,6 +422,10 @@
                                                 </span>
                                             </td>
 
+                                            <td class="p-3 border text-center text-red-600 font-semibold">
+                                                {{ $task->due_date }}
+                                            </td>
+
                                             <td class="p-2 flex border text-xs gap-3 justify-center">
                                                 <button onclick="openTaskModal({{ $task->id }})"
                                                         class="px-3 text-blue-600">
@@ -304,8 +433,8 @@
                                                 </button>
 
                                                 <form method="POST"
-                                                      action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
-                                                      class="inline">
+                                                    action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                    class="inline">
                                                     @csrf
                                                     @method('DELETE')
 
@@ -350,10 +479,6 @@
 
         </table>
 
-
-
-    </div>
-
     <script>
 
         function confirmDelete(form) {
@@ -381,6 +506,12 @@
             } else {
                 row.classList.add('hidden');
             }
+        }
+
+        function toggleBacklogEpic(id) {
+            document
+                .getElementById('backlog-epic-' + id)
+                .classList.toggle('hidden');
         }
 
         function openTaskModal(taskId)

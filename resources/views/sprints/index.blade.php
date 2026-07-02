@@ -156,7 +156,7 @@
 
 
     @foreach($sprints as $sprint)
-                <div class="border rounded-lg mb-8 bg-gray-100 shadow-sm overflow-hidden">
+                <div class="border rounded-lg mb-8 border-black shadow-sm overflow-hidden">
 
             <div class="grid grid-cols-12 items-center gap-4 px-5 py-3  border-b text-sm font-medium text-gray-600">
 
@@ -243,7 +243,7 @@
 
             <div class="p-5">
 
-                <h3 class="font-semibold text-gray-700 mb-3">
+                <h3 class="font-semibold text-gray-700 m-3">
                     Connected Tasks
                 </h3>
 
@@ -323,99 +323,106 @@
 
                 @if($sprint->backlogTasks->count() > 0)
 
-                                <h3 class="font-semibold text-sm text-red-500 mt-6">
+                                <h2 class="text-xl font-bold mt-6 mx-9 text-red-600">
                                     Backlog
-                                </h3>
+                                </h2>
 
-                                <table class="w-full text-sm text-left bg-white border rounded">
+                                <div class="overflow-x-auto pt-3 pb-8 px-9">
+                                    <table class="w-full text-sm text-left bg-white shadow border rounded">
 
-                                    <thead>
-                                        <tr>
-                                            <th class="p-2 border text-center">Task</th>
-                                            <th class="p-2 border text-center">Epic</th>
-                                            <th class="p-2 border text-center">Status</th>
-                                            <th class="p-2 border text-center">Type</th>
-                                            <th class="p-2 border text-center">Priority</th>
-                                            <th class="p-2 border text-center">Actions</th>
-                                        </tr>
-                                    </thead>
+                                        <thead class="bg-red-600 text-white uppercase text-xs">
+                                            <tr>
+                                                <th class="p-2 border text-center">Task</th>
+                                                <th class="p-2 border text-center">Epic</th>
+                                                <th class="p-2 border text-center">Status</th>
+                                                <th class="p-2 border text-center">Type</th>
+                                                <th class="p-2 border text-center">Priority</th>
+                                                <th class="p-3 text-center border">Due Date</th>
+                                                <th class="p-2 border text-center">Actions</th>
+                                            </tr>
+                                        </thead>
 
-                                    <tbody>
+                                        <tbody>
 
-                                    @foreach($sprint->backlogTasks as $task)
+                                        @foreach($sprint->backlogTasks as $task)
 
-                                        <tr class="border-t text-xs">
+                                            <tr class="border-t text-xs">
 
-                                            <td class="p-2 border font-medium text-xs text-center">
-                                                    {{ $task->title }}
-                                            </td>
+                                                <td class="p-2 border font-medium text-xs text-center">
+                                                        {{ $task->title }}
+                                                </td>
 
-                                            <td class="p-2 border text-center">
-                                                {{  $task->epic->title ??  'Backlog' }}
-                                            </td>
+                                                <td class="p-2 border text-center">
+                                                    {{  $task->epic->title ??  'Backlog' }}
+                                                </td>
 
-                                            <td class="p-2 border text-center">
-                                                     @php
-                                                        $status = $task->projectStatus;
-                                                    @endphp
+                                                <td class="p-2 border text-center">
+                                                        @php
+                                                            $status = $task->projectStatus;
+                                                        @endphp
 
-                                                    <span class="px-2 py-1 rounded border text-white text-xs"
-                                                        style="background-color: {{ $status->color ?? '#6b7280' }}">
+                                                        <span class="px-2 py-1 rounded border text-white text-xs"
+                                                            style="background-color: {{ $status->color ?? '#6b7280' }}">
 
-                                                        {{ $status->name ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                            {{ $status->name ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                        </span>
+                                                </td>
+
+                                                <td class="p-2 border text-center ">
+                                                        @php
+                                                            $type = $task->projectType;
+                                                        @endphp
+
+                                                        <span class="px-2 py-1 border rounded text-white text-xs"
+                                                            style="background-color: {{ ($task->type)->color ?? '#6b7280' }}">
+
+                                                            {{ ($task->type)->name  ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                        </span>
+                                                </td>
+
+                                                <td class="p-2 text-yellow-600 border text-center">
+                                                    <span class="px-2 py-1 rounded text-xs
+                                                        @if($task->priority == 'low') text-green-600
+                                                        @elseif($task->priority == 'medium') text-yellow-600
+                                                        @elseif($task->priority == 'high') text-orange-600
+                                                        @else text-red-600 @endif">
+
+                                                        {{ ucfirst($task->priority) }}
                                                     </span>
-                                            </td>
+                                                </td>
 
-                                            <td class="p-2 border text-center ">
-                                                    @php
-                                                        $type = $task->projectType;
-                                                    @endphp
+                                                <td class="p-3 border text-center text-red-600 font-semibold">
+                                                    {{ $task->due_date }}
+                                                </td>
 
-                                                    <span class="px-2 py-1 border rounded text-white text-xs"
-                                                        style="background-color: {{ ($task->type)->color ?? '#6b7280' }}">
-
-                                                        {{ ($task->type)->name  ?? ucfirst(str_replace('_', ' ', $task->status)) }}
-                                                    </span>
-                                            </td>
-
-                                            <td class="p-2 text-yellow-600 border text-center">
-                                                <span class="px-2 py-1 rounded text-xs
-                                                    @if($task->priority == 'low') text-green-600
-                                                    @elseif($task->priority == 'medium') text-yellow-600
-                                                    @elseif($task->priority == 'high') text-orange-600
-                                                    @else text-red-600 @endif">
-
-                                                    {{ ucfirst($task->priority) }}
-                                                </span>
-                                            </td>
-
-                                            <td class="p-2 flex border text-xs gap-3 justify-center">
-                                                <button
-                                                        class="px-3 text-blue-600">
-                                                    Edit
-                                                </button>
-
-                                                <form method="POST"
-                                                      action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
-                                                      class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-
-                                                    <button type="button"
-                                                            class=" text-red-600 hover:text-red-400"
-                                                            onclick="confirmDelete(this.form)">
-                                                        Delete
+                                                <td class="p-2 flex border text-xs gap-3 justify-center">
+                                                    <button
+                                                            class="px-3 text-blue-600">
+                                                        Edit
                                                     </button>
-                                                </form>
-                                            </td>
 
-                                        </tr>
+                                                    <form method="POST"
+                                                        action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                        class="inline">
+                                                        @csrf
+                                                        @method('DELETE')
 
-                                    @endforeach
+                                                        <button type="button"
+                                                                class=" text-red-600 hover:text-red-400"
+                                                                onclick="confirmDelete(this.form)">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </td>
 
-                                    </tbody>
+                                            </tr>
 
-                                </table>
+                                        @endforeach
+
+                                        </tbody>
+
+                                    </table>
+                                </div>
 
                             @endif
 

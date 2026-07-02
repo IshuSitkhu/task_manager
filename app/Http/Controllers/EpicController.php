@@ -40,9 +40,19 @@ class EpicController extends Controller
                             $task->status != 'done';
                     });
 
-                }
 
-        return view('epics.index', compact('project', 'epics'));
+
+            }
+
+            $backlogEpics = $epics->filter(function ($epic) {
+                    return $epic->backlogTasks->count() > 0;
+            });
+
+        return view('epics.index', compact(
+            'project',
+            'epics',
+            'backlogEpics'
+        ));
     }
 
     /**

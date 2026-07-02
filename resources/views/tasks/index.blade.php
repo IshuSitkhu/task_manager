@@ -146,7 +146,7 @@
 
 <div class="mt-10">
 
-    <h2 class="text-2xl font-bold mb-4 text-red-600">
+    <h2 class="font-semibold text-sm mb-4 text-red-600">
         Backlog
     </h2>
 
@@ -156,13 +156,14 @@
 
             <thead class="bg-red-600 text-white uppercase text-xs">
                 <tr>
-                    <th class="p-3 text-center border">Task</th>
-                    <th class="p-3 text-center border">Epic</th>
-                    <th class="p-3 text-center border">Assignee</th>
-                    <th class="p-3 text-center border">Priority</th>
-                    <th class="p-3 text-center border">Due Date</th>
-                    <th class="p-3 text-center border">Status</th>
-                    <th class="p-3 text-center border">Actions</th>
+                    <th class="p-3 border text-center border">Task</th>
+                    <th class="p-3 border text-center border">Epic</th>
+                    <th class="p-2 border text-center border">Sprint</th>
+                    <th class="p-3 border text-center border">Assignee</th>
+                    <th class="p-3 border text-center border">Priority</th>
+                    <th class="p-3 border text-center border">Due Date</th>
+                    <th class="p-3 border text-center border">Status</th>
+                    <th class="p-3 border text-center border">Actions</th>
                 </tr>
             </thead>
 
@@ -180,12 +181,24 @@
                             {{ $task->epic->title ?? '-' }}
                         </td>
 
-                        <td class="p-3 border text-center">
+                        <td class="p-2 border text-center border">
+                            {{ $task->sprint?->name ?? 'Backlog' }}
+                        </td>
+
+                        <td class="p-3 border text-center border">
                             {{ $task->assignee->name ?? '-' }}
                         </td>
 
-                        <td class="p-3 border text-center">
-                            {{ ucfirst($task->priority) }}
+
+                        <td class="p-2 text-yellow-600 border text-center">
+                            <span class="px-2 py-1 rounded text-xs
+                                @if($task->priority == 'low') text-green-600
+                                @elseif($task->priority == 'medium') text-yellow-600
+                                @elseif($task->priority == 'high') text-orange-600
+                                @else text-red-600 @endif">
+
+                                {{ ucfirst($task->priority) }}
+                            </span>
                         </td>
 
                         <td class="p-3 border text-center text-red-600 font-semibold">
