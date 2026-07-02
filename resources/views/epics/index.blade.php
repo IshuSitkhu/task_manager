@@ -26,127 +26,34 @@
 
         <table class="w-full text-sm text-left ">
 
-            <thead class="bg-black/80 text-white uppercase text-xs">
+            <thead class="bg-black/80 border text-white uppercase text-xs">
                 <tr>
-                    <th class="p-3">Epic</th>
-                    <th class="p-3 text-center">Owner</th>
-                    <th class="p-3 text-center">Planned timeline</th>
-                    <th class="p-3 text-center">Status</th>
-                    <th class="p-3 text-center">Priority</th>
-                    <th class="p-3 text-center">Progress</th>
-                    <th class="p-3 text-center">Actions</th>
+                    <th class="p-3 border  ">Epic</th>
+                    <th class="p-3 border text-center">Owner</th>
+                    <th class="p-3 border text-center">Planned timeline</th>
+                    <th class="p-3 border text-center">Status</th>
+                    <th class="p-3 border text-center">Priority</th>
+                    <th class="p-3 border text-center">Progress</th>
+                    <th class="p-3 border text-center">Actions</th>
                 </tr>
             </thead>
-
-            {{-- <tbody>
-
-                @forelse($epics as $epic)
-
-                    <tr class="border-b">
-
-                        <td class="p-3 font-semibold">
-                            {{ $epic->title }}
-                        </td>
-
-                        <td class="p-3">
-                            {{ $epic->owner->name ?? 'N/A' }}
-                        </td>
-
-                        <td class="p-3 text-xs">
-                            <div>{{ $epic->planned_start_date ?? '-' }}</div>
-                            <div>{{ $epic->planned_end_date ?? '-' }}</div>
-                        </td>
-
-                        <td class="p-3">
-                            @php
-                                $statusColors = [
-                                    'not_started' => 'bg-gray-200 text-gray-700',
-                                    'in_progress' => 'bg-blue-200 text-blue-800',
-                                    'testing' => 'bg-purple-200 text-purple-800',
-                                    'completed' => 'bg-green-200 text-green-800',
-                                ];
-                            @endphp
-
-                            <span class="px-2 py-1 rounded text-xs {{ $statusColors[$epic->status] }}">
-                                {{ str_replace('_', ' ', ucfirst($epic->status)) }}
-                            </span>
-                        </td>
-
-                        <td class="p-3">
-                            @php
-                                $priorityColors = [
-                                    'low' => 'bg-green-200 text-green-800',
-                                    'medium' => 'bg-yellow-200 text-yellow-800',
-                                    'high' => 'bg-orange-200 text-orange-800',
-                                    'critical' => 'bg-red-200 text-red-800',
-                                ];
-                            @endphp
-
-                            <span class="px-2 py-1 rounded text-xs {{ $priorityColors[$epic->priority] }}">
-                                {{ ucfirst($epic->priority) }}
-                            </span>
-                        </td>
-
-
-                        <td class="p-3 w-20">
-                            <div class="w-full bg-gray-200 rounded h-2">
-                                <div class="bg-blue-500 h-2 rounded"
-                                     style="width: {{ $epic->progress }}%"></div>
-                            </div>
-                            <span class="text-xs">{{ $epic->progress }}%</span>
-                        </td>
-
-
-                        <td class="pt-5 flex gap-3">
-
-                            <a href="{{ route('projects.epics.edit', [$project->id, $epic->id]) }}"
-                               class="text-blue-600 ">
-                                Edit
-                            </a>
-
-                            <form method="POST"
-                                  action="{{ route('projects.epics.destroy', [$project->id, $epic->id]) }}">
-                                @csrf
-                                @method('DELETE')
-
-                                <button class="text-red-600"
-                                        onclick="return confirm('Delete epic?')">
-                                       Delete
-                                </button>
-                            </form>
-
-                        </td>
-
-                    </tr>
-
-                @empty
-
-                    <tr>
-                        <td colspan="7" class="p-4 text-center text-gray-500">
-                            No epics found. Create your first epic.
-                        </td>
-                    </tr>
-
-                @endforelse
-
-            </tbody> --}}
 
             <tbody>
 
                 @forelse($epics as $epic)
 
 
-                    <tr class="bg-white border-b hover:bg-gray-50 cursor-pointer mb-6">
+                    <tr class="bg-gray-100 border-b cursor-pointer mb-6">
 
-                        <td class="p-2 font-semibold">
+                        <td class="p-2 font-semibold border">
                             {{ $epic->title }}
                         </td>
 
-                        <td class="p-2 text-sm text-gray-800 text-center">
+                        <td class="p-2 text-sm text-gray-800 border text-center">
                             {{ $epic->owner->name ?? 'N/A' }}
                         </td>
 
-                        <td class="p-2 text-xs ">
+                        <td class="p-2 text-sm border text-center ">
 
                             <span>
                                 {{ \Carbon\Carbon::parse($epic->planned_start_date)->format('d M Y') }}
@@ -157,7 +64,7 @@
                             </span>
                         </td>
 
-                        <td class="p-2 text-center">
+                        <td class="p-2 text-center border ">
                             <span class="px-2 py-1 rounded text-sm text-white
                             @if($epic->status == 'not_started')  bg-red-500
                             @elseif($epic->status == 'in_progress') bg-blue-500
@@ -168,7 +75,7 @@
                             </span>
                         </td>
 
-                        <td class="p-2 text-center">
+                        <td class="p-2 text-center border">
                             <span class="px-2 py-1 rounded text-sm
                                  @if($epic->priority == 'low') text-green-800
                                 @elseif($epic->priority == 'medium') text-yellow-800
@@ -178,7 +85,7 @@
                             </span>
                         </td>
 
-                        <td class="p-2 text-center">
+                        <td class="p-2 text-center border">
                             <div class="w-full bg-gray-200 rounded h-2">
                                 <div class="bg-green-500 h-2 rounded"
                                      style="width: {{ $epic->progress }}%"></div>
@@ -187,7 +94,7 @@
                             {{ $epic->progress }}%
                         </td>
 
-                        <td class="p-2 flex justify-end text-center">
+                        <td class="p-2 flex justify-end text-center border gap-2">
                             <button onclick="toggleEpic({{ $epic->id }})"
                                         class="text-sm text-blue-600">
                                     Show Tasks
@@ -209,74 +116,72 @@
                                             Delete
                                         </button>
                                     </form>
-
-
                         </td>
 
                         <td>
 
                     </tr>
 
-                    <tr id="epic-{{ $epic->id }}" class="hidden  bg-black/80  ">
+                    <tr id="epic-{{ $epic->id }}" class="hidden  ">
 
                         <td colspan="7" class="p-4 border-b mb-6">
 
                             @if($epic->tasks->count() > 0)
-                                <h3 class="font-semibold text-sm text-white ">
+                                <h3 class="font-semibold text-sm">
                                     Connected Tasks
                                 </h3>
-                                <table class="w-full text-sm text-left bg-gray-50 border  rounded">
+                                <table class="w-full text-sm text-left  border  rounded">
 
                                     <thead class=" text-left border-black">
                                         <tr>
-                                            <th class="p-2 text-center">Task</th>
-                                            <th class="p-2 text-center">Sprint</th>
-                                            <th class="p-2 text-center">Status</th>
-                                            <th class="p-2 text-center">Type</th>
-                                            <th class="p-2 text-center">Priority</th>
-                                            <th class="p-2 text-center">Actions</th>
+                                            <th class="p-2 border text-center">Task</th>
+                                            <th class="p-2 border text-center">Sprint</th>
+                                            <th class="p-2 border text-center">Status</th>
+                                            <th class="p-2 border text-center">Type</th>
+                                            <th class="p-2 border text-center">Priority</th>
+                                            <th class="p-2 border text-center">Actions</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
 
-                                        @foreach($epic->tasks as $task)
+                                        @foreach($epic->normalTasks as $task)
 
                                             <tr class="border-t text-xs">
 
-                                                <td class="p-2 font-medium text-xs text-center">
+                                                <td class="p-2 border font-medium text-xs text-center">
                                                     {{ $task->title }}
                                                 </td>
 
-                                                <td class="p-2 text-xs text-center ">
+                                                <td class="p-2 text-xs border text-center ">
                                                     {{ $task->sprint ?  $task->sprint->name : 'Backlog' }}
                                                 </td>
 
-                                                <td class="p-2  text-center">
+                                                <td class="p-2 border text-center">
                                                    @php
                                                         $status = $task->projectStatus;
                                                     @endphp
 
-                                                    <span class="px-2 py-1 rounded text-white text-xs"
+                                                    <span class="px-2 py-1 rounded border text-white text-xs"
                                                         style="background-color: {{ $status->color ?? '#6b7280' }}">
 
                                                         {{ $status->name ?? ucfirst(str_replace('_', ' ', $task->status)) }}
                                                     </span>
                                                 </td>
 
-                                                <td class="p-2 text-center ">
+                                                <td class="p-2 border text-center ">
                                                     @php
                                                         $type = $task->projectType;
                                                     @endphp
 
-                                                    <span class="px-2 py-1 rounded text-white text-xs"
+                                                    <span class="px-2 py-1 border rounded text-white text-xs"
                                                         style="background-color: {{ ($task->type)->color ?? '#6b7280' }}">
 
                                                         {{ ($task->type)->name  ?? ucfirst(str_replace('_', ' ', $task->status)) }}
                                                     </span>
                                                 </td>
 
-                                                <td class="p-2 text-yellow-600 text-center">
+                                                <td class="p-2 text-yellow-600 border text-center">
                                                     <span class="px-2 py-1 rounded text-xs
                                                         @if($task->priority == 'low') text-green-600
                                                         @elseif($task->priority == 'medium') text-yellow-600
@@ -287,7 +192,7 @@
                                                     </span>
                                                 </td>
 
-                                                <td class="p-2 flex text-xs gap-3 justify-center">
+                                                <td class="p-2 flex border text-xs gap-3 justify-center">
                                                     {{-- <a href="{{ route('projects.tasks.edit', [$project->id, $task->id]) }}"
                                                        class="text-sm text-blue-600">
                                                         Edit
@@ -324,6 +229,104 @@
                                 <p class="text-gray-500">No tasks in this epic</p>
                             @endif
 
+                            @if($epic->backlogTasks->count() > 0)
+
+                                <h3 class="font-semibold text-sm text-red-500 mt-6">
+                                    Backlog
+                                </h3>
+
+                                <table class="w-full text-sm text-left  border rounded">
+
+                                    <thead>
+                                        <tr>
+                                            <th class="p-2 border text-center">Task</th>
+                                            <th class="p-2 border text-center">Sprint</th>
+                                            <th class="p-2 border text-center">Status</th>
+                                            <th class="p-2 border text-center">Type</th>
+                                            <th class="p-2 border text-center">Priority</th>
+                                            <th class="p-2 border text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                    @foreach($epic->backlogTasks as $task)
+
+                                        <tr class="border-t text-xs">
+
+                                            <td class="p-2 border font-medium text-xs text-center">
+                                                    {{ $task->title }}
+                                            </td>
+
+                                            <td class="p-2 border text-center">
+                                                {{ $task->sprint?->name ?? 'Backlog' }}
+                                            </td>
+
+                                            <td class="p-2 border text-center">
+                                                     @php
+                                                        $status = $task->projectStatus;
+                                                    @endphp
+
+                                                    <span class="px-2 py-1 rounded border text-white text-xs"
+                                                        style="background-color: {{ $status->color ?? '#6b7280' }}">
+
+                                                        {{ $status->name ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                    </span>
+                                            </td>
+
+                                            <td class="p-2 border text-center ">
+                                                    @php
+                                                        $type = $task->projectType;
+                                                    @endphp
+
+                                                    <span class="px-2 py-1 border rounded text-white text-xs"
+                                                        style="background-color: {{ ($task->type)->color ?? '#6b7280' }}">
+
+                                                        {{ ($task->type)->name  ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                    </span>
+                                            </td>
+
+                                            <td class="p-2 text-yellow-600 border text-center">
+                                                <span class="px-2 py-1 rounded text-xs
+                                                    @if($task->priority == 'low') text-green-600
+                                                    @elseif($task->priority == 'medium') text-yellow-600
+                                                    @elseif($task->priority == 'high') text-orange-600
+                                                    @else text-red-600 @endif">
+
+                                                    {{ ucfirst($task->priority) }}
+                                                </span>
+                                            </td>
+
+                                            <td class="p-2 flex border text-xs gap-3 justify-center">
+                                                <button onclick="openTaskModal({{ $task->id }})"
+                                                        class="px-3 text-blue-600">
+                                                    Edit
+                                                </button>
+
+                                                <form method="POST"
+                                                      action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                      class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <button type="button"
+                                                            class=" text-red-600 hover:text-red-400"
+                                                            onclick="confirmDelete(this.form)">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+
+                                        </tr>
+
+                                    @endforeach
+
+                                    </tbody>
+
+                                </table>
+
+                            @endif
+
 
 
                         </td>
@@ -346,6 +349,8 @@
                 </tbody>
 
         </table>
+
+
 
     </div>
 
@@ -425,21 +430,32 @@
                     });
         }
 
+
+
+
     </script>
 
     <div id="taskModal"
                 class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-                <div class="bg-white w-full max-w-3xl p-6 rounded shadow">
+                <div class="bg-white w-full max-w-3xl h-full mt-4 p-4 rounded shadow">
 
-                    <div class="flex py-6 justify-between ">
+                    <div class="flex mb-4 item-center justify-between ">
                         <h2 class="  text-xl font-bold">Edit Task</h2>
-                        <button onclick="closeModal()">✕</button>
+                            <button onclick="closeModal()"
+                                class="text-xl">
+                                ✕
+                            </button>
                     </div>
 
-                    <div id="modalBody">
-                        {{-- AJAX FORM WILL LOAD HERE --}}
+                    <div class="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded shadow">
+                        <input type="hidden" id="currentTaskId">
+
+                        <div id="modalBody">
+
+                        </div>
                     </div>
+                </div>
 
     </div>
 

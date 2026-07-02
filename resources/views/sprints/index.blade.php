@@ -156,12 +156,12 @@
 
 
     @foreach($sprints as $sprint)
-                <div class="border rounded-lg mb-8 bg-white shadow-sm overflow-hidden">
+                <div class="border rounded-lg mb-8 bg-gray-100 shadow-sm overflow-hidden">
 
             <div class="grid grid-cols-12 items-center gap-4 px-5 py-3  border-b text-sm font-medium text-gray-600">
 
                 <div class="col-span-3">
-                    <div class="font-semibold text-gray-900">
+                    <div class="font-bold text-base text-gray-900">
                         {{ $sprint->name }}
                     </div>
                 </div>
@@ -259,7 +259,7 @@
 
                             <div class="flex items-center gap-8 min-w-0">
 
-                                <h1 class="font-semibold text-gray-800 text-base whitespace-nowrap">
+                                <h1 class="font-semibold text-gray-800 text-sm whitespace-nowrap">
                                     {{ $task->title }}
                                 </h1>
 
@@ -320,6 +320,104 @@
                 @else
                     <p class="text-gray-500 text-sm">No tasks in this sprint</p>
                 @endif
+
+                @if($sprint->backlogTasks->count() > 0)
+
+                                <h3 class="font-semibold text-sm text-red-500 mt-6">
+                                    Backlog
+                                </h3>
+
+                                <table class="w-full text-sm text-left bg-white border rounded">
+
+                                    <thead>
+                                        <tr>
+                                            <th class="p-2 border text-center">Task</th>
+                                            <th class="p-2 border text-center">Epic</th>
+                                            <th class="p-2 border text-center">Status</th>
+                                            <th class="p-2 border text-center">Type</th>
+                                            <th class="p-2 border text-center">Priority</th>
+                                            <th class="p-2 border text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                    @foreach($sprint->backlogTasks as $task)
+
+                                        <tr class="border-t text-xs">
+
+                                            <td class="p-2 border font-medium text-xs text-center">
+                                                    {{ $task->title }}
+                                            </td>
+
+                                            <td class="p-2 border text-center">
+                                                {{  $task->epic->title ??  'Backlog' }}
+                                            </td>
+
+                                            <td class="p-2 border text-center">
+                                                     @php
+                                                        $status = $task->projectStatus;
+                                                    @endphp
+
+                                                    <span class="px-2 py-1 rounded border text-white text-xs"
+                                                        style="background-color: {{ $status->color ?? '#6b7280' }}">
+
+                                                        {{ $status->name ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                    </span>
+                                            </td>
+
+                                            <td class="p-2 border text-center ">
+                                                    @php
+                                                        $type = $task->projectType;
+                                                    @endphp
+
+                                                    <span class="px-2 py-1 border rounded text-white text-xs"
+                                                        style="background-color: {{ ($task->type)->color ?? '#6b7280' }}">
+
+                                                        {{ ($task->type)->name  ?? ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                    </span>
+                                            </td>
+
+                                            <td class="p-2 text-yellow-600 border text-center">
+                                                <span class="px-2 py-1 rounded text-xs
+                                                    @if($task->priority == 'low') text-green-600
+                                                    @elseif($task->priority == 'medium') text-yellow-600
+                                                    @elseif($task->priority == 'high') text-orange-600
+                                                    @else text-red-600 @endif">
+
+                                                    {{ ucfirst($task->priority) }}
+                                                </span>
+                                            </td>
+
+                                            <td class="p-2 flex border text-xs gap-3 justify-center">
+                                                <button
+                                                        class="px-3 text-blue-600">
+                                                    Edit
+                                                </button>
+
+                                                <form method="POST"
+                                                      action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                      class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <button type="button"
+                                                            class=" text-red-600 hover:text-red-400"
+                                                            onclick="confirmDelete(this.form)">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+
+                                        </tr>
+
+                                    @endforeach
+
+                                    </tbody>
+
+                                </table>
+
+                            @endif
 
             </div>
 
@@ -401,21 +499,29 @@
 
             </script>
 
-            <div id="taskModal"
+    <div id="taskModal"
                 class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-                <div class="bg-white w-full max-w-3xl p-6 rounded shadow">
+                <div class="bg-white w-full max-w-3xl h-full mt-4 p-4 rounded shadow">
 
-                    <div class="flex justify-between mb-4">
-                        <h2 class="text-xl font-bold">Edit Task</h2>
-                        <button onclick="closeModal()">✕</button>
+                    <div class="flex mb-4 item-center justify-between ">
+                        <h2 class="  text-xl font-bold">Edit Task</h2>
+                            <button onclick="closeModal()"
+                                class="text-xl">
+                                ✕
+                            </button>
                     </div>
 
-                    <div id="modalBody">
-                        {{-- AJAX FORM WILL LOAD HERE --}}
-                    </div>
+                    <div class="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded shadow">
+                        <input type="hidden" id="currentTaskId">
 
-            </div>
+                        <div id="modalBody">
+
+                        </div>
+                    </div>
+                </div>
+
+    </div>
 
     </div>
 

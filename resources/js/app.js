@@ -9,8 +9,30 @@ Alpine.start();
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 
+// Project dates
+const projectStart = document.querySelector("#project_start_date");
+const projectEnd = document.querySelector("#project_end_date");
 
+if (projectStart && projectEnd) {
+    const projectEndPicker = flatpickr("#project_end_date", {
+        dateFormat: "Y-m-d",
+        minDate: projectStart.value || null
+    });
 
+    flatpickr("#project_start_date", {
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates) {
+            projectEndPicker.set("minDate", selectedDates[0]);
+
+            if (
+                projectEndPicker.selectedDates.length &&
+                projectEndPicker.selectedDates[0] < selectedDates[0]
+            ) {
+                projectEndPicker.clear();
+            }
+        }
+    });
+}
 
 // const startInput = document.querySelector("#start_date");
 // const endInput = document.querySelector("#end_date");

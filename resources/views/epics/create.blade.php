@@ -2,7 +2,6 @@
 
 @section('content')
 
-    {{-- HEADER --}}
     <div class="flex justify-between items-center mb-6">
 
         <h2 class="text-2xl font-bold">
@@ -16,7 +15,6 @@
 
     </div>
 
-    {{-- FORM CARD --}}
     <div class="bg-white p-6 rounded shadow">
 
         @if ($errors->any())
@@ -32,7 +30,6 @@
         <form method="POST" action="{{ route('projects.epics.store', $project->id) }}">
             @csrf
 
-            {{-- TITLE --}}
             <div class="mb-4">
                 <label class="block font-medium mb-1">Epic Title</label>
                 <input type="text"
@@ -42,7 +39,6 @@
                        required>
             </div>
 
-            {{-- DESCRIPTION --}}
             <div class="mb-4">
                 <label class="block font-medium mb-1">Description</label>
                 <textarea name="description"
@@ -53,7 +49,6 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                {{-- OWNER --}}
                 <div>
                     <label class="block font-medium mb-1">Owner</label>
                     <select name="owner_id" class="w-full border rounded p-2" required>
@@ -69,7 +64,6 @@
                     </select>
                 </div>
 
-                {{-- PRIORITY --}}
                 <div>
                     <label class="block font-medium mb-1">Priority</label>
                     <select name="priority" class="w-full border rounded p-2" required>
@@ -80,7 +74,6 @@
                     </select>
                 </div>
 
-                {{-- STATUS --}}
                 <div>
                     <label class="block font-medium mb-1">Status</label>
                     <select name="status" class="w-full border rounded p-2" required>
@@ -91,7 +84,6 @@
                     </select>
                 </div>
 
-                {{-- PROGRESS --}}
                 <div>
                     <label class="block font-medium mb-1">Progress (%)</label>
                     <input type="number"
@@ -102,7 +94,6 @@
                            value="0">
                 </div>
 
-                {{-- START DATE --}}
                 <div>
                     <label class="block font-medium mb-1">Start Date</label>
                     <input type="text"
@@ -112,9 +103,6 @@
                         required>
                 </div>
 
-
-
-                {{-- END DATE --}}
                 <div>
                     <label class="block font-medium mb-1">End Date</label>
                         <input type="text"
@@ -132,7 +120,6 @@
                 </div> --}}
             </div>
 
-            {{-- SUBMIT --}}
             <div class="mt-6 flex justify-end">
                 <button type="submit"
                         class="bg-blue-600 text-white px-6 py-2 rounded">

@@ -6,6 +6,7 @@ use App\Models\Epic;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class EpicController extends Controller
 {
@@ -16,9 +17,30 @@ class EpicController extends Controller
     {
         $epics = $project->epics()
             ->withCount('tasks')
-            ->with('owner')
+            ->with([
+                'owner',
+                'tasks.sprint',
+                'tasks.projectStatus',
+                'tasks.type',
+            ])
             ->latest()
             ->get();
+
+            foreach ($epics as $epic) {
+
+                    $epic->backlogTasks = $epic->tasks->filter(function ($task) {
+                        return $task->due_date &&
+                            Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+                            $task->status != 'done';
+                    });
+
+                    $epic->normalTasks = $epic->tasks->reject(function ($task) {
+                        return $task->due_date &&
+                            Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+                            $task->status != 'done';
+                    });
+
+                }
 
         return view('epics.index', compact('project', 'epics'));
     }

@@ -5,12 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Sprint;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class SprintController extends Controller
 {
     public function index(Project $project)
     {
         $sprints = $project->sprints()->latest()->get();
+
+        foreach ($sprints as $sprint){
+            $sprint->backlogTasks = $sprint->tasks->filter(function ($task){
+                return $task->due_date &&
+                    Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+                    $task->status != 'done';
+            });
+        }
 
         return view('sprints.index', compact('project', 'sprints'));
     }

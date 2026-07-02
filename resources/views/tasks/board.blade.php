@@ -149,9 +149,6 @@
                     <div id="subtasks-{{ $task->id }}"
                         class="hidden mt-3 border-t pt-2 max-h-40 overflow-y-auto space-y-2">
 
-
-
-
                         @foreach($task->checklists as $subtask)
 
                             <div class="flex items-center justify-between bg-gray-50 rounded p-2 text-sm border"
