@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\ChecklistComment;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Services\ActivityService;
 
 class TaskController extends Controller
 {
@@ -65,7 +66,7 @@ class TaskController extends Controller
         return view('tasks.create', compact('project', 'epics', 'sprints', 'users','types' ));
     }
 
-    public function store(Request $request, Project $project)
+    public function store(Request $request, Project $project, ActivityService $activityService)
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -126,6 +127,13 @@ class TaskController extends Controller
             }
         }
 
+        $activityService->log(
+            Auth::user(),
+            'created_task',
+            'Created task "' . $task->title . '"',
+            $task
+        );
+
         // return redirect()->route('projects.tasks', $project->id)
         //     ->with('success', 'Task created successfully');
 
@@ -141,6 +149,8 @@ class TaskController extends Controller
         $users = $project->members;
 
         return view('tasks.edit', compact('project', 'task', 'epics', 'sprints', 'users'));
+
+
     }
 
     public function editmodule(Project $project, Task $task)
@@ -154,7 +164,8 @@ class TaskController extends Controller
             'users' => $project->members,
         ]);
     }
-    public function update(Request $request, Project $project, Task $task)
+
+    public function update(Request $request, Project $project, Task $task, ActivityService $activityService)
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -205,18 +216,33 @@ class TaskController extends Controller
             'image' => $imagePath,
         ]);
 
+        $activityService->log(
+            Auth::user(),
+            'updated_task',
+            'Updated task "' . $task->title . '"',
+            $task
+        );
+
 
         return redirect()->back()
             ->with('success', 'Task updated successfully');
     }
 
-    public function destroy(Project $project, Task $task)
+    public function destroy(Project $project, Task $task, ActivityService $activityService)
     {
+
+        $activityService->log(
+            Auth::user(),
+            'deleted_task',
+            'Deleted task "' . $task->title . '"',
+            $task
+        );
+
         $task->delete();
 
         return back()->with('success', 'Task deleted successfully');
     }
-    
+
     public function board(Project $project)
     {
         $project->load('statuses');

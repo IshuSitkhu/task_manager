@@ -444,7 +444,7 @@
 
                 <div>
                     <label class="block font-medium mb-1">Assign Developer</label>
-                    
+
                     <select name="assigned_to" class="w-full border rounded p-2 mb-2">
                         @foreach($users as $user)
                             <option value="{{ $user->id }}">
