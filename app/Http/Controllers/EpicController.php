@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Services\ActivityService;
 
 class EpicController extends Controller
 {
@@ -75,7 +76,7 @@ class EpicController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Project $project)
+    public function store(Request $request, Project $project, ActivityService $activityService)
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -98,6 +99,13 @@ class EpicController extends Controller
             'planned_end_date' => $request->planned_end_date,
             'progress' => $request->progress ?? 0,
         ]);
+
+        $activityService->log(
+            Auth::user(),
+            'created_epic',
+            'Created epic "' . $request->title . '"',
+            null
+        );
 
         return redirect()->route('projects.epics', $project->id)
             ->with('success', 'Epic created successfully');
@@ -124,32 +132,47 @@ class EpicController extends Controller
     /**
      * Update the specified resource in storage.
      */
-public function update(Request $request, Project $project, Epic $epic)
-{
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'owner_id' => 'required|exists:users,id',
-        'priority' => 'required',
-        'status' => 'required',
-        'planned_start_date' => 'nullable|date',
-        'planned_end_date' => 'nullable|date',
-        'progress' => 'nullable|integer|min:0|max:100',
-    ]);
+    public function update(Request $request, Project $project, Epic $epic, ActivityService $activityService)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'owner_id' => 'required|exists:users,id',
+            'priority' => 'required',
+            'status' => 'required',
+            'planned_start_date' => 'nullable|date',
+            'planned_end_date' => 'nullable|date',
+            'progress' => 'nullable|integer|min:0|max:100',
+        ]);
 
-    $epic->update($request->all());
+        $epic->update($request->all());
 
-    return redirect()->route('projects.epics', $project->id)
-        ->with('success', 'Epic updated successfully');
-}
+        $activityService->log(
+            Auth::user(),
+            'updated_epic',
+            'Updated epic "' . $epic->title . '"',
+            null
+        );
+
+        return redirect()->route('projects.epics', $project->id)
+            ->with('success', 'Epic updated successfully');
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-public function destroy(Project $project, Epic $epic)
-{
-    $epic->delete();
+    public function destroy(Project $project, Epic $epic, ActivityService $activityService)
+    {
+        $activityService->log(
+            Auth::user(),
+            'deleted_epic',
+            'Deleted epic "' . $epic->title . '"',
+            null
+        );
 
-    return back()->with('success', 'Epic deleted successfully');
-}
+        $epic->delete();
+
+        return back()->with('success', 'Epic deleted successfully');
+    }
+
 }
