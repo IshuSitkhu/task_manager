@@ -220,7 +220,7 @@ class TaskController extends Controller
 
         $epics = $project->epics;
         $sprints = $project->sprints;
-        $users = User::where('role', 'employee')->get();
+        $users = $project->members;
 
         return view('tasks.board', compact(
             'project',

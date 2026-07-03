@@ -106,7 +106,7 @@ class EpicController extends Controller
      */
     public function edit(Project $project, Epic $epic)
     {
-        $users = User::where('role', 'employee')->get();
+        $users = $project->members;
 
         return view('epics.edit', compact('project', 'epic', 'users'));
     }

@@ -2,7 +2,6 @@
 
 @section('content')
 
-    {{-- HEADER --}}
     <div class="flex justify-between items-center mb-6">
 
         <h2 class="text-2xl font-bold">
@@ -16,7 +15,6 @@
 
     </div>
 
-    {{-- FORM CARD --}}
     <div class="bg-white p-6 rounded shadow">
 
 
@@ -34,7 +32,6 @@
             @csrf
             @method('PUT')
 
-            {{-- TITLE --}}
             <div class="mb-4">
                 <label class="block font-medium mb-1">Epic Title</label>
                 <input type="text"
@@ -44,7 +41,6 @@
                        required>
             </div>
 
-            {{-- DESCRIPTION --}}
             <div class="mb-4">
                 <label class="block font-medium mb-1">Description</label>
                 <textarea name="description"
@@ -55,7 +51,6 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                {{-- OWNER --}}
                 <div>
                     <label class="block font-medium mb-1">Owner</label>
                     <select name="owner_id" class="w-full border rounded p-2" required>
