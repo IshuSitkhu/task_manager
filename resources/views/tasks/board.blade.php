@@ -111,21 +111,6 @@
                     </div>
 
                     <div class="mt-3 flex gap-2">
-                        {{-- <button
-                            type="button"
-
-                           onclick="event.stopPropagation(); toggleBugs({{ $task->id }})"
-                            class="text-xs px-2 py-1 rounded bg-red-50 text-red-600">
-                            Bugs ({{ $task->bugs->count() }})
-                        </button>
-
-                        <button
-                            type="button"
-                            onclick="event.stopPropagation(); toggleSubtasks({{ $task->id }})"
-                            class="text-xs px-2 py-1 rounded bg-blue-50 text-blue-600">
-                            {{ $task->checklists->count() }} Subtasks
-                        </button> --}}
-
                         <button
                             type="button"
                             {{-- onclick="event.stopPropagation(); openBugListModal({{ $task->id }})" --}}
@@ -341,7 +326,7 @@
 
 <div id="taskEditModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
-    <div class="bg-white w-full max-w-3xl h-full mt-4 p-4 rounded shadow">
+    <div class="bg-white  w-[1000px] h-full mt-4 p-4 rounded shadow">
 
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">
@@ -368,7 +353,7 @@
             </div>
         </div>
 
-        <div class="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded shadow">
+        <div class="bg-white max-h-[90vh] overflow-y-auto rounded shadow">
              <input type="hidden" id="currentTaskId">
 
             <div id="modalBody">
@@ -396,15 +381,8 @@
                 </div>
             </div>
         </div>
-
-
     </div>
-
-
-
 </div>
-
-
 
 <div id="bugModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
@@ -536,10 +514,6 @@
 
     </div>
 </div>
-
-
-
-
 
 <script>
     const currentUserId = {{ auth()->id() }};
@@ -1006,19 +980,12 @@
         console.log(taskId);
 
         document.getElementById('modalTaskId').value = taskId;
-
-
-
-
-
         document.getElementById('subtaskModal').classList.remove('hidden');
     }
 
     function closeSubtaskModal() {
 
         document.getElementById('subtaskModal').classList.add('hidden');
-
-
     }
 
 </script>

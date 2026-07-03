@@ -1,77 +1,77 @@
 <script>
     console.log('Subtask script loaded');
-document.addEventListener('click', function (e) {
+    document.addEventListener('click', function (e) {
 
-    if (e.target.id !== 'addChecklist') return;
+        if (e.target.id !== 'addChecklist') return;
 
-    console.log("Add button clicked");
+        console.log("Add button clicked");
 
-    const input = document.getElementById('checklistInput');
-    const container = document.getElementById('checklistContainer');
+        const input = document.getElementById('checklistInput');
+        const container = document.getElementById('checklistContainer');
 
-    if (input.value.trim() === '') return;
+        if (input.value.trim() === '') return;
 
-    const taskId = document.getElementById('currentTaskId').value;
+        const taskId = document.getElementById('currentTaskId').value;
 
-    fetch('/tasks/' + taskId + '/checklists', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN':
-                document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-            title: input.value
+        fetch('/tasks/' + taskId + '/checklists', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN':
+                    document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                title: input.value
+            })
         })
-    })
-    .then(response => response.json())
-    .then(checklist => {
+        .then(response => response.json())
+        .then(checklist => {
 
-        const id = checklist.id;
+            const id = checklist.id;
 
-        const html = `
-        <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50"
-             data-id="${id}"
-             data-image="">
+            const html = `
+            <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50"
+                data-id="${id}"
+                data-image="">
 
-            <div class="flex items-center gap-3 flex-1">
+                <div class="flex items-center gap-3 flex-1">
 
-                <input type="checkbox"
-                       class="check-toggle"
-                       data-id="${id}">
+                    <input type="checkbox"
+                        class="check-toggle"
+                        data-id="${id}">
 
-                <span>${checklist.title}</span>
+                    <span>${checklist.title}</span>
 
-                <input type="hidden" class="sub-title" value="${checklist.title}">
-                <input type="hidden" class="sub-description" value="">
-                <input type="hidden" class="sub-assigned" value="">
-                <input type="hidden" class="sub-due-date" value="">
-                <input type="hidden" class="check-status" value="0">
+                    <input type="hidden" class="sub-title" value="${checklist.title}">
+                    <input type="hidden" class="sub-description" value="">
+                    <input type="hidden" class="sub-assigned" value="">
+                    <input type="hidden" class="sub-due-date" value="">
+                    <input type="hidden" class="check-status" value="0">
 
-                <input type="file" class="sub-image hidden">
+                    <input type="file" class="sub-image hidden">
+
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="button"
+                            class="editSubtask text-blue-600">
+                        Edit
+                    </button>
+
+                    <button type="button"
+                            class="removeChecklist text-red-500">
+                        Delete
+                    </button>
+                </div>
 
             </div>
+            `;
 
-            <div class="flex gap-2">
-                <button type="button"
-                        class="editSubtask text-blue-600">
-                    Edit
-                </button>
+            container.insertAdjacentHTML('beforeend', html);
 
-                <button type="button"
-                        class="removeChecklist text-red-500">
-                    Delete
-                </button>
-            </div>
-
-        </div>
-        `;
-
-        container.insertAdjacentHTML('beforeend', html);
-
-        input.value = '';
+            input.value = '';
+        });
     });
-});
 
     document.addEventListener('click', function (e) {
 
@@ -168,6 +168,8 @@ document.addEventListener('click', function (e) {
 
             currentSubtask = e.target.closest('[data-id]');
              console.log(currentSubtask);
+
+            loadSubtaskComments(currentSubtask.dataset.id);
 
             currentFileInput =
                 currentSubtask.querySelector('.sub-image');
@@ -267,5 +269,132 @@ document.addEventListener('click', function (e) {
 
     document.getElementById('closeModal').addEventListener('click', function(){
         modal.classList.add('hidden');
+    });
+
+    //SUBTASK COMMENTS
+    function loadSubtaskComments(checklistId) {
+
+        fetch('/checklists/' + checklistId + '/comments')
+            .then(response => response.json())
+            .then(comments => {
+
+                let html = '';
+
+                comments.forEach(comment => {
+
+                html += `
+                    <div class="flex gap-3 py-4 border-b ">
+
+                        <!-- Avatar -->
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-blue-200  flex items-center justify-center font-semibold">
+                                ${comment.user.name.charAt(0).toUpperCase()}
+                            </div>
+                        </div>
+
+                        <div class="flex-1">
+
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold ">
+                                    ${comment.user.name}
+                                </span>
+
+                                <span class="text-xs ">
+                                    ${new Date(comment.created_at).toLocaleString()}
+                                </span>
+                                ${comment.user_id == currentUserId ? `
+                                    <button
+                                        class="deleteSubtaskComment text-red-500 text-sm ml-auto"
+                                        data-id="${comment.id}">
+                                        Delete
+                                    </button>
+                                ` : ''}
+                            </div>
+
+                            <div class="mt-2 border border-black rounded-xl px-4 py-3 text-gray-700 shadow-sm">
+                                ${comment.comment}
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+
+                });
+
+                console.log(comments);
+
+                document.getElementById('subtaskCommentList').innerHTML = html;
+                document.getElementById('subtaskCommentList').innerHTML
+
+            });
+
+    }
+
+    document.getElementById('addComment').addEventListener('click', function(){
+
+         console.log("Send button clicked");
+
+        const input = document.getElementById('subtaskCommentInput');
+
+        input.addEventListener('input', function () {
+            console.log("Typing:", this.value);
+        });
+        console.log(input);
+
+        const text = input.value;
+
+        console.log("Comment:", "[" + text + "]");
+
+        if(text.trim() == '') return;
+
+        fetch('/checklists/' + currentSubtask.dataset.id + '/comments',{
+
+            method:'POST',
+
+            headers:{
+                'Content-Type':'application/json',
+                'X-CSRF-TOKEN':
+                    document.querySelector('meta[name="csrf-token"]').content
+            },
+
+            body:JSON.stringify({
+                comment:text
+            })
+
+        })
+
+        .then(response => response.json())
+
+        .then(() => {
+
+            document.getElementById('subtaskCommentInput').value = '';
+
+            loadSubtaskComments(currentSubtask.dataset.id);
+
+        });
+
+    });
+
+    document.addEventListener('click', function (e) {
+
+        if (!e.target.classList.contains('deleteSubtaskComment')) return;
+
+        const id = e.target.dataset.id;
+
+        fetch('/checklists/comments/' + id, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN':
+                    document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadSubtaskComments(currentSubtask.dataset.id);
+            }
+        });
+
     });
 </script>

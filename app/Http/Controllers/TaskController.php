@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\TaskChecklist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ChecklistComment;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class TaskController extends Controller
@@ -245,7 +247,6 @@ class TaskController extends Controller
         ]);
     }
 
-
     public function moveStatus(Request $request, Task $task)
     {
         $task->update([
@@ -256,7 +257,6 @@ class TaskController extends Controller
             'success' => true
         ]);
     }
-
 
     public function toggleChecklist(Request $request, TaskChecklist $checklist)
     {
@@ -326,6 +326,50 @@ class TaskController extends Controller
             compact('task')
         );
     }
+
+    //SUBTASK COMMENTS
+    public function comments(TaskChecklist $checklist)
+    {
+        return response()->json(
+            $checklist->comments()
+                    ->with('user')
+                    ->latest()
+                    ->get()
+        );
+    }
+
+    public function storeComment(Request $request, TaskChecklist $checklist)
+    {
+        $request->validate([
+            'comment' => 'required|string'
+        ]);
+
+        $comment = $checklist->comments()->create([
+            'user_id' => Auth::id(),
+            'comment' => $request->comment
+        ]);
+
+        $comment->load('user');
+
+        return response()->json($comment);
+    }
+
+public function destroyComment(ChecklistComment $comment)
+{
+    // Optional: only allow the comment owner to delete
+    if ($comment->user_id != Auth::id()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized'
+        ], 403);
+    }
+
+    $comment->delete();
+
+    return response()->json([
+        'success' => true
+    ]);
+}
 
 
 }

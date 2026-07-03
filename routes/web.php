@@ -98,6 +98,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/tasks/{task}/move-status', [TaskController::class, 'moveStatus'])
     ->name('tasks.move-status');
 
+
+
     //bug
     Route::prefix('projects/{project}')->group(function () {
 
@@ -182,10 +184,26 @@ Route::middleware('auth')->group(function () {
     );
 
 
+
     Route::get(
         '/tasks/{task}/subtasks',
         [TaskController::class, 'subtaskModal']
     );
+
+    Route::post(
+        '/checklists/{checklist}/comments',
+        [TaskController::class,'storeComment']
+    );
+
+    Route::get(
+        '/checklists/{checklist}/comments',
+        [TaskController::class,'comments']
+    );
+
+    Route::delete(
+    '/checklists/comments/{comment}',
+    [TaskController::class, 'destroyComment']
+);
 
 });
 

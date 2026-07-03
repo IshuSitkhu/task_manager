@@ -38,9 +38,10 @@
             @forelse($tasks as $task)
                 <tr class="bg-white border-b hover:bg-gray-50 cursor-pointer mb-6">
 
-                <td class="border p-3">
-                    <div class="font-semibold">
-                        {{ $task->title }}
+                <td class="p-3 font-semibold border">
+                    <div>{{ $task->title }}</div>
+                    <div class="text-blue-700">
+                        {{ $task->checklists->where('is_completed',1)->count() }}/{{ $task->checklists->count() }} Subtasks
                     </div>
                 </td>
 
@@ -173,9 +174,13 @@
 
                     <tr class="border-b hover:bg-red-50">
 
-                        <td class="p-3 font-semibold border">
-                            {{ $task->title }}
-                        </td>
+                            <td class="p-3 font-semibold border">
+                                <div>{{ $task->title }}</div>
+                                <div class="text-blue-700">
+                                    {{ $task->checklists->where('is_completed',1)->count() }}/{{ $task->checklists->count() }} Subtasks
+                                </div>
+                            </td>
+
 
                         <td class="p-3 border text-center">
                             {{ $task->epic->title ?? '-' }}

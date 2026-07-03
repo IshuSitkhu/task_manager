@@ -8,7 +8,7 @@
         @method('PUT')
 
 
-        <input type="hidden" name="redirect_to" value="{{ route('projects.sprints', $project->id) }}">
+            <input type="hidden" name="redirect_to" value="{{ route('projects.sprints', $project->id) }}">
             <div class="mb-2">
                 <label class="block font-medium mb-1">Task Title</label>
                 <input type="text"
@@ -254,11 +254,6 @@
             Delete Task
         </button>
     </form>
-
-
-
-
-
 </div>
 
 <script>
@@ -298,5 +293,5 @@
     });
 </script>
 
-@include('tasks.partials.subtask-modal')
-@include('tasks.partials.subtask-script')
+{{-- @include('tasks.partials.subtask-modal')
+@include('tasks.partials.subtask-script') --}}
