@@ -252,10 +252,12 @@
                                 Edit
                             </button>
 
+                            @if(auth()->user()->role == 'project_manager')
                             <button type="button"
                                     class="removeChecklist text-red-500">
                                 Delete
                             </button>
+                            @endif
                         </div>
 
                     </div>
@@ -526,10 +528,12 @@
                         Edit
                     </button>
 
-                    <button type="button"
-                            class="removeChecklist text-red-500">
-                        Delete
-                    </button>
+                    @if(auth()->user()->role == 'project_manager')
+                        <button type="button"
+                                class="removeChecklist text-red-500">
+                            Delete
+                        </button>
+                    @endif
                 </div>
 
             </div>
@@ -656,6 +660,7 @@
 
                 modalPreview.classList.add('hidden');
             }
+            loadSubtaskComments(currentSubtask.dataset.id);
 
             modal.classList.remove('hidden');
         }
@@ -731,62 +736,68 @@
 
 
     //SUBTASK COMMENTS
-    function loadSubtaskComments(checklistId) {
+function loadSubtaskComments(checklistId) {
 
-        fetch('/checklists/' + checklistId + '/comments')
-            .then(response => response.json())
-            .then(comments => {
+    fetch('/checklists/' + checklistId + '/comments')
+        .then(response => response.json())
+        .then(comments => {
 
-                let html = '';
+            let html = '';
 
-                comments.forEach(comment => {
-
-                html += `
-                    <div class="flex gap-3 py-4 border-b ">
-
-                        <!-- Avatar -->
-                        <div class="flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-blue-200  flex items-center justify-center font-semibold">
-                                ${comment.user.name.charAt(0).toUpperCase()}
-                            </div>
-                        </div>
-
-                        <div class="flex-1">
-
-                            <div class="flex items-center gap-2">
-                                <span class="font-semibold ">
-                                    ${comment.user.name}
-                                </span>
-
-                                <span class="text-xs ">
-                                    ${new Date(comment.created_at).toLocaleString()}
-                                </span>
-                                <button
-                                    class="deleteSubtaskComment text-red-500 text-sm ml-auto"
-                                    data-id="${comment.id}">
-                                    Delete
-                                </button>
-                            </div>
-
-                            <div class="mt-2 border border-black rounded-xl px-4 py-3 text-gray-700 shadow-sm">
-                                ${comment.comment}
-                            </div>
-
-                        </div>
-
+            if (comments.length === 0) {
+                html = `
+                    <div class="text-center text-gray-500 py-6">
+                        No comments yet.
                     </div>
                 `;
+            } else {
+                comments.forEach(comment => {
 
+                    html += `
+                        <div class="flex gap-3 py-4 border-b ">
+
+                            <!-- Avatar -->
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center font-semibold">
+                                    ${comment.user.name.charAt(0).toUpperCase()}
+                                </div>
+                            </div>
+
+                            <div class="flex-1">
+
+                                <div class="flex items-center gap-2">
+                                    <span class="font-semibold">
+                                        ${comment.user.name}
+                                    </span>
+
+                                    <span class="text-xs">
+                                        ${new Date(comment.created_at).toLocaleString()}
+                                    </span>
+
+                                    ${comment.user_id == currentUserId ? `
+                                        <button
+                                            class="deleteSubtaskComment text-red-500 text-sm ml-auto"
+                                            data-id="${comment.id}">
+                                            Delete
+                                        </button>
+                                    ` : ''}
+                                </div>
+
+                                <div class="mt-2 border border-black rounded-xl px-4 py-3 text-gray-700 shadow-sm">
+                                    ${comment.comment}
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `;
                 });
+            }
 
-                console.log(comments);
+            document.getElementById('subtaskCommentList').innerHTML = html;
+        });
 
-                document.getElementById('subtaskCommentList').innerHTML = html;
-                document.getElementById('subtaskCommentList').innerHTML
-
-            });
-
-    }
+}
 
     document.getElementById('addComment').addEventListener('click', function(){
 
@@ -854,6 +865,9 @@
         });
 
     });
+</script>
+<script>
+    window.currentUserId = {{ auth()->id() }};
 </script>
 
 @endsection

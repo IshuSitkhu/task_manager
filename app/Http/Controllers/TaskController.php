@@ -18,7 +18,7 @@ class TaskController extends Controller
 {
     public function index(Project $project)
     {
-        $tasks = Task::where('project_id', $project->id)
+        $query = Task::where('project_id', $project->id)
             ->with([
                 'epic',
                 'sprint',
@@ -26,9 +26,14 @@ class TaskController extends Controller
                 'checklists',
                 'projectStatus',
                 'type'
-            ])
-            ->latest()
-            ->get();
+            ]);
+
+        // Employees see only their assigned tasks
+        if (Auth::user()->role == 'employee') {
+            $query->where('assigned_to', Auth::id());
+        }
+
+        $tasks = $query->latest()->get();
 
         // Backlog = due date before today AND not done
         $backlogTasks = $tasks->filter(function ($task) {
@@ -211,13 +216,22 @@ class TaskController extends Controller
 
         return back()->with('success', 'Task deleted successfully');
     }
+    
     public function board(Project $project)
     {
         $project->load('statuses');
 
-        $tasks = $project->tasks()->with('epic', 'assignee', 'projectStatus', 'bugs','type')->latest()->get();
-        $types = $project->taskTypes;
+        $query = $project->tasks()
+            ->with('epic', 'assignee', 'projectStatus', 'bugs', 'type');
 
+        // Employees see only their assigned tasks
+        if (Auth::user()->role == 'employee') {
+            $query->where('assigned_to', Auth::id());
+        }
+
+        $tasks = $query->latest()->get();
+
+        $types = $project->taskTypes;
         $epics = $project->epics;
         $sprints = $project->sprints;
         $users = $project->members;

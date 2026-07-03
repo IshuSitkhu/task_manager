@@ -58,10 +58,12 @@
                         Edit
                     </button>
 
+                    @if(auth()->user()->role == 'project_manager')
                     <button type="button"
                             class="removeChecklist text-red-500">
                         Delete
                     </button>
+                    @endif
                 </div>
 
             </div>
@@ -282,6 +284,7 @@
 
                 comments.forEach(comment => {
 
+
                 html += `
                     <div class="flex gap-3 py-4 border-b ">
 
@@ -319,6 +322,12 @@
 
                     </div>
                 `;
+
+                console.log({
+    commentUserId: comment.user_id,
+    currentUserId: currentUserId,
+    equal: comment.user_id == currentUserId
+});
 
                 });
 
@@ -397,4 +406,7 @@
         });
 
     });
+</script>
+<script>
+    window.currentUserId = {{ auth()->id() }};
 </script>

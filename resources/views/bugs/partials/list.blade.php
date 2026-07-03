@@ -20,16 +20,18 @@
     @endif
 
 
-    <form method="POST" >
-        @csrf
-        @method('DELETE')
+    @if(auth()->user()->role == 'project_manager')
+        <form method="POST" >
+            @csrf
+            @method('DELETE')
 
-        <button type="submit"
-                class="text-sm text-white border rounded p-3 bg-red-600"
-                onclick="return confirm('Delete this bug?')">
-            Delete Bug Report
-        </button>
-    </form>
+            <button type="submit"
+                    class="text-sm text-white border rounded p-3 bg-red-600"
+                    onclick="return confirm('Delete this bug?')">
+                Delete Bug Report
+            </button>
+        </form>
+    @endif
 </div>
 @empty
     <p class="text-gray-500">No bugs found for this task.</p>

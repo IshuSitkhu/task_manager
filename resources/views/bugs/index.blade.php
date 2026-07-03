@@ -145,20 +145,22 @@
                             Edit
                         </button>
 
-                        <form method="POST"
-                            action="{{ route('projects.bugs.destroy', [$project, $bug]) }}">
+                        @if(auth()->user()->role == 'project_manager')
+                            <form method="POST"
+                                action="{{ route('projects.bugs.destroy', [$project, $bug]) }}">
 
-                            @csrf
-                            @method('DELETE')
+                                @csrf
+                                @method('DELETE')
 
-                            <button
-                                class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
+                                <button
+                                    class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
 
-                                Delete
+                                    Delete
 
-                            </button>
+                                </button>
 
-                        </form>
+                            </form>
+                        @endif
 
                     </div>
 

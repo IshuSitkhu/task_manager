@@ -17,6 +17,7 @@
             {{ session('success') }}
         </div>
     @endif --}}
+    @if(auth()->user()->role == 'project_manager')
     <div class="flex flex-col gap-2">
         <button onclick="openStatusModal()"
             class="px-3 py-1 bg-black/50 rounded text-white rounded">
@@ -28,6 +29,7 @@
             + Add New Type
         </button>
     </div>
+    @endif
 </div>
 
 <div class="grid grid-cols-3 gap-6">
@@ -49,17 +51,19 @@
                     </button>
 
                     <div id="menu-{{ $status->id }}" class="hidden absolute right-0 top-8 mt-2 bg-white border rounded shadow-lg z-50 min-w-[150px]">
-                        <form method="POST"
-                        action="{{ route('projects.statuses.destroy', [$project->id, $status->id]) }}">
-                            @csrf
-                            @method('DELETE')
+                        @if(auth()->user()->role == 'project_manager')
+                            <form method="POST"
+                            action="{{ route('projects.statuses.destroy', [$project->id, $status->id]) }}">
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="button"
-                                onclick="confirmDelete(this.form)"
-                                class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
-                                Delete Status
-                            </button>
-                        </form>
+                                <button type="button"
+                                    onclick="confirmDelete(this.form)"
+                                    class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
+                                    Delete Status
+                                </button>
+                            </form>
+                        @endif
 
                         <button onclick="openTaskModal('{{ $status->slug }}'); toggleMenu({{ $status->id }})"
                             class="text-sm bg-white text-black px-4 py-2 rounded">
@@ -176,10 +180,12 @@
                                         Edit
                                     </button>
 
-                                    <button type="button"
-                                            class="removeChecklist text-red-500 text-xs">
-                                        Delete
-                                    </button>
+                                    @if(auth()->user()->role == 'project_manager')
+                                        <button type="button"
+                                                class="removeChecklist text-red-500 text-xs">
+                                            Delete
+                                        </button>
+                                    @endif
                                 </div>
 
                             </div>
@@ -438,6 +444,7 @@
 
                 <div>
                     <label class="block font-medium mb-1">Assign Developer</label>
+                    
                     <select name="assigned_to" class="w-full border rounded p-2 mb-2">
                         @foreach($users as $user)
                             <option value="{{ $user->id }}">

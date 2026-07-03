@@ -117,16 +117,18 @@
                             Edit
                         </a>
 
-                        <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
-                            @csrf
-                            @method('DELETE')
+                        @if(auth()->user()->role == 'project_manager')
+                            <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="button"
-                            onclick="confirmDelete(this.form)"
-                            class="text-red-600 hover:text-red-400">
-                                Delete
-                            </button>
-                        </form>
+                                <button type="button"
+                                onclick="confirmDelete(this.form)"
+                                class="text-red-600 hover:text-red-400">
+                                    Delete
+                                </button>
+                            </form>
+                        @endif
                     </td>
 
                 </tr>
@@ -225,6 +227,7 @@
                                 Edit
                             </a>
 
+                            @if(auth()->user()->role == 'project_manager')
                             <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
                                 @csrf
                                 @method('DELETE')
@@ -235,6 +238,7 @@
                                     Delete
                                 </button>
                             </form>
+                            @endif
                         </td>
 
 

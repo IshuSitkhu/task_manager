@@ -7,43 +7,53 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class EpicController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Project $project)
-    {
-        $epics = $project->epics()
+    public function index(Project $project){
+        $query = $project->epics()
             ->withCount('tasks')
             ->with([
                 'owner',
                 'tasks.sprint',
                 'tasks.projectStatus',
                 'tasks.type',
-            ])
-            ->latest()
-            ->get();
+            ]);
 
-            foreach ($epics as $epic) {
-
-                    $epic->backlogTasks = $epic->tasks->filter(function ($task) {
-                        return $task->due_date &&
-                            Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
-                            $task->status != 'done';
+            // Only employees see their own epics AND At least one task in this epic is assigned to me.
+            if (Auth::user()->role == 'employee') {
+                $query->where(function ($q) {
+                    $q->where('owner_id', Auth::id())
+                    ->orWhereHas('tasks', function ($taskQuery) {
+                        $taskQuery->where('assigned_to', Auth::id());
                     });
-
-                    $epic->normalTasks = $epic->tasks->reject(function ($task) {
-                        return $task->due_date &&
-                            Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
-                            $task->status != 'done';
-                    });
+                });
             }
 
-            $backlogEpics = $epics->filter(function ($epic) {
-                    return $epic->backlogTasks->count() > 0;
+        $epics = $query->latest()->get();
+
+        foreach ($epics as $epic) {
+
+            $epic->backlogTasks = $epic->tasks->filter(function ($task) {
+                return $task->due_date &&
+                    Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+                    $task->status != 'done';
             });
+
+            $epic->normalTasks = $epic->tasks->reject(function ($task) {
+                return $task->due_date &&
+                    Carbon::parse($task->due_date)->isBefore(Carbon::today()) &&
+                    $task->status != 'done';
+            });
+        }
+
+        $backlogEpics = $epics->filter(function ($epic) {
+            return $epic->backlogTasks->count() > 0;
+        });
 
         return view('epics.index', compact(
             'project',

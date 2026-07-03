@@ -65,25 +65,27 @@
         </div>
 
         {{-- INVITE FORM --}}
-        <form method="POST" action="{{ route('projects.addMembers', $project->id) }}">
-            @csrf
+        @if(auth()->user()->role == 'project_manager')
+            <form method="POST" action="{{ route('projects.addMembers', $project->id) }}">
+                @csrf
 
-            <label class="block mb-2 font-medium">Invite Members</label>
+                <label class="block mb-2 font-medium">Invite Members</label>
 
-            <select name="members[]" multiple class="js-select2 w-full border p-2 rounded">
-                @foreach($allUsers as $user)
-                    <option value="{{ $user->id }}">
-                        {{ $user->name }}
-                    </option>
-                @endforeach
-            </select>
+                <select name="members[]" multiple class="js-select2 w-full border p-2 rounded">
+                    @foreach($allUsers as $user)
+                        <option value="{{ $user->id }}">
+                            {{ $user->name }}
+                        </option>
+                    @endforeach
+                </select>
 
-            <button type="submit"
-                class="mt-4 bg-blue-600 text-white px-4 py-2 rounded w-full">
-                Invite Members
-            </button>
+                <button type="submit"
+                    class="mt-4 bg-blue-600 text-white px-4 py-2 rounded w-full">
+                    Invite Members
+                </button>
 
-        </form>
+            </form>
+        @endif
 
     </div>
 </div>

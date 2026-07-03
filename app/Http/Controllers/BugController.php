@@ -8,24 +8,30 @@ use App\Models\Bug;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class BugController extends Controller
 {
     public function index(Project $project)
-{
-    $bugs = Bug::where('project_id', $project->id)
-        ->with(['task', 'assignee'])
-        ->latest()
-        ->get();
+    {
+        $query = Bug::where('project_id', $project->id)
+            ->with(['task', 'assignee']);
 
-    $users = User::all();
+        // Employees see only bugs assigned to them
+        if (Auth::user()->role == 'employee') {
+            $query->where('assigned_to', Auth::id());
+        }
 
-    return view('bugs.index', compact(
-        'project',
-        'bugs',
-        'users'
-    ));
-}
+        $bugs = $query->latest()->get();
+
+        $users = $project->members;
+
+        return view('bugs.index', compact(
+            'project',
+            'bugs',
+            'users'
+        ));
+    }
 
     public function store(Request $request, Project $project)
     {
@@ -62,20 +68,19 @@ class BugController extends Controller
         return view('bugs.partials.list', compact('bugs'));
     }
 
-public function edit(Project $project, Bug $bug)
-{
-    $tasks = Task::where('project_id', $project->id)->get();
+    public function edit(Project $project, Bug $bug)
+    {
+        $tasks = Task::where('project_id', $project->id)->get();
 
+        $users = $project->members;
 
-
-    $users = User::all();
-
-    return view('bugs.edit', compact(
-        'project',
-        'bug',
-        'users'
-    ));
-}
+        return view('bugs.edit', compact(
+            'project',
+            'bug',
+            'tasks',
+            'users'
+        ));
+    }
 
 public function update(Request $request, Project $project, Bug $bug)
 {

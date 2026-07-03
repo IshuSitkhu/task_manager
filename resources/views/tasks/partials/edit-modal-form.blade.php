@@ -222,10 +222,12 @@
                                 Edit
                             </button>
 
+                            @if(auth()->user()->role == 'project_manager')
                             <button type="button"
                                     class="removeChecklist text-red-500">
                                 Delete
                             </button>
+                            @endif
                         </div>
 
                     </div>
@@ -244,6 +246,7 @@
     </form>
 
 
+    @if(auth()->user()->role == 'project_manager')
     <form method="POST" action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
         @csrf
         @method('DELETE')
@@ -254,6 +257,7 @@
             Delete Task
         </button>
     </form>
+    @endif
 </div>
 
 <script>

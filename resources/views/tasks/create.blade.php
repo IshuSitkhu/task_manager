@@ -276,11 +276,12 @@
 
                 <div class="flex gap-2">
 
-
+                    @if(auth()->user()->role == 'project_manager')
                     <button type="button"
                             class="removeChecklist text-red-500">
                         Delete
                     </button>
+                    @endif
                 </div>
 
             </div>

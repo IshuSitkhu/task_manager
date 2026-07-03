@@ -15,9 +15,15 @@ class ProjectController extends Controller
     public function index()
     {
         if (Auth::user()->role == 'project_manager') {
+
             $projects = Project::all();
+
         } else {
-            $projects = Project::where('created_by', Auth::id())->get();
+
+            $projects = Project::whereHas('members', function ($query) {
+                $query->where('users.id', Auth::id());
+            })->get();
+
         }
 
         return view('projects.index', compact('projects'));

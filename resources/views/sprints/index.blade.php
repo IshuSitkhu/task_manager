@@ -8,10 +8,12 @@
             Sprints
         </h2>
 
+        @if(auth()->user()->role == 'project_manager')
         <a href="{{ route('projects.sprints.create', $project->id) }}"
            class="px-3 py-1 bg-black text-white rounded">
             New Sprint
         </a>
+        @endif
 
     </div>
 
@@ -90,24 +92,25 @@
                                         class="text-sm bg-blue-600 text-white px-1 rounded">
                                     Show Tasks
                             </button>
+                                @if(auth()->user()->role == 'project_manager')
+                                    <a href="{{ route('projects.sprints.edit', [$project->id, $sprint->id]) }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Edit
+                                    </a>
 
-                                <a href="{{ route('projects.sprints.edit', [$project->id, $sprint->id]) }}"
-                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Edit
-                                </a>
+                                    <form method="POST"
+                                        action="{{ route('projects.sprints.destroy', [$project->id, $sprint->id]) }}">
 
-                                <form method="POST"
-                                      action="{{ route('projects.sprints.destroy', [$project->id, $sprint->id]) }}">
+                                        @csrf
+                                        @method('DELETE')
 
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button
-                                        onclick="return confirm('Delete sprint?')"
-                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
-                                        Delete
-                                    </button>
-                                </form>
+                                        <button
+                                            onclick="return confirm('Delete sprint?')"
+                                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                            Delete
+                                        </button>
+                                    </form>
+                                @endif
                         </td>
                     </tr>
 
@@ -202,18 +205,20 @@
                                                         Edit
                                                     </button>
 
-                                                    <form method="POST"
-                                                          action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
-                                                          class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
+                                                    @if(auth()->user()->role == 'project_manager')
+                                                        <form method="POST"
+                                                            action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                            class="inline">
+                                                            @csrf
+                                                            @method('DELETE')
 
-                                                        <button type="button"
-                                                                class=" text-red-600 hover:text-red-400"
-                                                                onclick="confirmDelete(this.form)">
-                                                            Delete
-                                                        </button>
-                                                    </form>
+                                                            <button type="button"
+                                                                    class=" text-red-600 hover:text-red-400"
+                                                                    onclick="confirmDelete(this.form)">
+                                                                Delete
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 </td>
 
                                             </tr>
@@ -407,18 +412,20 @@
                                                 Edit
                                             </button>
 
-                                            <form method="POST"
-                                                action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
-                                                class="inline">
-                                                @csrf
-                                                @method('DELETE')
+                                            @if(auth()->user()->role == 'project_manager')
+                                                <form method="POST"
+                                                    action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                    class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
 
-                                                <button type="button"
-                                                        class=" text-red-600 hover:text-red-400"
-                                                        onclick="confirmDelete(this.form)">
-                                                    Delete
-                                                </button>
-                                            </form>
+                                                    <button type="button"
+                                                            class=" text-red-600 hover:text-red-400"
+                                                            onclick="confirmDelete(this.form)">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </td>
 
                                     </tr>
@@ -520,19 +527,21 @@
                             Edit
                         </a>
 
-                        <form method="POST"
-                            action="{{ route('projects.sprints.destroy', [$project->id, $sprint->id]) }}">
+                        @if(auth()->user()->role == 'project_manager')
+                            <form method="POST"
+                                action="{{ route('projects.sprints.destroy', [$project->id, $sprint->id]) }}">
 
-                            @csrf
-                            @method('DELETE')
+                                @csrf
+                                @method('DELETE')
 
-                            <button type="submit"
-                                    onclick="return confirm('Delete sprint?')"
-                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                                Delete
-                            </button>
+                                <button type="submit"
+                                        onclick="return confirm('Delete sprint?')"
+                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                    Delete
+                                </button>
 
-                        </form>
+                            </form>
+                        @endif
 
                     </div>
                 </div>
@@ -590,19 +599,21 @@
                                     Edit
                                 </button>
 
-                                <form method="POST"
-                                    action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
+                                @if(auth()->user()->role == 'project_manager')
+                                    <form method="POST"
+                                        action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}">
 
-                                    @csrf
-                                    @method('DELETE')
+                                        @csrf
+                                        @method('DELETE')
 
-                                    <button type="submit"
-                                            onclick="return confirm('Delete this task?')"
-                                            class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded">
-                                        Delete
-                                    </button>
+                                        <button type="submit"
+                                                onclick="return confirm('Delete this task?')"
+                                                class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded">
+                                            Delete
+                                        </button>
 
-                                </form>
+                                    </form>
+                                @endif
 
                             </div>
 
@@ -699,18 +710,20 @@
                                                         Edit
                                                     </button>
 
-                                                    <form method="POST"
-                                                        action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
-                                                        class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
+                                                    @if(auth()->user()->role == 'project_manager')
+                                                        <form method="POST"
+                                                            action="{{ route('projects.tasks.destroy', [$project->id, $task->id]) }}"
+                                                            class="inline">
+                                                            @csrf
+                                                            @method('DELETE')
 
-                                                        <button type="button"
-                                                                class=" text-red-600 hover:text-red-400"
-                                                                onclick="confirmDelete(this.form)">
-                                                            Delete
-                                                        </button>
-                                                    </form>
+                                                            <button type="button"
+                                                                    class=" text-red-600 hover:text-red-400"
+                                                                    onclick="confirmDelete(this.form)">
+                                                                Delete
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 </td>
 
                                             </tr>
