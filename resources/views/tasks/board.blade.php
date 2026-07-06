@@ -6,17 +6,6 @@
 <div class="flex justify-between items-center mb-4">
     <h2 class="text-2xl font-bold">Kanban Board</h2>
 
-    {{-- @if(session('error'))
-        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif --}}
     @if(auth()->user()->role == 'project_manager')
     <div class="flex flex-col gap-2">
         <button onclick="openStatusModal()"
@@ -311,6 +300,7 @@
     </div>
 </div>
 
+//ADD TASK MODAL
 <div id="taskModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 
     <div class="bg-white p-4 rounded w-[700px] max-h-[99vh] overflow-y-auto">
@@ -330,6 +320,7 @@
     </div>
 </div>
 
+//EDIT TASK MODAL
 <div id="taskEditModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
     <div class="bg-white  w-[1000px] h-full mt-4 p-4 rounded shadow">
@@ -360,7 +351,8 @@
         </div>
 
         <div class="bg-white max-h-[90vh] overflow-y-auto rounded shadow">
-             <input type="hidden" id="currentTaskId">
+            //later js change value of this hidden input when edit task is clicked
+            <input type="hidden" id="currentTaskId">
 
             <div id="modalBody">
 
@@ -548,6 +540,19 @@
         document.getElementById('statusModal').classList.remove('hidden');
     }
 
+    function closeStatusModal() {
+        document.getElementById('statusModal').classList.add('hidden');
+    }
+
+    document.getElementById("statusForm").addEventListener("submit", function () {
+        const btn = document.getElementById("statusSubmitBtn");
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+        }
+    });
+
     function openTypeModal(){
         document.getElementById('typeModal').classList.remove('hidden')
     }
@@ -556,10 +561,16 @@
         document.getElementById('typeModal').classList.add('hidden');
     }
 
-    function closeStatusModal() {
-        document.getElementById('statusModal').classList.add('hidden');
-    }
+    document.getElementById("typeForm").addEventListener("submit", function () {
+        const btn = document.getElementById("typeSubmitBtn");
 
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+        }
+    });
+
+    // ADD TASK CLICK GARE PAXI STATUS MA VALUE AAUXA
     function openTaskModal(statusSlug = null){
         const modal = document.getElementById('taskModal');
         modal.classList.remove('hidden');
@@ -577,14 +588,12 @@
         document.getElementById('taskModal').classList.add('hidden');
         const select = document.getElementById('statusSelect');
         if (select) {
+            //tHIS RESET THE DROPDOWN
             select.selectedIndex = 0;
         }
     }
 
-    function closeEditTaskModal(){
-        document.getElementById('taskEditModal').classList.add('hidden');
-    }
-
+    //edit task modal
     function openEditTaskModal(taskId){
 
         document.getElementById('currentTaskId').value = taskId;
@@ -593,6 +602,7 @@
             .then(res => res.text())
             .then(html => {
 
+                // yo step ma modal vitra html fill garxa
                 document.getElementById('modalBody').innerHTML = html;
 
                 document.getElementById('taskEditModal').classList.remove('hidden');
@@ -600,8 +610,52 @@
                 const fileInput = document.getElementById('imageInput');
                 if (fileInput) fileInput.value = "";
 
+                // Load existing comments
                 loadComments(taskId);
             });
+    }
+
+    function closeEditTaskModal(){
+        document.getElementById('taskEditModal').classList.add('hidden');
+    }
+
+    //TASK COMMENT
+    function sendComment(){
+        const taskId = document.getElementById('currentTaskId').value;
+        const input = document.getElementById('commentInput');
+
+        if (!input.value.trim()) return;
+
+        fetch(`/tasks/${taskId}/comments`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                message: input.value
+            })
+        })
+        .then(async res => {
+
+            if (res.status === 403) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    text: 'You are not a member of this project so, you are not allowed to comment'
+                });
+                return null;
+            }
+
+            return res.json();
+        })
+        .then(data => {
+            if (!data) return;
+
+            input.value = '';
+            // reload comments after sending a new comment
+            loadComments(taskId);
+        });
     }
 
     function loadComments(taskId){
@@ -665,19 +719,16 @@
             });
     }
 
+    //EDIT COMMENT MODAL
     function openEditCommentModal(id, message) {
         document.getElementById('editCommentId').value = id;
         document.getElementById('editCommentText').value = message;
 
-        document
-            .getElementById('editCommentModal')
-            .classList.remove('hidden');
+        document.getElementById('editCommentModal').classList.remove('hidden');
     }
 
     function closeEditCommentModal() {
-        document
-            .getElementById('editCommentModal')
-            .classList.add('hidden');
+        document.getElementById('editCommentModal').classList.add('hidden');
     }
 
     function updateComment() {
@@ -777,43 +828,6 @@
         });
     }
 
-    function sendComment(){
-        const taskId = document.getElementById('currentTaskId').value;
-        const input = document.getElementById('commentInput');
-
-        if (!input.value.trim()) return;
-
-        fetch(`/tasks/${taskId}/comments`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                message: input.value
-            })
-        })
-        .then(async res => {
-
-            if (res.status === 403) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Access Denied',
-                    text: 'You are not a member of this project so, you are not allowed to comment'
-                });
-                return null;
-            }
-
-            return res.json();
-        })
-        .then(data => {
-            if (!data) return;
-
-            input.value = '';
-            loadComments(taskId);
-        });
-    }
-
     //glabal variable
     let draggedTaskId = null;
 
@@ -878,23 +892,7 @@
         }
     });
 
-    document.getElementById("statusForm").addEventListener("submit", function () {
-        const btn = document.getElementById("statusSubmitBtn");
 
-        if (btn) {
-            btn.disabled = true;
-            btn.innerText = "Saving...";
-        }
-    });
-
-    document.getElementById("typeForm").addEventListener("submit", function () {
-        const btn = document.getElementById("typeSubmitBtn");
-
-        if (btn) {
-            btn.disabled = true;
-            btn.innerText = "Saving...";
-        }
-    });
 
     //buymodal
     function openBugModal(taskId) {
@@ -913,12 +911,6 @@
         closeEditTaskModal();
         openBugModal(taskId);
     }
-
-    // function openBugListFromEditModal() {
-    //     const taskId = document.getElementById('currentTaskId').value;
-
-    //     openBugListModal(taskId);
-    // }
 
     function closeBugModal() {
         document.getElementById('bugModal').classList.add('hidden');

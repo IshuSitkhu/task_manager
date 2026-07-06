@@ -1,4 +1,3 @@
-
 <div id="subtaskModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
         <div class="bg-white p-6 rounded-lg w-[1200px] overflow-y-auto mt-8">
 

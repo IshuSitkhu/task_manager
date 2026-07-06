@@ -56,6 +56,7 @@ class TaskController extends Controller
             'backlogTasks'
         ));
     }
+
     public function create(Project $project)
     {
         $epics = $project->epics;
@@ -109,6 +110,7 @@ class TaskController extends Controller
              'image' => $imagePath,
         ]);
 
+        //CREATE LISTLIST ITEM
         if ($request->filled('checklists')) {
             $order = 0;
 
@@ -143,14 +145,11 @@ class TaskController extends Controller
 
     public function edit(Project $project, Task $task)
     {
-
         $epics = $project->epics;
         $sprints = $project->sprints;
         $users = $project->members;
 
         return view('tasks.edit', compact('project', 'task', 'epics', 'sprints', 'users'));
-
-
     }
 
     public function editmodule(Project $project, Task $task)
@@ -245,6 +244,7 @@ class TaskController extends Controller
 
     public function board(Project $project)
     {
+        // LOAD ALL THE STATUS RELATED TO THE PROJECT, INCLUDING TASKS AND THEIR RELATIONSHIPS
         $project->load('statuses');
 
         $query = $project->tasks()
@@ -394,22 +394,22 @@ class TaskController extends Controller
         return response()->json($comment);
     }
 
-public function destroyComment(ChecklistComment $comment)
-{
-    // Optional: only allow the comment owner to delete
-    if ($comment->user_id != Auth::id()) {
+    public function destroyComment(ChecklistComment $comment)
+    {
+        // Optional: only allow the comment owner to delete
+        if ($comment->user_id != Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        $comment->delete();
+
         return response()->json([
-            'success' => false,
-            'message' => 'Unauthorized'
-        ], 403);
+            'success' => true
+        ]);
     }
-
-    $comment->delete();
-
-    return response()->json([
-        'success' => true
-    ]);
-}
 
 
 }

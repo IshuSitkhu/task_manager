@@ -14,11 +14,11 @@ class TaskType extends Model
     ];
 
     public function project()
-{
-    return $this->belongsTo(Project::class);
-}
+    {
+        return $this->belongsTo(Project::class);
+    }
 
-public function tasks()
+    public function tasks()
     {
         return $this->hasMany(Task::class);
     }

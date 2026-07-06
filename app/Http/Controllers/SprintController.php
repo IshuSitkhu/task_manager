@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\Sprint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Services\ActivityService;
 
 class SprintController extends Controller
 {
@@ -38,7 +40,7 @@ class SprintController extends Controller
         return view('sprints.create', compact('project'));
     }
 
-    public function store(Request $request, Project $project)
+    public function store(Request $request, Project $project, ActivityService $activityService)
     {
         $request->validate([
             'name' => 'required|max:255',
@@ -49,7 +51,7 @@ class SprintController extends Controller
             'progress' => 'nullable|integer|min:0|max:100',
         ]);
 
-        $project->sprints()->create([
+        $sprint =$project->sprints()->create([
             'name' => $request->name,
             'goal' => $request->goal,
             'start_date' => $request->start_date,
@@ -57,6 +59,13 @@ class SprintController extends Controller
             'status' => $request->status,
             'progress' => $request->progress ?? 0,
         ]);
+
+        $activityService->log(
+            Auth::user(),
+            'created_sprint',
+            'Created sprint "' . $sprint->name . '"',
+            $sprint
+        );
 
         return redirect()
             ->route('projects.sprints', $project->id)
@@ -70,7 +79,7 @@ class SprintController extends Controller
     }
 
     // UPDATE
-    public function update(Request $request, Project $project, Sprint $sprint)
+    public function update(Request $request, Project $project, Sprint $sprint, ActivityService $activityService)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -83,17 +92,30 @@ class SprintController extends Controller
 
         $sprint->update($request->all());
 
+        $activityService->log(
+            Auth::user(),
+            'updated_sprint',
+            'Updated sprint "' . $sprint->name . '"',
+            $sprint
+        );
+
         return redirect()->route('projects.sprints', $project->id)
             ->with('success', 'Sprint updated successfully');
     }
 
     // DELETE
-    public function destroy(Project $project, Sprint $sprint)
+    public function destroy(Project $project, Sprint $sprint, ActivityService $activityService)
     {
+        $activityService->log(
+            Auth::user(),
+            'deleted_sprint',
+            'Deleted sprint "' . $sprint->name . '"',
+            $sprint
+        );
+
         $sprint->delete();
 
         return back()->with('success', 'Sprint deleted successfully');
     }
-
 
 }

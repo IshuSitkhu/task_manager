@@ -89,7 +89,7 @@ class EpicController extends Controller
             'progress' => 'nullable|integer|min:0|max:100',
         ]);
 
-        $project->epics()->create([
+        $epic = $project->epics()->create([
             'title' => $request->title,
             'description' => $request->description,
             'owner_id' => $request->owner_id,
@@ -103,8 +103,8 @@ class EpicController extends Controller
         $activityService->log(
             Auth::user(),
             'created_epic',
-            'Created epic "' . $request->title . '"',
-            null
+            'Created epic "' . $epic->title . '"',
+            $epic
         );
 
         return redirect()->route('projects.epics', $project->id)
@@ -151,7 +151,7 @@ class EpicController extends Controller
             Auth::user(),
             'updated_epic',
             'Updated epic "' . $epic->title . '"',
-            null
+            $epic
         );
 
         return redirect()->route('projects.epics', $project->id)
@@ -167,7 +167,7 @@ class EpicController extends Controller
             Auth::user(),
             'deleted_epic',
             'Deleted epic "' . $epic->title . '"',
-            null
+            $epic
         );
 
         $epic->delete();

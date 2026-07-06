@@ -209,9 +209,7 @@
 
                         <div class="flex items-center gap-3">
 
-                            <input type="checkbox"
-                            class="check-toggle w-4 h-4"
-                            data-id="{{ $item->id }}"
+                            <input type="checkbox" class="check-toggle w-4 h-4" data-id="{{ $item->id }}"
                             {{ $item->is_completed ? 'checked' : '' }}>
 
                             <span>{{ $item->title }}</span>
@@ -418,7 +416,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-
         const input = document.getElementById('imageInput');
         const preview = document.getElementById('imagePreview');
 
@@ -480,6 +477,7 @@
 
             const id = checklist.id;
 
+            // Create the HTML for the new checklist item
             const html = `
             <div class="flex items-center justify-between border rounded-lg p-3 bg-gray-50"
                  data-id="${id}">
@@ -539,6 +537,7 @@
             </div>
             `;
 
+            // Append the new checklist item to the container
             container.insertAdjacentHTML('beforeend', html);
 
             input.value = '';
@@ -548,6 +547,7 @@
         });
     });
 
+    // remove checklist item
     document.addEventListener('click', function (e) {
 
         if (e.target.classList.contains('removeChecklist')) {
@@ -580,8 +580,7 @@
 
         if (e.target.classList.contains('check-toggle')) {
 
-            const hidden =
-                e.target.parentElement.querySelector('.check-status');
+            const hidden = e.target.parentElement.querySelector('.check-status');
 
             hidden.value = e.target.checked ? 1 : 0;
 
@@ -592,6 +591,7 @@
                     'X-CSRF-TOKEN':
                         document.querySelector('meta[name="csrf-token"]').content
                 },
+
                 body: JSON.stringify({
                     is_completed: e.target.checked ? 1 : 0
                 })
@@ -637,6 +637,7 @@
                 currentSubtask.querySelector('.sub-image');
                 console.log(currentFileInput);
 
+            // Populate modal fields with current subtask data
             modalTitle.value =
                 currentSubtask.querySelector('.sub-title').value;
 
@@ -668,6 +669,7 @@
 
     document.getElementById('saveSubtask').addEventListener('click', function () {
 
+        // Update the hidden inputs in the current subtask with modal values
         currentSubtask.querySelector('.sub-title').value =
             modalTitle.value;
 
@@ -736,68 +738,68 @@
 
 
     //SUBTASK COMMENTS
-function loadSubtaskComments(checklistId) {
+    function loadSubtaskComments(checklistId) {
 
-    fetch('/checklists/' + checklistId + '/comments')
-        .then(response => response.json())
-        .then(comments => {
+        fetch('/checklists/' + checklistId + '/comments')
+            .then(response => response.json())
+            .then(comments => {
 
-            let html = '';
+                let html = '';
 
-            if (comments.length === 0) {
-                html = `
-                    <div class="text-center text-gray-500 py-6">
-                        No comments yet.
-                    </div>
-                `;
-            } else {
-                comments.forEach(comment => {
-
-                    html += `
-                        <div class="flex gap-3 py-4 border-b ">
-
-                            <!-- Avatar -->
-                            <div class="flex-shrink-0">
-                                <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center font-semibold">
-                                    ${comment.user.name.charAt(0).toUpperCase()}
-                                </div>
-                            </div>
-
-                            <div class="flex-1">
-
-                                <div class="flex items-center gap-2">
-                                    <span class="font-semibold">
-                                        ${comment.user.name}
-                                    </span>
-
-                                    <span class="text-xs">
-                                        ${new Date(comment.created_at).toLocaleString()}
-                                    </span>
-
-                                    ${comment.user_id == currentUserId ? `
-                                        <button
-                                            class="deleteSubtaskComment text-red-500 text-sm ml-auto"
-                                            data-id="${comment.id}">
-                                            Delete
-                                        </button>
-                                    ` : ''}
-                                </div>
-
-                                <div class="mt-2 border border-black rounded-xl px-4 py-3 text-gray-700 shadow-sm">
-                                    ${comment.comment}
-                                </div>
-
-                            </div>
-
+                if (comments.length === 0) {
+                    html = `
+                        <div class="text-center text-gray-500 py-6">
+                            No comments yet.
                         </div>
                     `;
-                });
-            }
+                } else {
+                    comments.forEach(comment => {
 
-            document.getElementById('subtaskCommentList').innerHTML = html;
-        });
+                        html += `
+                            <div class="flex gap-3 py-4 border-b ">
 
-}
+                                <!-- Avatar -->
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center font-semibold">
+                                        ${comment.user.name.charAt(0).toUpperCase()}
+                                    </div>
+                                </div>
+
+                                <div class="flex-1">
+
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-semibold">
+                                            ${comment.user.name}
+                                        </span>
+
+                                        <span class="text-xs">
+                                            ${new Date(comment.created_at).toLocaleString()}
+                                        </span>
+
+                                        ${comment.user_id == currentUserId ? `
+                                            <button
+                                                class="deleteSubtaskComment text-red-500 text-sm ml-auto"
+                                                data-id="${comment.id}">
+                                                Delete
+                                            </button>
+                                        ` : ''}
+                                    </div>
+
+                                    <div class="mt-2 border border-black rounded-xl px-4 py-3 text-gray-700 shadow-sm">
+                                        ${comment.comment}
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        `;
+                    });
+                }
+
+                document.getElementById('subtaskCommentList').innerHTML = html;
+            });
+
+    }
 
     document.getElementById('addComment').addEventListener('click', function(){
 

@@ -9,6 +9,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Services\ActivityService;
 
 class BugController extends Controller
 {
@@ -33,7 +34,7 @@ class BugController extends Controller
         ));
     }
 
-    public function store(Request $request, Project $project)
+    public function store(Request $request, Project $project, ActivityService $activityService)
     {
         $request->validate([
             'title' => 'required',
@@ -57,6 +58,13 @@ class BugController extends Controller
             'assigned_to' => $request->assigned_to,
             'status' => $request->status,
         ]);
+
+        $activityService->log(
+            Auth::user(),
+            'created_bug',
+            'Created bug "' . $request->title . '"',
+            null
+        );
 
         return back()->with('success', 'Bug reported successfully');
     }
