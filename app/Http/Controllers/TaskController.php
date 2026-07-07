@@ -272,26 +272,44 @@ class TaskController extends Controller
         ));
     }
 
-    public function updateStatus(Request $request, Task $task)
+    public function updateStatus(Request $request, Task $task, ActivityService $activityService)
     {
         $request->validate([
             'status' => 'required|in:todo,in_progress,review,bug,done',
         ]);
 
+        $oldStatus = $task->status;
+
         $task->update([
             'status' => $request->status
         ]);
+
+        $activityService->log(
+            Auth::user(),
+            'updated_task_status',
+            'Changed task "' . $task->title . '" status from "' . $oldStatus . '" to "' . $task->status . '"',
+            $task
+        );
 
         return response()->json([
             'success' => true
         ]);
     }
 
-    public function moveStatus(Request $request, Task $task)
+    public function moveStatus(Request $request, Task $task, ActivityService $activityService)
     {
+        $oldStatus = $task->status;
+
         $task->update([
             'status' => $request->status
         ]);
+
+        $activityService->log(
+            Auth::user(),
+            'moved_task',
+            'Moved status of task "' . $task->title . '" from "' . $oldStatus . '" to "' . $task->status . '"',
+            $task
+        );
 
         return response()->json([
             'success' => true
