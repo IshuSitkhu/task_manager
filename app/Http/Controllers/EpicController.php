@@ -104,7 +104,8 @@ class EpicController extends Controller
             Auth::user(),
             'created_epic',
             'Created epic "' . $epic->title . '"',
-            $epic
+            $epic,
+            "Epic"
         );
 
         return redirect()->route('projects.epics', $project->id)
@@ -151,7 +152,8 @@ class EpicController extends Controller
             Auth::user(),
             'updated_epic',
             'Updated epic "' . $epic->title . '"',
-            $epic
+            $epic,
+            "Epic"
         );
 
         return redirect()->route('projects.epics', $project->id)
@@ -167,7 +169,8 @@ class EpicController extends Controller
             Auth::user(),
             'deleted_epic',
             'Deleted epic "' . $epic->title . '"',
-            $epic
+            $epic,
+            "Epic"
         );
 
         $epic->delete();

@@ -64,7 +64,8 @@ class SprintController extends Controller
             Auth::user(),
             'created_sprint',
             'Created sprint "' . $sprint->name . '"',
-            $sprint
+            $sprint,
+            "Sprint"
         );
 
         return redirect()
@@ -96,7 +97,8 @@ class SprintController extends Controller
             Auth::user(),
             'updated_sprint',
             'Updated sprint "' . $sprint->name . '"',
-            $sprint
+            $sprint,
+            "Sprint"
         );
 
         return redirect()->route('projects.sprints', $project->id)
@@ -110,7 +112,8 @@ class SprintController extends Controller
             Auth::user(),
             'deleted_sprint',
             'Deleted sprint "' . $sprint->name . '"',
-            $sprint
+            $sprint,
+            "Sprint"
         );
 
         $sprint->delete();

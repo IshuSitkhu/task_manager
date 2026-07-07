@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\User;
+use App\Services\ActivityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -51,7 +52,7 @@ class ProjectController extends Controller
         return view('projects.create', compact('users'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ActivityService $activityService)
     {
         if (Auth::user()->role !== 'project_manager') {
             abort(403);
@@ -73,6 +74,14 @@ class ProjectController extends Controller
             'end_date' => $request->end_date,
             'created_by' => Auth::id(),
         ]);
+
+        $activityService->log(
+            Auth::user(),
+            'Created_Project',
+            "Created project '{$project->name}'",
+            $project,
+            "Project"
+        );
 
         //  DEFAULT STATUSES (FIXED)
         $defaultStatuses = [
@@ -119,7 +128,7 @@ class ProjectController extends Controller
     }
 
 
-    public function update(Request $request, Project $project) {
+    public function update(Request $request, Project $project, ActivityService $activityService) {
         if (Auth::user()->role !== 'project_manager') {
             abort(403);
         }
@@ -147,11 +156,28 @@ class ProjectController extends Controller
             $project->members()->sync([]);
         }
 
+        $activityService->log(
+            Auth::user(),
+            'Edited_Project',
+            "Updated project '{$project->name}'",
+            $project,
+            "Project"
+        );
+
         return redirect()->route('projects.index')
             ->with('success', 'Project updated successfully');
     }
 
-    public function destroy(Project $project) {
+    public function destroy(Project $project, ActivityService $activityService ) {
+        $title = $project-> title;
+
+        $activityService->log(
+            Auth::user(),
+            'Deleted_Project',
+            "Deleted project '{$project->name}'",
+            $project,
+            "Project"
+        );
         $project->delete();
 
         return redirect()->route('projects.index')
@@ -251,16 +277,37 @@ class ProjectController extends Controller
     /**
      * Add members
      */
-    public function addMembers(Request $request, Project $project)
+    public function addMembers(Request $request, Project $project, ActivityService $activityService)
     {
         // add memebers without detaching existing ones
         $project->members()->syncWithoutDetaching($request->members);
 
+        $members = User::whereIn('id', $request->members)->get();
+
+        foreach ($members as $member) {
+            $activityService->log(
+                Auth::user(),
+                'Added_member',
+                "Added {$member->name} to project '{$project->name}'",
+                $project,
+                "Project"
+            );
+        }
+
         return back();
     }
 
-    public function removeMember(Project $project, User $user)
+    public function removeMember(Project $project, User $user, ActivityService $activityService)
     {
+
+        $activityService->log(
+            Auth::user(),
+            'Removed_member',
+            "Removed {$user->name} from project '{$project->name}'",
+            $project,
+            "Project"
+        );
+
         $project->members()->detach($user->id);
 
         return back()->with('success', 'Member removed successfully.');

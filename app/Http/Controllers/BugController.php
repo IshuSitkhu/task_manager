@@ -48,7 +48,7 @@ class BugController extends Controller
             $imagePath = $request->file('image')->store('bugs', 'public');
         }
 
-        Bug::create([
+        $bug= Bug::create([
             'project_id' => $project->id,
             'task_id' => $request->task_id,
             'title' => $request->title,
@@ -63,7 +63,8 @@ class BugController extends Controller
             Auth::user(),
             'created_bug',
             'Created bug "' . $request->title . '"',
-            null
+            $bug,
+            "Bug"
         );
 
         return back()->with('success', 'Bug reported successfully');
@@ -90,41 +91,59 @@ class BugController extends Controller
         ));
     }
 
-public function update(Request $request, Project $project, Bug $bug)
-{
-    $request->validate([
-        'title' => 'required',
-        'severity' => 'required',
-        'status' => 'required|in:open,in_progress,fixed',
-    ]);
+    public function update(Request $request, Project $project, Bug $bug, ActivityService $activityService)
+    {
+        $request->validate([
+            'title' => 'required',
+            'severity' => 'required',
+            'status' => 'required|in:open,in_progress,fixed',
+        ]);
 
-    if ($request->hasFile('image')) {
+        if ($request->hasFile('image')) {
 
-        if ($bug->image) {
-            Storage::delete('public/' . $bug->image);
+            if ($bug->image) {
+                Storage::delete('public/' . $bug->image);
+            }
+
+            $bug->image = $request->file('image')
+                ->store('bugs', 'public');
         }
 
-        $bug->image = $request->file('image')
-            ->store('bugs', 'public');
+        $bug->update([
+            'task_id' => $request->task_id,
+            'title' => $request->title,
+            'description' => $request->description,
+            'severity' => $request->severity,
+            'assigned_to' => $request->assigned_to,
+            'status' => $request->status,
+            'image' => $bug->image,
+        ]);
+
+        $activityService->log(
+            Auth::user(),
+            'Updated_bug',
+            "Updated bug '{$bug->title}'",
+            $bug,
+            "Bug"
+        );
+
+        return redirect()
+            ->route('projects.bugs.index', $project)
+            ->with('success', 'Bug updated successfully.');
     }
 
-    $bug->update([
-        'task_id' => $request->task_id,
-        'title' => $request->title,
-        'description' => $request->description,
-        'severity' => $request->severity,
-        'assigned_to' => $request->assigned_to,
-        'status' => $request->status,
-        'image' => $bug->image,
-    ]);
-
-    return redirect()
-        ->route('projects.bugs.index', $project)
-        ->with('success', 'Bug updated successfully.');
-}
-
-    public function destroy(Project $project, Bug $bug)
+    public function destroy(Project $project, Bug $bug, ActivityService $activityService)
     {
+        $title = $bug->title;
+
+        $activityService->log(
+            Auth::user(),
+            'Deleted_bug',
+            "Deleted bug '{$title}'",
+            $bug,
+            "Bug"
+        );
+
         if ($bug->image && Storage::exists('public/' . $bug->image)) {
             Storage::delete('public/' . $bug->image);
         }

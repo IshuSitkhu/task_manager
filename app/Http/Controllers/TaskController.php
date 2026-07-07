@@ -133,7 +133,8 @@ class TaskController extends Controller
             Auth::user(),
             'created_task',
             'Created task "' . $task->title . '"',
-            $task
+            $task,
+            "Task"
         );
 
         // return redirect()->route('projects.tasks', $project->id)
@@ -219,7 +220,8 @@ class TaskController extends Controller
             Auth::user(),
             'updated_task',
             'Updated task "' . $task->title . '"',
-            $task
+            $task,
+            "Task"
         );
 
 
@@ -234,7 +236,8 @@ class TaskController extends Controller
             Auth::user(),
             'deleted_task',
             'Deleted task "' . $task->title . '"',
-            $task
+            $task,
+            "Task"
         );
 
         $task->delete();
@@ -288,7 +291,8 @@ class TaskController extends Controller
             Auth::user(),
             'updated_task_status',
             'Changed task "' . $task->title . '" status from "' . $oldStatus . '" to "' . $task->status . '"',
-            $task
+            $task,
+            "Task"
         );
 
         return response()->json([
@@ -308,7 +312,8 @@ class TaskController extends Controller
             Auth::user(),
             'moved_task',
             'Moved status of task "' . $task->title . '" from "' . $oldStatus . '" to "' . $task->status . '"',
-            $task
+            $task,
+            "Task"
         );
 
         return response()->json([
@@ -316,18 +321,30 @@ class TaskController extends Controller
         ]);
     }
 
-    public function toggleChecklist(Request $request, TaskChecklist $checklist)
+    public function toggleChecklist(Request $request, TaskChecklist $checklist, ActivityService $activityService)
     {
         $checklist->update([
             'is_completed' => $request->is_completed
         ]);
+
+        $description = $request->is_completed
+            ? "Completed checklist '{$checklist->title}'"
+            : "Unchecked checklist '{$checklist->title}'";
+
+        $activityService->log(
+            Auth::user(),
+            'Toggle_checklist',
+            $description,
+            $checklist,
+            "Subtask"
+        );
 
         return response()->json([
             'success' => true
         ]);
     }
 
-    public function updateChecklist(Request $request, TaskChecklist $checklist)
+    public function updateChecklist(Request $request, TaskChecklist $checklist, ActivityService $activityService)
     {
         $imagePath = $checklist->image;
 
@@ -349,12 +366,20 @@ class TaskController extends Controller
             'image' => $imagePath,
         ]);
 
+        $activityService->log(
+            Auth::user(),
+            'Updated_subtask',
+            "Updated checklist '{$checklist->title}'",
+            $checklist,
+            "Subtask"
+        );
+
         return response()->json([
             'success' => true
         ]);
     }
 
-    public function storeChecklist(Request $request, Task $task)
+    public function storeChecklist(Request $request, Task $task, ActivityService $activityService)
     {
         $checklist = $task->checklists()->create([
             'title' => $request->title,
@@ -365,11 +390,31 @@ class TaskController extends Controller
             'sort_order' => 0,
         ]);
 
+
+        $activityService->log(
+            Auth::user(),
+            'Created_Subtask',
+            "Created checklist '{$checklist->title}'",
+            $checklist,
+            "Subtask"
+        );
+
         return response()->json($checklist);
     }
 
-    public function destroyChecklist(TaskChecklist $checklist)
+    public function destroyChecklist(TaskChecklist $checklist, ActivityService $activityService)
     {
+
+        $title = $checklist->title;
+
+        $activityService->log(
+            Auth::user(),
+            'Deleted_Subtask',
+            "Deleted checklist '{$title}'",
+            $checklist,
+            "Subtask"
+        );
+
         $checklist->delete();
 
         return response()->json([
@@ -396,7 +441,7 @@ class TaskController extends Controller
         );
     }
 
-    public function storeComment(Request $request, TaskChecklist $checklist)
+    public function storeComment(Request $request, TaskChecklist $checklist, ActivityService $activityService)
     {
         $request->validate([
             'comment' => 'required|string'
@@ -409,10 +454,18 @@ class TaskController extends Controller
 
         $comment->load('user');
 
+        $activityService->log(
+            Auth::user(),
+            'Added_Comment',
+            "Added a comment '{$comment->comment}' to subtask '{$checklist->title}'",
+            $checklist,
+            "Subtask"
+        );
+
         return response()->json($comment);
     }
 
-    public function destroyComment(ChecklistComment $comment)
+    public function destroyComment(ChecklistComment $comment, ActivityService $activityService)
     {
         // Optional: only allow the comment owner to delete
         if ($comment->user_id != Auth::id()) {
@@ -421,6 +474,16 @@ class TaskController extends Controller
                 'message' => 'Unauthorized'
             ], 403);
         }
+
+        $checklist = $comment->checklist; // assuming ChecklistComment belongsTo TaskChecklist
+
+        $activityService->log(
+            Auth::user(),
+            'Deleted_Comment',
+            "Deleted a comment from subtask '{$checklist->title}'",
+            $checklist,
+            "Subtask"
+        );
 
         $comment->delete();
 

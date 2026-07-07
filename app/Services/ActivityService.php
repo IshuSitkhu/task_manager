@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class ActivityService
 {
-    public function log(Authenticatable $user, string $action, string $description, ?Model $subject = null)
+    public function log(Authenticatable $user, string $action, string $description, ?Model $subject = null,string $type)
     {
         ActivityLog::create([
             'user_id'      => $user->id,
             'action'       => $action,
             'description'  => $description,
             'subject_id'   => $subject?->id,
-            'subject_type' => $subject ?->getMorphClass(),
+            'subject_type' => $type
         ]);
     }
 }
