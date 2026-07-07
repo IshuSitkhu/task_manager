@@ -30,8 +30,16 @@ class ProjectController extends Controller
     }
 
     /**
-     * Show create form
+     * Overview page ( Open Project → click gare paxi)
      */
+    public function overview(Project $project)
+    {
+        // selected memebers are not shown in options
+        $allUsers = User::whereNotIn('id', $project->members()->pluck('users.id'))->get();
+
+        return view('projects.overview', compact('project', 'allUsers'));
+    }
+
     public function create()
     {
         if (Auth::user()->role !== 'project_manager') {
@@ -43,9 +51,6 @@ class ProjectController extends Controller
         return view('projects.create', compact('users'));
     }
 
-    /**
-     * Store project + default statuses
-     */
     public function store(Request $request)
     {
         if (Auth::user()->role !== 'project_manager') {
@@ -103,153 +108,6 @@ class ProjectController extends Controller
             ->with('success', 'Project created successfully');
     }
 
-    public function storeStatus(Request $request, Project $project)
-    {
-        $request->validate([
-            'name' => 'required',
-            'slug' => 'required',
-            'color' => 'nullable',
-        ]);
-
-        $exists = $project->statuses()
-            ->where('slug', $request->slug)
-            ->exists();
-
-        if ($exists) {
-            return back()->with('error', 'Status already exists!');
-        }
-
-        $project->statuses()->create([
-            'name' => $request->name,
-            'slug' => $request->slug,
-            'color' => $request->color,
-            'order' => ($project->statuses()->max('order') ?? 0) + 1,
-        ]);
-
-        return back();
-    }
-
-    public function destroyStatus(Project $project, int $statusId)
-    {
-        $status = $project->statuses()->findOrFail($statusId);
-
-        $taskCount = $project->tasks()
-            ->where('status', $status->slug)
-            ->count();
-
-        if ($taskCount > 0) {
-            return back()->with(
-                'error',
-                'Cannot delete status because it contains tasks.'
-            );
-        }
-
-        $status->delete();
-
-        return back()->with(
-            'success',
-            'Status deleted successfully.'
-        );
-    }
-
-    // public function storeType(Request $request, Project $project)
-    // {
-    //     $request->validate([
-    //         'name' => 'required',
-    //         'slug' => 'required',
-    //         'color' => 'nullable',
-    //     ]);
-
-    //     $exists = $project->types()
-    //         ->where('slug', $request->slug)
-    //         ->exists();
-
-    //     if ($exists) {
-    //         return back()->with('error', 'Type already exists!');
-    //     }
-
-    //     $project->types()->create([
-    //         'name' => $request->name,
-    //         'slug' => $request->slug,
-    //         'color' => $request->color,
-    //     ]);
-
-    //     return back()->with('success', 'Type added successfully!');
-    // }
-
-    public function storeType(Request $request, Project $project)
-{
-    $request->validate([
-        'name' => 'required'
-    ]);
-
-    $exists = $project->taskTypes()
-                      ->where('name', $request->name)
-                      ->exists();
-
-    if ($exists) {
-        return back()->with('error', 'Type already exists.');
-    }
-
-    $project->taskTypes()->create([
-        'name' => $request->name,
-        'slug' => $request->slug,
-        'color' => $request->color,
-
-    ]);
-
-    return back()->with('success', 'Type created.');
-}
-
-public function destroyType(Project $project, $typeId)
-{
-    $type = $project->taskTypes()->findOrFail($typeId);
-
-    $count = $project->tasks()
-                     ->where('type_id', $type->id)
-                     ->count();
-
-    if ($count > 0) {
-        return back()->with('error', 'Type contains tasks.');
-    }
-
-    $type->delete();
-
-    return back()->with('success', 'Type deleted.');
-}
-
-    /**
-     * Show project details
-     */
-    public function show(Project $project)
-    {
-        $project->load('members', 'statuses');
-
-        $allUsers = User::where('role', 'employee')->get();
-
-        return view('projects.show', compact('project', 'allUsers'));
-    }
-
-    /**
-     * Add members
-     */
-    public function addMembers(Request $request, Project $project)
-    {
-        $project->members()->syncWithoutDetaching($request->members);
-
-        return back();
-    }
-
-    /**
-     * Overview page
-     */
-    public function overview(Project $project)
-    {
-        $allUsers = User::all();
-
-        return view('projects.overview', compact('project', 'allUsers'));
-    }
-
     public function edit(Project $project) {
         if (Auth::user()->role !== 'project_manager') {
             abort(403);
@@ -299,4 +157,114 @@ public function destroyType(Project $project, $typeId)
         return redirect()->route('projects.index')
             ->with('success', 'Project deleted successfully');
     }
+
+    public function storeStatus(Request $request, Project $project)
+    {
+        $request->validate([
+            'name' => 'required',
+            'slug' => 'required',
+            'color' => 'nullable',
+        ]);
+
+        $exists = $project->statuses()
+            ->where('slug', $request->slug)
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Status already exists!');
+        }
+
+        $project->statuses()->create([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'color' => $request->color,
+            'order' => ($project->statuses()->max('order') ?? 0) + 1,
+        ]);
+
+        return back();
+    }
+
+    public function destroyStatus(Project $project, int $statusId)
+    {
+        $status = $project->statuses()->findOrFail($statusId);
+
+        $taskCount = $project->tasks()
+            ->where('status', $status->slug)
+            ->count();
+
+        if ($taskCount > 0) {
+            return back()->with(
+                'error',
+                'Cannot delete status because it contains tasks.'
+            );
+        }
+
+        $status->delete();
+
+        return back()->with(
+            'success',
+            'Status deleted successfully.'
+        );
+    }
+
+    public function storeType(Request $request, Project $project)
+    {
+        $request->validate([
+            'name' => 'required'
+        ]);
+
+        $exists = $project->taskTypes()
+                        ->where('name', $request->name)
+                        ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Type already exists.');
+        }
+
+        $project->taskTypes()->create([
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'color' => $request->color,
+
+        ]);
+
+        return back()->with('success', 'Type created.');
+    }
+
+    public function destroyType(Project $project, $typeId)
+    {
+        $type = $project->taskTypes()->findOrFail($typeId);
+
+        $count = $project->tasks()
+                        ->where('type_id', $type->id)
+                        ->count();
+
+        if ($count > 0) {
+            return back()->with('error', 'Type contains tasks.');
+        }
+
+        $type->delete();
+
+        return back()->with('success', 'Type deleted.');
+    }
+
+    /**
+     * Add members
+     */
+    public function addMembers(Request $request, Project $project)
+    {
+        // add memebers without detaching existing ones
+        $project->members()->syncWithoutDetaching($request->members);
+
+        return back();
+    }
+
+    public function removeMember(Project $project, User $user)
+    {
+        $project->members()->detach($user->id);
+
+        return back()->with('success', 'Member removed successfully.');
+    }
+
+
 }

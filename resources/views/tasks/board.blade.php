@@ -300,7 +300,7 @@
     </div>
 </div>
 
-//ADD TASK MODAL
+
 <div id="taskModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 
     <div class="bg-white p-4 rounded w-[700px] max-h-[99vh] overflow-y-auto">
@@ -320,7 +320,6 @@
     </div>
 </div>
 
-//EDIT TASK MODAL
 <div id="taskEditModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
     <div class="bg-white  w-[1000px] h-full mt-4 p-4 rounded shadow">
@@ -351,7 +350,6 @@
         </div>
 
         <div class="bg-white max-h-[90vh] overflow-y-auto rounded shadow">
-            //later js change value of this hidden input when edit task is clicked
             <input type="hidden" id="currentTaskId">
 
             <div id="modalBody">
@@ -544,14 +542,7 @@
         document.getElementById('statusModal').classList.add('hidden');
     }
 
-    document.getElementById("statusForm").addEventListener("submit", function () {
-        const btn = document.getElementById("statusSubmitBtn");
 
-        if (btn) {
-            btn.disabled = true;
-            btn.innerText = "Saving...";
-        }
-    });
 
     function openTypeModal(){
         document.getElementById('typeModal').classList.remove('hidden')
@@ -561,14 +552,7 @@
         document.getElementById('typeModal').classList.add('hidden');
     }
 
-    document.getElementById("typeForm").addEventListener("submit", function () {
-        const btn = document.getElementById("typeSubmitBtn");
 
-        if (btn) {
-            btn.disabled = true;
-            btn.innerText = "Saving...";
-        }
-    });
 
     // ADD TASK CLICK GARE PAXI STATUS MA VALUE AAUXA
     function openTaskModal(statusSlug = null){
@@ -938,6 +922,24 @@
 
         box.classList.toggle('hidden');
     }
+
+        document.getElementById("statusForm").addEventListener("submit", function () {
+        const btn = document.getElementById("statusSubmitBtn");
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+        }
+    });
+
+        document.getElementById("typeForm").addEventListener("submit", function () {
+        const btn = document.getElementById("typeSubmitBtn");
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+        }
+    });
 
     document.addEventListener('change', function(e){
 

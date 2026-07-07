@@ -50,9 +50,6 @@
                 Status
             </th>
 
-            <th class="border px-4 py-2 text-left">
-                Assigned To
-            </th>
 
             <th class="border px-4 py-2 text-left">
                 Action
@@ -132,9 +129,6 @@
 
                 </td>
 
-                <td class="border px-4 py-2 text-sm">
-                    {{ $bug->assignee->name ?? '-' }}
-                </td>
 
                 <td class="border px-4 py-2">
 

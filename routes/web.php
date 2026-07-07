@@ -28,6 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/projects/{project}/members', [ProjectController::class, 'addMembers'])
     ->name('projects.addMembers');
 
+    Route::delete('/projects/{project}/members/{user}',[ProjectController::class, 'removeMember'])
+    ->name('projects.removeMember');
+
     Route::get('/projects/{project}/overview', [ProjectController::class, 'overview'])->name('projects.overview');
 
     Route::post('/projects/{project}/statuses', [ProjectController::class, 'storeStatus'])

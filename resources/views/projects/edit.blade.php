@@ -1,8 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Edit Project
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Edit Project
+            </h2>
+
+            <a href="{{ route('projects.index')}}"
+            class="text-blue-600 hover:underline">
+                ← Back to Tasks
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-6">
@@ -10,8 +17,9 @@
 
             <div class="bg-white p-6 rounded-lg shadow">
 
-                <form action="{{ route('projects.store') }}" method="POST">
+                <form action="{{ route('projects.update', $project) }}" method="POST">
                     @csrf
+                    @method('PUT')
 
                     <div class="mb-4">
                         <label class="block font-medium mb-2">
@@ -21,8 +29,9 @@
                         <input
                             type="text"
                             name="name"
-                            value="{{ old('name') }}"
+                            value="{{ old('name', $project->name) }}"
                             class="w-full border rounded-lg p-2"
+                            required
                         >
 
                         @error('name')
@@ -41,7 +50,7 @@
                             name="description"
                             rows="4"
                             class="w-full border rounded-lg p-2"
-                        >{{ old('description') }}</textarea>
+                        >{{ old('description', $project->description) }}</textarea>
                     </div>
 
                     <div class="mb-4">
@@ -53,9 +62,20 @@
                             name="status"
                             class="w-full border rounded-lg p-2"
                         >
-                            <option value="active">Active</option>
-                            <option value="completed">Completed</option>
-                            <option value="archived">Archived</option>
+                            <option value="active"
+                                {{ old('status', $project->status) == 'active' ? 'selected' : '' }}>
+                                Active
+                            </option>
+
+                            <option value="completed"
+                                {{ old('status', $project->status) == 'completed' ? 'selected' : '' }}>
+                                Completed
+                            </option>
+
+                            <option value="archived"
+                                {{ old('status', $project->status) == 'archived' ? 'selected' : '' }}>
+                                Archived
+                            </option>
                         </select>
                     </div>
 
@@ -67,6 +87,7 @@
                         <input type="text"
                             id="project_start_date"
                             name="start_date"
+                            value="{{ old('start_date', $project->start_date) }}"
                             class="w-full border rounded-lg p-2"
                             required
                         >
@@ -81,6 +102,7 @@
                             id="project_end_date"
                             name="end_date"
                             class="w-full border rounded-lg p-2"
+                            value="{{ old('end_date', $project->end_date) }}"
                             required
                         >
                     </div>
@@ -90,7 +112,8 @@
 
                     <select name="members[]" multiple class="js-select2 w-full border p-2 rounded">
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}">
+                            <option value="{{ $user->id }}"
+                                {{ in_array($user->id, old('members', $project->members->pluck('id')->toArray())) ? 'selected' : '' }}>
                                 {{ $user->name }}
                             </option>
                         @endforeach
@@ -98,11 +121,6 @@
                     </div>
 
                     <div class="flex justify-end gap-3">
-
-                        <a href="{{ route('projects.index') }}"
-                           class="px-4 py-2 bg-gray-200 rounded-lg">
-                            Cancel
-                        </a>
 
                         <button
                             type="submit"

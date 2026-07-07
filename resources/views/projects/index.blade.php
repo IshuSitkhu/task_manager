@@ -76,12 +76,26 @@
                                     Open Project →
                             </a>
 
-                            @if(auth()->user()->role == 'project_manager')
-                                <a href="{{ route('projects.edit', $project) }}"
-                                   class="text-yellow-600 hover:underline">
-                                    Edit
-                                </a>
-                            @endif
+
+
+                                @if(auth()->user()->role == 'project_manager')
+                                    <div class="flex gap-3 items-center">
+                                        <a href="{{ route('projects.edit', $project) }}"
+                                        class="text-yellow-600 hover:underline">
+                                            Edit
+                                        </a>
+
+                                        <form action="{{ route('projects.destroy', $project) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:underline">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
+
+
 
                         </div>
 
