@@ -40,9 +40,14 @@
 
                             <div>
 
-                            <span class="px-2 py-1 text-xs rounded bg-blue-100 text-blue-700">
-                                {{ ucfirst($project->status) }}
-                            </span>
+                                <span @class([
+                                    'px-2 py-1 text-xs rounded font-medium',
+                                    'bg-blue-500 text-white' => $project->status === 'active',
+                                    'bg-green-500 text-white' => $project->status === 'completed',
+                                    'bg-gray-500 text-white' => $project->status === 'archived',
+                                ])>
+                                    {{ ucfirst($project->status) }}
+                                </span>
                             </div>
 
                         </div>
