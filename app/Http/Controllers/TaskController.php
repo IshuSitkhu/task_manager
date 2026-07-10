@@ -235,6 +235,27 @@ class TaskController extends Controller
             $query->where('sprint_id', $request->sprint);
         }
 
+        //due date
+        if ($request->due_date == 'today') {
+            $query->whereDate('due_date', today());
+        }
+
+        if ($request->due_date == 'tomorrow') {
+            $query->whereDate('due_date', today()->addDay());
+        }
+
+        // END OF THE WEEK IS SUNDAY
+        if ($request->due_date == 'week') {
+            $query->whereBetween('due_date', [
+                today(),
+                today()->endOfWeek()
+            ]);
+        }
+
+        if ($request->due_date == 'overdue') {
+            $query->whereDate('due_date', '<', today());
+        }
+
         $tasks = $query->latest()->get();
 
         $types = $project->taskTypes;
@@ -242,7 +263,7 @@ class TaskController extends Controller
         $sprints = $project->sprints;
         $users = $project->members;
 
-        // THIS IS FOR NO REFRESH WHEN FILTER
+        // THIS IS FOR NO REFRESH WHEN FILTER. THIS RENDER IN KANBAN BOARD
         if ($request->ajax()) {
             return view('tasks.partials.board', compact(
                 'project',

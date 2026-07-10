@@ -38,6 +38,14 @@
 
         </select>
 
+        <select id="dueDateFilter">
+            <option value="">All Due Dates</option>
+            <option value="today">Today</option>
+            <option value="tomorrow">Tomorrow</option>
+            <option value="week">This Week</option>
+            <option value="overdue">Overdue</option>
+        </select>
+
     </form>
 
     @if(auth()->user()->role == 'project_manager')
@@ -880,8 +888,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const epic = epicFilter.value;
         const sprint = sprintFilter.value;
+        const dueDate = dueDateFilter.value
 
-        fetch(`/projects/{{ $project->id }}/tasks/board?epic=${epic}&sprint=${sprint}`, {
+        fetch(`/projects/{{ $project->id }}/tasks/board?epic=${epic}&sprint=${sprint}&due_date=${dueDate}`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
@@ -895,6 +904,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     epicFilter.addEventListener('change', loadBoard);
     sprintFilter.addEventListener('change', loadBoard);
+    dueDateFilter.addEventListener('change', loadBoard);
+
 
 
 </script>
