@@ -320,6 +320,14 @@
     </div>
 </div>
 
+@if ($errors->any() && old('form_type') === 'create')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    openTaskModal('{{ old('status') }}');
+});
+</script>
+@endif
+
 <div id="taskEditModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
     <div class="bg-white  w-[1000px] h-full mt-4 p-4 rounded shadow">

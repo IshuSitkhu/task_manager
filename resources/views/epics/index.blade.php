@@ -67,7 +67,7 @@
 
                         <td class="p-2 text-center border">
                             <span class="px-2 py-1 rounded text-sm
-                                 @if($epic->priority == 'low') text-green-800
+                                @if($epic->priority == 'low') text-green-800
                                 @elseif($epic->priority == 'medium') text-yellow-800
                                 @elseif($epic->priority == 'high') text-blue-800
                                 @else text-red-800 @endif">
@@ -101,8 +101,7 @@
                                         @method('DELETE')
 
                                         <button type="submit"
-                                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                                                onclick="return confirm('Delete epic?')">
+                                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                                             Delete
                                         </button>
                                     </form>

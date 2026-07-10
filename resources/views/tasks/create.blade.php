@@ -15,18 +15,7 @@
 
     </div>
 
-    <div class="bg-white p-6 rounded shadow">
-
-
-        @if ($errors->any())
-            <div class="bg-red-100 text-red-700 p-4 mb-4 rounded">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    <div class="bg-white p-6 ">
 
         <form method="POST"
             enctype="multipart/form-data"
@@ -37,9 +26,15 @@
                 <label class="block font-medium mb-1">Task Title</label>
                 <input type="text"
                        name="title"
+                       value="{{ old('title') }}"
                        class="w-full border rounded p-2"
                        placeholder="e.g. Login API Fix"
-                       required>
+                       required
+                >
+
+                @error('title')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="mb-4">
@@ -48,23 +43,32 @@
                     name="description"
                     class="w-full border rounded p-3"
                     rows="3"
-                    placeholder="Describe the task..."></textarea>
+                    placeholder="Describe the task...">{{ old('description') }}</textarea>
             </div>
 
             <div class="mb-2">
                 <label class="block font-medium mb-1">Task Image</label>
 
-                <input type="file"
-                    name="image"
-                    id="imageInput"
-                    accept="image/*"
-                    class="w-full border rounded p-2"
-                    placeholder="Task image">
+                <div class="flex items-start gap-2">
+                    <input type="file"
+                        name="image"
+                        id="imageInput"
+                        accept="image/*"
+                        class=" p-2"
+                        placeholder="Task image"
+                    >
+                    @error('image')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+
+                    <img id="imagePreview"
+                        class="hidden mt-3 w-52 h-42 mb-2 rounded-lg border object-cover">
+                </div>
 
 
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class=" grid grid-cols-2 md:grid-cols-4 gap-4">
 
                 <div>
                     <label class="block font-medium mb-1">Epic</label>
@@ -72,7 +76,8 @@
                         <option value="">Select Epic</option>
 
                         @foreach($epics as $epic)
-                            <option value="{{ $epic->id }}">
+                            <option value="{{ $epic->id }}"
+                                {{ old('epic_id') == $epic->id ? 'selected' : '' }}>
                                 {{ $epic->title }}
                             </option>
                         @endforeach
@@ -85,7 +90,8 @@
                         <option value="">No Sprint</option>
 
                         @foreach($sprints as $sprint)
-                            <option value="{{ $sprint->id }}">
+                            <option value="{{ $sprint->id }}"
+                                {{ old('sprint_id') == $sprint->id ? 'selected' : '' }}>
                                 {{ $sprint->name }}
                             </option>
                         @endforeach
@@ -98,7 +104,8 @@
                         <option value="">Select Member</option>
 
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}">
+                            <option value="{{ $user->id }}"
+                                {{ old('assigned_to') == $user->id ? 'selected' : '' }}>
                                 {{ $user->name }}
                             </option>
                         @endforeach
@@ -117,7 +124,8 @@
                     </select> --}}
                     <select name="type_id" class="w-full border rounded p-2">
                         @foreach($project->taskTypes as $type)
-                            <option value="{{ $type->id }}">
+                            <option value="{{ $type->id }}"
+                                {{ old('type_id') == $type->id ? 'selected' : '' }}>
                                 {{ $type->name }}
                             </option>
                         @endforeach
@@ -127,11 +135,15 @@
                 <div>
                     <label class="block font-medium mb-1">Priority</label>
                     <select name="priority" class="w-full border rounded p-2" required>
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                        <option value="critical">Critical</option>
+                        <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>Low</option>
+                        <option value="medium" {{ old('priority', 'medium') == 'medium' ? 'selected' : '' }}>Medium</option>
+                        <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>High</option>
+                        <option value="critical" {{ old('priority') == 'critical' ? 'selected' : '' }}>Critical</option>
                     </select>
+
+                    @error('priority')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
@@ -139,7 +151,8 @@
 
                     <select name="status" class="w-full border rounded p-2" required>
                         @foreach($project->statuses as $status)
-                            <option value="{{ $status->slug }}">
+                            <option value="{{ $status->slug }}"
+                                {{ old('status') == $status->slug ? 'selected' : '' }}>
                                 {{ $status->name }}
                             </option>
                         @endforeach
@@ -152,6 +165,7 @@
                     <input type="text"
                            name="github_link"
                            class="w-full border rounded p-2"
+                           value="{{ old('github_link') }}"
                            placeholder="https://github.com/...">
                 </div>
 
@@ -160,10 +174,17 @@
                     <input type="text"
                         id="task_due_date"
                         name="due_date"
+                        value="{{ old('due_date') }}"
                         class="w-full border rounded p-2"
                         placeholder="Select due date"
-                        required >
+                        required
+                    >
+                    @error('due_date')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
+
+
 
             </div>
 
@@ -194,7 +215,11 @@
 
             const file = e.target.files[0];
 
-            if (!file) return;
+            if (!file) {
+                preview.src = '';
+                preview.classList.add('hidden');
+                return;
+            }
 
             if (!file.type.startsWith('image/')) {
                 Swal.fire({

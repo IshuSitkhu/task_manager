@@ -17,17 +17,6 @@
 
     <div class="bg-white p-6 rounded shadow">
 
-
-        @if ($errors->any())
-            <div class="bg-red-100 text-red-700 p-4 mb-4 rounded">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <form method="POST" action="{{ route('projects.epics.update', [$project->id, $epic->id]) }}">
             @csrf
             @method('PUT')
@@ -36,9 +25,15 @@
                 <label class="block font-medium mb-1">Epic Title</label>
                 <input type="text"
                        name="title"
-                       value="{{ $epic->title }}"
+                       value="{{ old('title', $epic->title) }}"
                        class="w-full border rounded p-2"
-                       required>
+                       required
+                >
+                @error('title')
+                    <p class="text-red-500 text-sm mt-1">
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <div class="mb-4">
@@ -46,7 +41,7 @@
                 <textarea name="description"
                           class="w-full border rounded p-2"
                           value="{{$epic->description}}"
-                          rows="4">{{ $epic->description }}</textarea>
+                          rows="4">{{old('description' ,$epic->description )}}</textarea>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -59,7 +54,7 @@
 
                         @foreach($users as $user)
                             <option value="{{ $user->id }}"
-                                {{ $epic->owner_id == $user->id ? 'selected' : '' }}>
+                                {{ old('owner_id', $epic->owner_id )== $user->id ? 'selected' : '' }}>
                                 {{ $user->name }}
                             </option>
                         @endforeach
@@ -72,10 +67,10 @@
                     <label class="block font-medium mb-1">Priority</label>
                     <select name="priority" class="w-full border rounded p-2" required>
 
-                        <option value="low" {{ $epic->priority == 'low' ? 'selected' : '' }}>Low</option>
-                        <option value="medium" {{ $epic->priority == 'medium' ? 'selected' : '' }}>Medium</option>
-                        <option value="high" {{ $epic->priority == 'high' ? 'selected' : '' }}>High</option>
-                        <option value="critical" {{ $epic->priority == 'critical' ? 'selected' : '' }}>Critical</option>
+                        <option value="low" {{ old('priority', $epic->priority) == 'low' ? 'selected' : '' }}>Low</option>
+                        <option value="medium" {{  old('priority', $epic->priority) == 'medium' ? 'selected' : '' }}>Medium</option>
+                        <option value="high" {{ old('priority',  $epic->priority) == 'high' ? 'selected' : '' }}>High</option>
+                        <option value="critical" {{ old('priority',$epic->priority )== 'critical' ? 'selected' : '' }}>Critical</option>
 
                     </select>
                 </div>
@@ -85,10 +80,10 @@
                     <label class="block font-medium mb-1">Status</label>
                     <select name="status" class="w-full border rounded p-2" required>
 
-                        <option value="not_started" {{ $epic->status == 'not_started' ? 'selected' : '' }}>Not Started</option>
-                        <option value="in_progress" {{ $epic->status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="testing" {{ $epic->status == 'testing' ? 'selected' : '' }}>Testing</option>
-                        <option value="completed" {{ $epic->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="not_started" {{ old('status', $epic->status )== 'not_started' ? 'selected' : '' }}>Not Started</option>
+                        <option value="in_progress" {{ old('status', $epic->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="testing" {{ old('status', $epic->status )== 'testing' ? 'selected' : '' }}>Testing</option>
+                        <option value="completed" {{ old('status',$epic->status) == 'completed' ? 'selected' : '' }}>Completed</option>
 
                     </select>
                 </div>
@@ -98,7 +93,7 @@
                     <label class="block font-medium mb-1">Progress (%)</label>
                     <input type="number"
                            name="progress"
-                           value="{{ $epic->progress }}"
+                           value="{{ old('progress', $epic->progress) }}"
                            class="w-full border rounded p-2"
                            min="0"
                            max="100">
@@ -110,7 +105,7 @@
                     <input type="text"
                         id="start_date"
                         name="planned_start_date"
-                        value="{{ $epic->planned_start_date }}"
+                        value="{{ old('planned_start_date', $epic->planned_start_date) }}"
                         class="w-full border rounded p-2">
                 </div>
 
@@ -120,7 +115,7 @@
                     <input type="text"
                         id="end_date"
                         name="planned_end_date"
-                        value="{{ $epic->planned_end_date }}"
+                        value="{{ old('planned_end_date', $epic->planned_end_date) }}"
                         class="w-full border rounded p-2">
                 </div>
 

@@ -8,39 +8,52 @@
         @method('PUT')
 
 
-            <input type="hidden" name="redirect_to" value="{{ route('projects.sprints', $project->id) }}">
-            <div class="mb-2">
+            <input type="hidden" name="redirect_to" value="{{ route('projects.tasks', $project->id) }}">
+
+            <div class="mb-4">
                 <label class="block font-medium mb-1">Task Title</label>
                 <input type="text"
                        name="title"
-                       value="{{ $task->title }}"
+                       value="{{ old('title', $task->title) }}"
                        class="w-full border rounded p-2"
-                       required>
+                       required
+                >
+                @error('title')
+                    <p class="text-red-500 text-sm mt-1">
+                        {{ $message }}
+                    </p>
+                @enderror
             </div>
 
             <div class="mb-2">
                 <label class="block font-medium mb-1">Description</label>
                 <textarea name="description"
                           class="w-full border rounded p-2"
-                          rows="3"
-                          placeholder="Describe the task">{{ $task->description }}</textarea>
+                          rows="3">{{ old('description', $task->description )}}</textarea>
             </div>
 
             <div class="mb-2">
                 <label class="block font-medium mb-1">Task Image</label>
 
-                <input type="file"
-                    name="image"
-                    id="imageInput"
-                    accept="image/*"
-                    class="w-full border rounded p-2">
+                <div class="flex items-start gap-2">
+                    <input type="file"
+                            name="image"
+                            id="imageInput"
+                            accept="image/*"
+                            class=" p-2"
+                    >
+                    @error('image')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
 
-                <img id="imagePreview"
+                    <img id="imagePreview"
                     src="{{ $task->image ? asset('storage/'.$task->image) : '' }}"
-                    class="mt-3 max-h-28 rounded border {{ $task->image ? '' : 'hidden' }}">
+                    class="w-52 h-42 mb-2 rounded-lg border object-cover {{ $task->image ? '' : 'hidden' }}">
+                </div>
+
             </div>
 
-            <div class="grid grid-cols-4 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 
                 <div>
                     <label class="block font-medium mb-1">Epic</label>
@@ -48,7 +61,7 @@
 
                         @foreach($epics as $epic)
                             <option value="{{ $epic->id }}"
-                                {{ $task->epic_id == $epic->id ? 'selected' : '' }}>
+                                {{ old('epic_id', $task->epic_id) == $epic->id ? 'selected' : '' }}>
                                 {{ $epic->title }}
                             </option>
                         @endforeach
@@ -64,7 +77,8 @@
 
                         @foreach($sprints as $sprint)
                             <option value="{{ $sprint->id }}"
-                                {{ $task->sprint_id == $sprint->id ? 'selected' : '' }}>
+                                {{ old('sprint_id', $task->sprint_id) == $sprint->id ? 'selected' : '' }}>
+
                                 {{ $sprint->name }}
                             </option>
                         @endforeach
@@ -78,7 +92,7 @@
 
                         @foreach($users as $user)
                             <option value="{{ $user->id }}"
-                                {{ $task->assigned_to == $user->id ? 'selected' : '' }}>
+                                {{ old('assigned_to', $task->assigned_to) == $user->id ? 'selected' : '' }}>
                                 {{ $user->name }}
                             </option>
                         @endforeach
@@ -92,8 +106,8 @@
 
                         @foreach($project->taskTypes as $type)
                             <option value="{{ $type->id }}"
-                                {{ $task->type_id == $type->id ? 'selected' : '' }}>
-                                {{ ucfirst(str_replace('_',' ', $type->name)) }}
+                                {{ old('type_id', $task->type_id) == $type->id ? 'selected' : '' }}>
+                                 {{ ucfirst(str_replace('_',' ', $type->name)) }}
                             </option>
                         @endforeach
 
@@ -106,7 +120,7 @@
 
                         @foreach(['low','medium','high','critical'] as $priority)
                             <option value="{{ $priority }}"
-                                {{ $task->priority == $priority ? 'selected' : '' }}>
+                                {{ old('priority', $task->priority) == $priority ? 'selected' : '' }}>
                                 {{ ucfirst($priority) }}
                             </option>
                         @endforeach
@@ -120,7 +134,7 @@
 
                         @foreach($project->statuses as $status)
                             <option value="{{ $status->slug }}"
-                                {{ $task->status == $status->slug ? 'selected' : '' }}>
+                                {{ old('status', $task->status) == $status->slug ? 'selected' : '' }}>
                                 {{ ucfirst(str_replace('_',' ', $status->name)) }}
                             </option>
                         @endforeach
@@ -132,7 +146,7 @@
                     <label class="block font-medium mb-1">GitHub Link</label>
                     <input type="text"
                            name="github_link"
-                           value="{{ $task->github_link }}"
+                           value="{{ old('github_link', $task->github_link) }}"
                            class="w-full border rounded p-2">
                 </div>
 
@@ -141,7 +155,7 @@
                     <input type="text"
                            id="task_due_date"
                             name="due_date"
-                           value="{{ $task->due_date }}"
+                           value="{{ old('due_date', $task->due_date) }}"
                            class="w-full border rounded p-2"
                            required >
                 </div>

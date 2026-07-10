@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use App\Models\Project;
 use App\Models\Epic;
@@ -67,26 +68,8 @@ class TaskController extends Controller
         return view('tasks.create', compact('project', 'epics', 'sprints', 'users','types' ));
     }
 
-    public function store(Request $request, Project $project, ActivityService $activityService)
+    public function store(TaskRequest $request, Project $project, ActivityService $activityService)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'epic_id' => 'required|exists:epics,id',
-            'sprint_id' => 'nullable|exists:sprints,id',
-            'assigned_to' => 'required|exists:users,id',
-            'status' => 'required',
-            'priority' => 'required',
-            'type_id' => 'required|exists:task_types,id',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'due_date' => 'required|date',
-
-            'checklists' => 'nullable|array',
-            'checklists.*.title' => 'required|string|max:255',
-            'checklists.*.is_completed' => 'nullable|boolean',
-            'checklists.*.description' => 'nullable|string',
-            'checklists.*.assigned_to' => 'nullable|exists:users,id',
-            'checklists.*.due_date' => 'nullable|date',
-        ]);
 
         $imagePath = null;
 
@@ -165,24 +148,8 @@ class TaskController extends Controller
         ]);
     }
 
-    public function update(Request $request, Project $project, Task $task, ActivityService $activityService)
+    public function update(TaskRequest $request, Project $project, Task $task, ActivityService $activityService)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'epic_id' => 'required|exists:epics,id',
-            'assigned_to' => 'required|exists:users,id',
-            'status' => 'required',
-            'priority' => 'required',
-            'type_id' => 'required|exists:task_types,id',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-
-            'checklists' => 'nullable|array',
-            'checklists.*.title' => 'required|string|max:255',
-            'checklists.*.description' => 'nullable|string',
-            'checklists.*.assigned_to' => 'nullable|exists:users,id',
-            'checklists.*.due_date' => 'nullable|date',
-            'checklists.*.is_completed' => 'nullable|boolean',
-        ]);
 
         //  STEP 1: KEEP OLD IMAGE BY DEFAULT
         $imagePath = $task->image;

@@ -1,12 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Notification;
 
 use App\Models\Project;
 use App\Models\User;
 use App\Services\ActivityService;
+use App\Actions\CreateProjectAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ProjectAssigned;
+use App\Http\Requests\ProjectRequest;
 
 class ProjectController extends Controller
 {
@@ -52,66 +56,10 @@ class ProjectController extends Controller
         return view('projects.create', compact('users'));
     }
 
-    public function store(Request $request, ActivityService $activityService)
+    public function store(ProjectRequest $request, CreateProjectAction $createProjectAction, ActivityService $activityService)
     {
-        if (Auth::user()->role !== 'project_manager') {
-            abort(403);
-        }
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
-        ]);
-
-        $project = Project::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'status' => $request->status,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'created_by' => Auth::id(),
-        ]);
-
-        $activityService->log(
-            Auth::user(),
-            'Created_Project',
-            "Created project '{$project->name}'",
-            $project,
-            "Project"
-        );
-
-        //  DEFAULT STATUSES (FIXED)
-        $defaultStatuses = [
-            ['name' => 'Todo', 'slug' => 'todo', 'order' => 1, 'color' => '#6b7280'],
-            ['name' => 'In Progress', 'slug' => 'in_progress', 'order' => 2, 'color' => '#3b82f6'],
-            ['name' => 'Review', 'slug' => 'review', 'order' => 3, 'color' => '#a855f7'],
-            ['name' => 'Bug', 'slug' => 'bug', 'order' => 4, 'color' => '#ef4444'],
-            ['name' => 'Done', 'slug' => 'done', 'order' => 5, 'color' => '#22c55e'],
-        ];
-
-        foreach ($defaultStatuses as $status) {
-            $project->statuses()->create($status);
-        }
-
-        // members
-        if ($request->members) {
-            $project->members()->syncWithoutDetaching($request->members);
-        }
-
-        $defaultTypes = [
-            ['name' => 'Feature', 'slug' => 'feature', 'color' => '#3b82f6'],
-            ['name' => 'UI', 'slug' => 'ui', 'color' => '#a855f7'],
-            ['name' => 'Bug', 'slug' => 'bug', 'color' => '#ef4444'],
-            ['name' => 'Backend', 'slug' => 'backend', 'color' => '#22c55e'],
-            ['name' => 'Test', 'slug' => 'test', 'color' => '#f59e0b'],
-        ];
-
-        foreach ($defaultTypes as $type) {
-            $project->taskTypes()->create($type);
-        }
+        $createProjectAction->execute($request, $activityService);
 
         return redirect()->route('projects.index')
             ->with('success', 'Project created successfully');
@@ -128,19 +76,8 @@ class ProjectController extends Controller
     }
 
 
-    public function update(Request $request, Project $project, ActivityService $activityService) {
-        if (Auth::user()->role !== 'project_manager') {
-            abort(403);
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date',
-        ]);
-
+    public function update(ProjectRequest $request, Project $project, ActivityService $activityService)
+    {
         $project->update([
             'name' => $request->name,
             'description' => $request->description,
@@ -156,13 +93,7 @@ class ProjectController extends Controller
             $project->members()->sync([]);
         }
 
-        $activityService->log(
-            Auth::user(),
-            'Edited_Project',
-            "Updated project '{$project->name}'",
-            $project,
-            "Project"
-        );
+       $activityService->projectUpdated( Auth::user(), $project);
 
         return redirect()->route('projects.index')
             ->with('success', 'Project updated successfully');
@@ -236,7 +167,9 @@ class ProjectController extends Controller
     public function storeType(Request $request, Project $project)
     {
         $request->validate([
-            'name' => 'required'
+            'name' => 'required',
+            'slug' => 'required',
+            'color' => 'nullable',
         ]);
 
         $exists = $project->taskTypes()
@@ -285,13 +218,7 @@ class ProjectController extends Controller
         $members = User::whereIn('id', $request->members)->get();
 
         foreach ($members as $member) {
-            $activityService->log(
-                Auth::user(),
-                'Added_member',
-                "Added {$member->name} to project '{$project->name}'",
-                $project,
-                "Project"
-            );
+            $activityService->memberAdded( Auth::user(), $project, $member );
         }
 
         return back();
@@ -300,13 +227,7 @@ class ProjectController extends Controller
     public function removeMember(Project $project, User $user, ActivityService $activityService)
     {
 
-        $activityService->log(
-            Auth::user(),
-            'Removed_member',
-            "Removed {$user->name} from project '{$project->name}'",
-            $project,
-            "Project"
-        );
+        $activityService->memberRemoved( Auth::user(), $project, $user);
 
         $project->members()->detach($user->id);
 

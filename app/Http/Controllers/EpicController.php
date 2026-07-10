@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EpicRequest;
 use App\Models\Epic;
 use App\Models\Project;
 use App\Models\User;
@@ -76,19 +77,8 @@ class EpicController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Project $project, ActivityService $activityService)
+    public function store(EpicRequest $request, Project $project, ActivityService $activityService)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'owner_id' => 'required|exists:users,id',
-            'priority' => 'required',
-            'status' => 'required',
-            'planned_start_date' => 'required|date',
-            'planned_end_date' => 'required|date',
-            'progress' => 'nullable|integer|min:0|max:100',
-        ]);
-
         $epic = $project->epics()->create([
             'title' => $request->title,
             'description' => $request->description,
@@ -133,19 +123,8 @@ class EpicController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project, Epic $epic, ActivityService $activityService)
+    public function update(EpicRequest $request, Project $project, Epic $epic, ActivityService $activityService)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'owner_id' => 'required|exists:users,id',
-            'priority' => 'required',
-            'status' => 'required',
-            'planned_start_date' => 'nullable|date',
-            'planned_end_date' => 'nullable|date',
-            'progress' => 'nullable|integer|min:0|max:100',
-        ]);
-
         $epic->update($request->all());
 
         $activityService->log(

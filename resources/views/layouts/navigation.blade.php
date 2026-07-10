@@ -11,7 +11,7 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-4 sm:-my-px sm:ms-6 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
@@ -28,11 +28,54 @@
                 </div>
             </div>
 
+
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
+
+                <div class="relative" x-data="{ notifyOpen: false }">
+
+                    <button
+                        @click="notifyOpen = !notifyOpen"
+                        class="text-sm text-gray-500 gap-2">
+                        Notification
+                    </button>
+
+                    <div
+
+                        x-show="notifyOpen"
+                        @click.outside="notifyOpen = false"
+                        x-transition
+                        class="absolute left-0 mt-3 bg-white shadow rounded w-60 p-4 z-50">
+
+                        @forelse($notifications as $notification)
+
+                            <div class="mb-3 border-b pb-3">
+                                <div class="text-sm text-gray-700">
+                                    {{ $notification->user->name }},
+                                    {{ $notification->message }}
+                                </div>
+
+                                <p class="text-xs text-gray-400 mt-1">
+                                    {{ $notification->created_at->diffForHumans() }}
+                                </p>
+                            </div>
+
+                        @empty
+
+                            <p class="text-gray-500 text-sm">
+                                No notifications
+                            </p>
+
+                        @endforelse
+
+                    </div>
+
+                </div>
+
+                <x-dropdown align="left" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center px-3 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()->name }}</div>
 
                             <div class="ms-1">
@@ -60,7 +103,40 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
+
+
+                {{-- <div class="relative">
+
+                    <button class="text-sm">
+                        Notification
+
+                        <div class="absolute p-4 mt-3 left-0 bg-white shadow rounded w-60">
+
+                            @foreach($notifications as $notification)
+
+                            <div class="gap-4">
+
+                                <div class="text-sm pt-2 text-gray-500"> {{ $notification->user->name }}, {{ $notification->message }}</div>
+                                <p class="text-xs text-gray-400 mt-2 mb-4">
+                                    {{ $notification->created_at->diffForHumans() }}
+                                </p>
+                                <hr>
+                            </div>
+
+
+                            @endforeach
+
+                        </div>
+
+                    </button>
+
+                </div> --}}
+
+
+
             </div>
+
+
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
@@ -105,6 +181,9 @@
                     </x-responsive-nav-link>
                 </form>
             </div>
+
+
         </div>
+
     </div>
 </nav>
