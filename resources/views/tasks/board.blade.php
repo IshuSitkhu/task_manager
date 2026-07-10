@@ -24,6 +24,20 @@
 
         </select>
 
+        <select id="sprintFilter" name="sprint">
+
+            <option value="">All Sprints</option>
+
+            @foreach($project->sprints as $sprint)
+
+                <option value="{{ $sprint->id }}">
+                    {{ $sprint->name }}
+                </option>
+
+            @endforeach
+
+        </select>
+
     </form>
 
     @if(auth()->user()->role == 'project_manager')
@@ -834,32 +848,53 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // EPIC FILTER
+    // const epicFilter = document.getElementById('epicFilter');
+
+    // if (epicFilter) {
+    //     epicFilter.addEventListener('change', function () {
+
+    //         const epic = this.value;
+
+    //         fetch(`/projects/{{ $project->id }}/tasks/board?epic=${epic}`, {
+    //             headers: {
+    //                 'X-Requested-With': 'XMLHttpRequest'
+    //             }
+    //         })
+    //         .then(response => response.text())
+    //         .then(html => {
+
+    //             document.getElementById('kanban-board').innerHTML = html;
+
+    //         });
+
+    //     });
+
+    // } else {
+    //     console.log("Epic filter not found!");
+    // }
+
     const epicFilter = document.getElementById('epicFilter');
+    const sprintFilter = document.getElementById('sprintFilter');
 
-    if (epicFilter) {
-        epicFilter.addEventListener('change', function () {
+    function loadBoard() {
 
-            const epic = this.value;
+        const epic = epicFilter.value;
+        const sprint = sprintFilter.value;
 
-            fetch(`/projects/{{ $project->id }}/tasks/board?epic=${epic}`, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.text())
-            .then(html => {
-
-                document.getElementById('kanban-board').innerHTML = html;
-
-            });
-
+        fetch(`/projects/{{ $project->id }}/tasks/board?epic=${epic}&sprint=${sprint}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('kanban-board').innerHTML = html;
         });
 
-    } else {
-
-        console.log("Epic filter not found!");
-
     }
+
+    epicFilter.addEventListener('change', loadBoard);
+    sprintFilter.addEventListener('change', loadBoard);
 
 
 </script>
