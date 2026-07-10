@@ -324,10 +324,10 @@
                 `;
 
                 console.log({
-    commentUserId: comment.user_id,
-    currentUserId: currentUserId,
-    equal: comment.user_id == currentUserId
-});
+                    commentUserId: comment.user_id,
+                    currentUserId: currentUserId,
+                    equal: comment.user_id == currentUserId
+                });
 
                 });
 

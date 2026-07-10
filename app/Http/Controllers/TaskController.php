@@ -212,7 +212,7 @@ class TaskController extends Controller
         return back()->with('success', 'Task deleted successfully');
     }
 
-    public function board(Project $project)
+    public function board(Request $request, Project $project)
     {
         // LOAD ALL THE STATUS RELATED TO THE PROJECT, INCLUDING TASKS AND THEIR RELATIONSHIPS
         $project->load('statuses');
@@ -225,12 +225,30 @@ class TaskController extends Controller
             $query->where('assigned_to', Auth::id());
         }
 
+        // epic filter
+        if ($request->filled('epic')) {
+            $query->where('epic_id', $request->epic);
+        }
+
+        // sprint filter
+        if ($request->filled('sprint')) {
+            $query->where('sprint_id', $request->sprint);
+        }
+
         $tasks = $query->latest()->get();
 
         $types = $project->taskTypes;
         $epics = $project->epics;
         $sprints = $project->sprints;
         $users = $project->members;
+
+        // THIS IS FOR NO REFRESH WHEN FILTER
+        if ($request->ajax()) {
+            return view('tasks.partials.board', compact(
+                'project',
+                'tasks'
+            ));
+        }
 
         return view('tasks.board', compact(
             'project',
