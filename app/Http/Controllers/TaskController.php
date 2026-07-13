@@ -236,25 +236,37 @@ class TaskController extends Controller
         }
 
         //due date
-        if ($request->due_date == 'today') {
-            $query->whereDate('due_date', today());
-        }
+        // if ($request->due_date == 'today') {
+        //     $query->whereDate('due_date', today());
+        // }
 
-        if ($request->due_date == 'tomorrow') {
-            $query->whereDate('due_date', today()->addDay());
-        }
+        // if ($request->due_date == 'tomorrow') {
+        //     $query->whereDate('due_date', today()->addDay());
+        // }
 
-        // END OF THE WEEK IS SUNDAY
-        if ($request->due_date == 'week') {
-            $query->whereBetween('due_date', [
-                today(),
-                today()->endOfWeek()
-            ]);
-        }
+        // if ($request->due_date == 'week') {
+        //     $query->whereBetween('due_date', [
+        //         today(),
+        //         today()->endOfWeek()
+        //     ]);
+        // }
 
-        if ($request->due_date == 'overdue') {
-            $query->whereDate('due_date', '<', today());
-        }
+        // if ($request->due_date == 'overdue') {
+        //     $query->whereDate('due_date', '<', today());
+        // }
+
+        $query->when($request->filled('due_date'), function ($query) use ($request) {
+            match ($request->due_date) {
+                'today' => $query->whereDate('due_date', today()),
+                'tomorrow' => $query->whereDate('due_date', today()->addDay()),
+                'week' => $query->whereBetween('due_date', [
+                    today(),
+                    today()->endOfWeek()
+                ]),
+                'overdue' => $query->whereDate('due_date', '<', today()),
+                default => null,
+            };
+        });
 
         $tasks = $query->latest()->get();
 
