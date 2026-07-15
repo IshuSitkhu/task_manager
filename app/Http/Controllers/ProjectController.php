@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Events\ProjectAssigned;
 use App\Http\Requests\ProjectRequest;
+use App\Services\ProjectSetupService;
 
 class ProjectController extends Controller
 {
@@ -56,10 +57,10 @@ class ProjectController extends Controller
         return view('projects.create', compact('users'));
     }
 
-    public function store(ProjectRequest $request, CreateProjectAction $createProjectAction, ActivityService $activityService)
+    public function store(ProjectRequest $request, CreateProjectAction $createProjectAction, ActivityService $activityService, ProjectSetupService $projectSetupService)
     {
 
-        $createProjectAction->execute($request, $activityService);
+        $createProjectAction->execute($request, $activityService, $projectSetupService);
 
         return redirect()->route('projects.index')
             ->with('success', 'Project created successfully');
@@ -100,6 +101,11 @@ class ProjectController extends Controller
     }
 
     public function destroy(Project $project, ActivityService $activityService ) {
+
+        if (Auth::user()->role !== 'project_manager') {
+            abort(403);
+        }
+
         $title = $project-> title;
 
         $activityService->log(

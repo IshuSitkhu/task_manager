@@ -77,7 +77,6 @@ class TaskController extends Controller
             $imagePath = $request->file('image')->store('tasks', 'public');
         }
 
-
         $task = Task::create([
             'project_id' => $project->id,
             'epic_id' => $request->epic_id,
