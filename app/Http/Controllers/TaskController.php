@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use App\Models\Project;
-use App\Models\Epic;
-use App\Models\Sprint;
-use App\Models\User;
 use App\Models\TaskChecklist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -70,7 +67,6 @@ class TaskController extends Controller
 
     public function store(TaskRequest $request, Project $project, ActivityService $activityService)
     {
-
         $imagePath = null;
 
         if ($request->hasFile('image')) {
