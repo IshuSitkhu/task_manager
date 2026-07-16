@@ -30,6 +30,9 @@ class ProjectRequest extends FormRequest
             'status' => 'required',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date',
+
+            'members' => 'nullable|array',
+            'members.*' => 'exists:users,id',
         ];
     }
 

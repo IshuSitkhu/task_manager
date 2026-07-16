@@ -41,9 +41,13 @@ class ProjectController extends Controller
             'created_by' => $request->user()->id,
         ]);
 
+        if ($request->filled('members')) {
+            $project->members()->sync($request->members);
+        }
+
         return response()->json([
             'message' => 'Project created successfully',
-            'data' => $project,
+            'data' => $project->load('members'),
         ], 201);
     }
 
@@ -81,9 +85,11 @@ class ProjectController extends Controller
             'end_date' => $request->end_date,
         ]);
 
+        $project->members()->sync($request->members ?? []);
+
         return response()->json([
             'message' => 'Project updated successfully',
-            'data' => $project,
+            'data' => $project->load('members'),
         ], 200);
     }
 
