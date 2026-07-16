@@ -9,11 +9,12 @@ use Illuminate\Foundation\Http\FormRequest;
 class ProjectRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the user is authorized to make this request YEDI PROJECT MANAGER VAYENA VANE RETURN FALSE.
      */
     public function authorize(): bool
     {
         return $this->user()?->role === 'project_manager';
+        // return true;
     }
 
     /**
