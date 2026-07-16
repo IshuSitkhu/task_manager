@@ -90,8 +90,18 @@ class ProjectController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy()
+    public function destroy(Project $project)
     {
-        //
+        if (Auth::user()->role !== 'project_manager') {
+            return response()->json([
+                'message' => 'You are not authorized to delete this project.'
+            ], 403);
+        }
+
+        $project->delete();
+
+        return response()-> json([
+            'message' => 'Project deleted successfully',
+        ]);
     }
 }
